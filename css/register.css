@@ -1,0 +1,27 @@
+#register-page {
+  gap: 70px;
+}
+
+#register-page .register-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#register-page .form-input-box span,
+#register-page .register-form .id-check {
+  flex-shrink: 0;
+}
+
+#register-page .register-form .id-check {
+  height: 25px;
+  background-color: var(--color-primary);
+  color: #ffffff;
+  padding: 0px 5px;
+  border-radius: 8px;
+}
+
+#register-page .register-form button[type='submit'] {
+  margin-top: 50px;
+}

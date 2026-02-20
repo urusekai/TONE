@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TONE</title>
+    <!-- 공통 CSS -->
+    <link rel="stylesheet" href="./css/reset.css" />
+    <link rel="stylesheet" href="./css/font.css" />
+    <link rel="stylesheet" href="./css/common.css" />
+    <!-- 페이지 전용 CSS -->
+    <link rel="stylesheet" href="./css/register.css" />
+  </head>
+  <body>
+    <div class="app layout-auth">
+      <main id="register-page">
+        <img class="logo" src="./assets/icons/logo-full.svg" alt="로고" />
+        <form class="register-form" action="javascript:void(0);" method="post">
+          <div class="form-input-box">
+            <span><img src="./assets/icons/id.svg" alt="아이디" /></span>
+            <input type="text" name="id" placeholder="아이디를 입력하세요" required />
+            <button class="id-check">중복확인</button>
+          </div>
+          <div class="form-input-box">
+            <span><img src="./assets/icons/id.svg" alt="이메일" /></span>
+            <input type="email" name="email" placeholder="이메일을 입력하세요" required />
+          </div>
+          <div class="form-input-box">
+            <span><img src="./assets/icons/password.svg" alt="비밀번호" /></span>
+            <input type="password" name="pw" placeholder="비밀번호를 입력하세요" required />
+          </div>
+          <div class="form-input-box">
+            <span><img src="./assets/icons/password.svg" alt="비밀번호확인" /></span>
+            <input
+              type="password"
+              name="pw_confirm"
+              placeholder="비밀번호를 다시 입력하세요"
+              required
+            />
+          </div>
+          <div class="form-input-box">
+            <span><img src="./assets/icons/id.svg" alt="닉네임" /></span>
+            <input
+              type="text"
+              name="name"
+              placeholder="닉네임을 2 ~ 5자 내에 입력하세요"
+              required
+            />
+          </div>
+          <button type="submit" class="form-submit-box">회원가입</button>
+        </form>
+      </main>
+    </div>
+  </body>
+</html>

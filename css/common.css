@@ -1,0 +1,370 @@
+/* ==================================================
+   1. 기초 설정
+================================================== */
+
+/* ----------------------------------------
+   변수
+---------------------------------------- */
+:root {
+  --color-bg-outside: rgb(58, 58, 58);
+  --color-bg-app: #f2f2ee;
+  --color-text-primary: #3f5f73;
+  --color-text-secondary: #b7aea6;
+  --color-primary: #3f5f73;
+  --color-pantone-primary: #6969ad;
+}
+
+/* ----------------------------------------
+   기본 설정
+---------------------------------------- */
+body {
+  background: var(--color-bg-outside);
+  font-family:
+    'Pretendard',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    'Noto Sans KR',
+    'Apple SD Gothic Neo',
+    'Malgun Gothic',
+    sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--color-text-primary);
+}
+
+/* ==================================================
+   2. 레이아웃
+================================================== */
+
+/* ----------------------------------------
+   앱 전체 영역
+---------------------------------------- */
+.app {
+  /* 고정 레이어 높이 */
+  --header-height: 84px;
+  --tabs-height: 0px;
+  --bottom-fixed-height: 75px;
+
+  /* 콘텐츠 여유 간격 */
+  --main-top-gap: 12px;
+  --main-bottom-gap: 12px;
+
+  /* 페이지별 main padding (fixed 요소에 가리지 않도록) */
+  --main-top: calc(var(--header-height) + var(--tabs-height) + var(--main-top-gap));
+  --main-bottom: calc(var(--bottom-fixed-height) + var(--main-bottom-gap));
+
+  max-width: 402px;
+  width: 100%;
+  min-height: 100vh;
+  margin: 0 auto;
+  background: var(--color-bg-app);
+
+  display: flex;
+  flex-direction: column;
+}
+
+/* 탭메뉴가 있는 페이지 */
+.app.has-tabs {
+  --tabs-height: 34px;
+}
+
+/* 미니플레이어가 있는 페이지 */
+.app.has-mini {
+  --bottom-fixed-height: 185px;
+}
+
+/* ----------------------------------------
+   메인 영역
+---------------------------------------- */
+.app main {
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  padding-left: 25px;
+  padding-right: 25px;
+
+  /* 페이지별 padding */
+  padding-top: var(--main-top);
+  padding-bottom: var(--main-bottom);
+}
+
+/* ==================================================
+   3. 고정(Fixed) 레이어
+================================================== */
+
+/* ----------------------------------------
+   고정 요소 공통(앱 폭 기준 가운데 고정)
+---------------------------------------- */
+.header,
+.tabs,
+.mini-player,
+.bottom-nav {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 402px;
+  z-index: 1000;
+}
+
+/* ==================================================
+   4. 컴포넌트
+================================================== */
+
+/* ----------------------------------------
+   헤더
+---------------------------------------- */
+
+/* 헤더 - 구조 */
+.header {
+  top: 0;
+  padding: 25px;
+  display: flex;
+  justify-content: space-between;
+  background: var(--color-bg-app);
+}
+
+/* 헤더 - 아바타 */
+.header .avatar {
+  width: 34px;
+  height: 34px;
+  background-color: var(--color-pantone-primary);
+  border-radius: 999px;
+}
+
+/* ----------------------------------------
+   탭 메뉴
+---------------------------------------- */
+
+/* 탭 - 컨테이너 */
+.tabs {
+  top: 84px; /* 헤더 실제 높이에 맞춰 조절 */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 0px 50px 10px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+
+  background: var(--color-bg-app);
+  z-index: 999;
+}
+
+/* 탭 - 기본 */
+.tabs .tab {
+  border-bottom: 2px solid transparent;
+  padding: 2px 0px;
+}
+
+/* 탭 - 활성 */
+.tabs .tab.is-active {
+  color: var(--color-text-primary);
+  border-bottom: 2px solid var(--color-text-primary);
+}
+
+/* ----------------------------------------
+   미니 플레이어
+---------------------------------------- */
+
+/* 미니 플레이어 - 컨테이너 */
+.mini-player {
+  bottom: 75px; /* 하단바 높이에 맞춰 조절 */
+  width: 100%;
+
+  background: #ffffff;
+  border-radius: 20px 20px 0 0;
+  padding: 25px 50px;
+
+  display: flex;
+  gap: 15px;
+
+  box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.25);
+  z-index: 1001;
+}
+
+/* 미니 플레이어 - 썸네일 */
+.mini-player .mini-thumb {
+  width: 60px;
+  height: 60px;
+  border-radius: 999px;
+  overflow: hidden;
+  display: flex;
+}
+
+.mini-player .mini-thumb img {
+  width: 100%;
+  height: 100%;
+}
+
+/* 미니 플레이어 - 오른쪽 영역 */
+.mini-player .mini-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 미니 플레이어 - 상단 줄 */
+.mini-player .mini-top {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* 미니 플레이어 - 제목 */
+.mini-player .mini-top .mini-title {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* 미니 플레이어 - 버튼 영역 */
+.mini-player .mini-top .mini-actions {
+  display: flex;
+  gap: 15px;
+}
+
+/* 재생/일시정지 아이콘 기본 상태 */
+.mini-player .mini-top .mini-actions .mini-btn .icon-pause {
+  display: none;
+}
+
+.mini-player .mini-top .mini-actions .mini-btn .icon-pause {
+  width: 20px;
+  height: 20px;
+}
+
+.mini-player .mini-top .mini-actions .mini-btn .icon-play {
+  width: 20px;
+  height: 18px;
+}
+
+/* 재생 중 상태 */
+.mini-player .mini-top .mini-actions .mini-btn.is-playing .icon-play {
+  display: none;
+}
+
+.mini-player .mini-top .mini-actions .mini-btn.is-playing .icon-pause {
+  display: block;
+}
+
+/* 미니 플레이어 - 아티스트 */
+.mini-player .mini-artist {
+  color: var(--color-text-secondary);
+  font-size: 14px;
+}
+
+/* 미니 플레이어 - 재생바 배경 */
+.mini-player .mini-progress {
+  position: relative;
+  width: 100%;
+  height: 5px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: linear-gradient(90deg, #a8d4e6 0%, #c3b7d6 49%, #f5c9c6 100%);
+  margin-top: auto;
+  margin-bottom: 2px;
+}
+
+/* 미니 플레이어 - 재생바 */
+.mini-player .mini-progress-cover {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+
+  /* 진행률만큼 왼쪽 남기고 오른쪽 덮기 */
+  width: calc(100% - var(--progress, 0%));
+  background: #e5e6e5;
+
+  /* 애니메이션 대응 */
+  transition: width 0.2s linear;
+}
+
+/* ----------------------------------------
+   하단 메뉴
+---------------------------------------- */
+.bottom-nav {
+  bottom: 0;
+  width: 100%;
+
+  display: flex;
+  padding: 25px 50px;
+  justify-content: space-between;
+
+  background: #ffffff;
+  z-index: 1002;
+}
+
+/* 하단 메뉴 - 아이콘 기본 */
+.bottom-nav .nav-item img {
+  display: none;
+  width: 25px;
+  height: 25px;
+}
+
+/* 하단 메뉴 - 기본 아이콘 */
+.bottom-nav .nav-item img:first-child {
+  display: block;
+}
+
+/* 하단 메뉴 - 활성 상태 */
+.bottom-nav .nav-item.is-active img:first-child {
+  display: none;
+}
+.bottom-nav .nav-item.is-active img:last-child {
+  display: block;
+}
+
+/* ----------------------------------------
+   폼
+---------------------------------------- */
+
+/* 폼 - 입력 박스 */
+.form-input-box {
+  width: 100%;
+  height: 50px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  background-color: #ffffff;
+  color: var(--color-text-primary);
+  border-radius: 15px;
+  padding: 0 20px;
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0.25);
+}
+
+/* 폼 - 입력 필드 */
+.form-input-box input {
+  flex: 1;
+  min-width: 0;
+  color: var(--color-text-primary);
+}
+
+/* 폼 - 제출 버튼 */
+.form-submit-box {
+  width: 100%;
+  padding: 20px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background-color: var(--color-primary);
+  color: white;
+  border-radius: 15px;
+
+  font-size: 16px;
+  font-weight: 700;
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0.25);
+}
