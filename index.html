@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="./css/font.css" />
     <link rel="stylesheet" href="./css/common.css" />
     <!-- 페이지 CSS -->
-    <link rel="stylesheet" href="./css/현재페이지에사용할.css" />
+    <link rel="stylesheet" href="./css/calendar-style.css" />
   </head>
 
   <body>
@@ -34,7 +34,64 @@
       </nav>
 
       <!-- 페이지 내용 -->
-      <main id="main-page">페이지 내용</main>
+      <main class="app">
+        <!-- 상단 헤더 -->
+        <header class="page-header">
+          <button class="back-btn">
+            <img src="./assets/icons/prev.svg" alt="뒤로가기" />
+          </button>
+          <h1>Today’s Record</h1>
+          <div class="profile-circle"></div>
+        </header>
+
+        <!-- 캘린더 카드 -->
+        <section class="calendar-card">
+          <h2 id="monthTitle"></h2>
+          <div class="calendar-grid" id="calendarGrid"></div>
+        </section>
+
+        <!-- 데일리 팬톤 카드 -->
+        <section class="daily-tone-card">
+          <div class="badge-row">
+            <span class="today-badge">Today</span>
+          </div>
+          <div class="tone-content">
+            <div class="tone-text">
+              <h3>데일리 팬톤 컬러 명</h3>
+              <p class="pantone-num">12-3456</p>
+              <div class="keyword-tags">
+                <span>#키워드</span>
+                <span>#키워드</span>
+                <span>#키워드</span>
+              </div>
+            </div>
+            <div class="tone-color-preview"></div>
+          </div>
+        </section>
+
+        <!-- 메모 영역 -->
+        <section class="memo-card">
+          <div class="memo-section">
+            <div class="memo-header">
+              <h4>기록 메모</h4>
+              <div class="memo-buttons">
+                <button type="button" class="btn-outline">수정</button>
+                <button type="button" class="btn-primary">저장</button>
+              </div>
+            </div>
+
+            <div class="memo-box">
+              <textarea
+                id="memoInput"
+                placeholder="오늘의 톤을 한 줄로 남겨주세요!"
+                maxlength="80"
+                readonly
+              ></textarea>
+              <div class="memo-count"><span id="currentCount">0</span>/80</div>
+            </div>
+          </div>
+        </section>
+      </main>
 
       <!-- 미니플레이어 -->
       <section class="mini-player">
@@ -81,5 +138,8 @@
         </a>
       </nav>
     </div>
+
+    <script src="./js/claendar.js"></script>
+    <script src="./js/numCount.js"></script>
   </body>
 </html>

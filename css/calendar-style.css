@@ -1,0 +1,237 @@
+main {
+  /* 팀원의 padding을 무시하고 강제로 여백 확보 */
+  padding-top: 30px !important; /* 상단 Today's Record 위쪽 여백 */
+  padding-bottom: 220px !important; /* 하단 미니플레이어에 가리지 않게 넉넉히 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: auto; /* 내부 스크롤 허용 */
+}
+
+/* 팀원 헤더와 탭메뉴 안 보이게 하기 */
+.app > .header,
+.app > .tabs {
+  display: none !important;
+}
+
+/* 2. 페이지 전용 헤더 */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.page-header h1 {
+  font-size: 14px;
+  color: #3f5f73;
+  font-weight: 700;
+}
+
+.back-btn img {
+  width: 8px;
+  height: 14px;
+}
+
+.profile-circle {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #d9d9d9;
+}
+
+/* ------------------ CALENDAR ------------------ */
+.calendar-card {
+  background: white;
+  border-radius: 17px;
+  padding: 20px;
+  width: 100%; /* common.css의 main padding에 맞춤 */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+#monthTitle {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #3f5f73;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 15px;
+  text-align: center;
+}
+
+.calendar-day {
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.day-dot {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #d9d9d9;
+  margin: 6px auto 0;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+/* 선택 및 컬러 상태 (기존 코드 유지) */
+.calendar-day.selected .day-dot {
+  border-color: #3f5f73;
+  transform: scale(1.1);
+}
+.active-dark .day-dot {
+  background: #3f5f73;
+}
+.tone-blue .day-dot {
+  background: #6faed9;
+}
+.tone-lightblue .day-dot {
+  background: #8fd8ec;
+}
+.tone-pink .day-dot {
+  background: #fea1b8;
+}
+
+/* ------------------ DAILY CARD ------------------ */
+.daily-tone-card {
+  background: white;
+  border-radius: 17px;
+  padding: 20px;
+  margin-top: 24px;
+  width: 100%;
+  position: relative;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.today-badge {
+  background: #3f5f73;
+  color: #fff;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.tone-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+}
+
+.tone-text h3 {
+  font-size: 20px;
+  margin-bottom: 4px;
+  font-weight: bold;
+}
+.pantone-num {
+  font-size: 16px;
+  color: #3f5f73;
+  font-weight: 600;
+}
+
+.tone-color-preview {
+  width: 55px;
+  height: 100px;
+  border-radius: 30px;
+  background: #6b6aa8;
+  border: 3px solid #fff;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+}
+
+.keyword-tags {
+  margin-top: 15px;
+}
+.keyword-tags span {
+  background: rgba(63, 95, 115, 0.15);
+  padding: 4px 10px;
+  border-radius: 10px;
+  font-size: 10px;
+  margin-right: 4px;
+}
+
+/* ------------------ MEMO ------------------ */
+.memo-card {
+  background: white;
+  border-radius: 17px;
+  padding: 20px;
+  margin-top: 24px;
+  margin-bottom: 20px;
+  width: 100%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.memo-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.memo-header h4 {
+  font-size: 15px;
+  font-weight: bold;
+}
+
+/* 3. 메모 버튼 디자인*/
+.memo-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-outline,
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 54px; /* 최소 너비 확보 */
+  height: 28px; /* 높이 명시 */
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+/* 수정 버튼 (테두리형) */
+.btn-outline {
+  background: #ffffff !important;
+  border: 1px solid #3f5f73 !important;
+  color: #3f5f73 !important;
+}
+
+/* 저장 버튼 (색상 채우기형) */
+.btn-primary {
+  background: #3f5f73 !important;
+  border: 1px solid #3f5f73 !important;
+  color: #ffffff !important;
+}
+
+.memo-box {
+  background: #f2f2ee;
+  border-radius: 12px;
+  padding: 12px;
+  position: relative;
+}
+
+.memo-box textarea {
+  width: 100%;
+  height: 80px;
+  background: transparent;
+  border: none;
+  resize: none;
+  font-size: 13px;
+  outline: none;
+}
+
+#memoInput:not([readonly]) {
+  background-color: #e9e9e1 !important;
+  color: #3f5f73d2;
+}
