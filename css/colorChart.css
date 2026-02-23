@@ -130,6 +130,7 @@
     /* ✅ 고정폭 제거 */
     position: relative;
     background: var(--color);
+    overflow: visible;
 }
 
 .cc-right::before {
@@ -138,6 +139,33 @@
     inset: 0;
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(0, 0, 0, 0.06));
     pointer-events: none;
+}
+
+/* ✅ 덮는 레이어 (처음엔 안 보이게 오른쪽에 숨김) */
+.cc-right::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 200%;
+    /* ✅ 카드 전체를 덮을 크기(오른쪽 50% 기준 2배) */
+    background: var(--color);
+    transform: translateX(0);
+    /* 기본: 오른쪽 영역에만 존재 */
+    opacity: 0;
+    /* 기본엔 안 보이게 */
+    transition: transform 300ms cubic-bezier(.2, .8, .2, 1), opacity 80ms linear;
+    z-index: 0;
+    /* cc-right 내부 바닥 */
+    pointer-events: none;
+}
+
+/* ✅ 활성: 레이어가 왼쪽으로 이동하며 전체 덮기 */
+.cc-item.is-active .cc-right::after {
+    opacity: 1;
+    transform: translateX(-50%);
+    /* ✅ 오른쪽 시작 → 왼쪽으로 이동하며 덮음 */
 }
 
 /* 좋아요(상단 우측) */
