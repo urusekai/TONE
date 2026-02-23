@@ -10,9 +10,8 @@ TONE은 사용자에게 매일 팬톤컬러 기반의 색상과 그에 맞는 �
 하루의 감정을 색과 음악으로 기록할 수 있는 뮤직 플랫폼입니다.
 </p>
 
----
-
 ## 📂 디렉터리 구조
+
 ```
 TONE/
 │── .vscode/                # VSCode 설정 파일
@@ -26,6 +25,7 @@ TONE/
 │   ├── reset.css           # 기본 스타일 초기화
 │   ├── common.css          # 공통 스타일
 │   └── font.css            # 폰트 설정
+│       ...                 # 페이지별 CSS 파일
 │
 │── js/                     # 페이지별 스크립트
 │
@@ -35,45 +35,66 @@ TONE/
 │── .prettierrc             # 코드 포맷 설정 파일
 ```
 
-## 🧑‍💻 작업 규칙
 
-### 1️⃣ 브랜치 규칙
+## 📜 컨벤션
 
-- `main` → 최종 완성본
-- `develop` → 코드 통합할 브랜치 (main 브랜치 대신 사용하는 브랜치)
-- `feature/기능이름` → 개인 작업 브랜치
-- 작업하기 전 현재 브랜치가 작업할 브랜치가 맞는지 인지 확인하고 작업하기
-- 현재 브랜치가 작업할 브랜치가 아니라면 `git checkout feature/기능이름` 으로 브랜치 이동 후 작업
+### 1. 브랜치 규칙
 
-### 2️⃣ 작업 순서
+- `main` : 최종 배포/제출용
+- `develop` : 개발 통합 브랜치
+- `feature/브랜치명` : 기능 추가
+- `refactor/브랜치명` : UI 수정, HTML/CSS 구조 변경
 
-#### 🔹 1. develop 최신화
+#### 브랜치명 예시
+- `feature/calendar`
+- `refactor/playlist`
+
+### 2. 커밋 메시지 규칙
+
+- `feat:` 기능 추가  
+- `refactor:` UI 수정, 구조 변경  
+- `fix:` 버그 수정  
+
+#### 커밋 메시지 예시
+- `feat: 캘린더 페이지 구현`
+- `refactor: 캘린더 페이지 레이아웃 수정`
+- `fix: 플레이어 진행바 오류 수정`
+
+
+## 🛠 작업 순서
+
+### 1. develop 브랜치 최신화
 
 ```bash
 git checkout develop
 git pull origin develop
 ```
 
-
-#### 🔹 2. 리모트 브랜치를 기준으로 로컬 브랜치 생성 + 이동 (처음 1회)
+### 2. (처음 1회만) develop 브랜치를 기반으로 새 작업 브랜치 생성 후 이동
 
 ```bash
-git switch -c feature/기능이름 origin/feature/기능이름
+git checkout -b 브랜치명
 ```
+> 예시: `git checkout -b feature/calendar`
 
-> ⚠ 에러가 발생하면 아직 리모트에 해당 브랜치가 생성되지 않은 상태입니다.
+### 3. 현재 브랜치가 작업할 브랜치가 맞는지 확인
 
+```bash
+git branch
+```
+> 현재 브랜치가 다르면 `git checkout 브랜치명` 으로 이동
 
-#### 🔹 3. 작업 후 커밋
+### 4. 작업 후 커밋
 
 ```bash
 git add .
-git commit -m "작업한 내용 쓰기"
+git commit -m "feat: 작업 내용"
 ```
+> 예시: `git commit -m "feat: 캘린더 페이지 구현"`
 
-
-#### 🔹 4. 리모트에 푸시
+### 5. 푸시
 
 ```bash
-git push origin feature/기능이름
+git push origin 브랜치명
 ```
+> 예시: `git push origin feature/calendar`
