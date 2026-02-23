@@ -9,27 +9,26 @@
 #palette-log-page {
     display: block !important;
     width: 100% !important;
-    max-width: 402px;
     /* 모바일 프레임 유지 */
     margin: 0 !important;
     align-self: stretch !important;
-    /* 부모가 flex일 때 핵심 */
-    padding: 18px 16px 160px;
-    /* 미니플레이어/하단바 공간 */
-    padding-top: 120px;
-    /* ← 일단 이 값으로 해결됨 (필요하면 100~140 조절) */
-    padding-left: 16px;
-    padding-right: 16px;
-    padding-bottom: 160px;
+    padding-left: 25px;
+    padding-right: 25px;
+    padding-top: var(--main-top);
+    padding-bottom: var(--main-bottom);
+    position: relative;
+    z-index: 2;
+    will-change: transform;
+    transition: transform .45s cubic-bezier(.2, .8, .2, 1);
 }
 
 /* 헤더 텍스트 */
 .pl-head {
-    margin: 8px 0 50px;
+    margin: 8px 0 70px;
 }
 
 .pl-title {
-    font-size: 22px;
+    font-size: 25px;
     font-weight: 800;
     letter-spacing: -0.02em;
     line-height: 1.15;
@@ -37,9 +36,8 @@
 
 .pl-sub {
     margin-top: 4px;
-    font-size: 12px;
-    /* 1.25em 쓰면 너무 커져서 레이아웃 깨짐 */
-    font-weight: 700;
+    font-size: 14px;
+    font-weight: 800;
     opacity: 0.75;
 }
 
@@ -48,11 +46,10 @@
    ========================= */
 .pl-board {
     width: 100%;
-    height: 1150px;
+    height: auto;
     margin: 0 auto;
     position: relative;
     padding-top: 22px;
-    padding-bottom: 100px;
     overflow: visible;
     background: #e1d8d6;
     box-shadow:
@@ -70,7 +67,7 @@
     list-style: none;
     /* 보드 안쪽 여백 */
     padding-top: 0;
-    padding-bottom: 150px;
+    padding-bottom: 70px;
     margin: 0;
     display: flex;
     flex-direction: column;
@@ -89,52 +86,15 @@
     box-shadow:
         0 16px 26px rgba(0, 0, 0, 0.18),
         0 1px 0 rgba(255, 255, 255, 0.25) inset;
+    opacity: 1;
+    transform: none;
+    will-change: transform, opacity;
 }
 
 .pl-card:first-child {
     margin-top: -70px;
 }
 
-/* 겹침 순서 정상화(현재 10개 기준) */
-.pl-card:nth-child(1) {
-    z-index: 10;
-}
-
-.pl-card:nth-child(2) {
-    z-index: 9;
-}
-
-.pl-card:nth-child(3) {
-    z-index: 8;
-}
-
-.pl-card:nth-child(4) {
-    z-index: 7;
-}
-
-.pl-card:nth-child(5) {
-    z-index: 6;
-}
-
-.pl-card:nth-child(6) {
-    z-index: 5;
-}
-
-.pl-card:nth-child(7) {
-    z-index: 4;
-}
-
-.pl-card:nth-child(8) {
-    z-index: 3;
-}
-
-.pl-card:nth-child(9) {
-    z-index: 2;
-}
-
-.pl-card:nth-child(10) {
-    z-index: 1;
-}
 
 /* 링크 내부 */
 .pl-link {
@@ -171,10 +131,14 @@
 .pl-arrow {
     position: absolute;
     right: 12px;
-    top: 8px;
+    top: 45px;
     font-size: 22px;
     line-height: 1;
     opacity: 0.9;
+}
+
+.pl-card:first-child .pl-arrow {
+    top: 10px;
 }
 
 /* 제목 */
@@ -217,4 +181,38 @@
     width: 12px;
     height: 12px;
     opacity: 0.85;
+}
+
+/* =========================
+   A) 카드 순차 등장 (JS 있으면 순서대로, 없으면 그냥 보임)
+========================= */
+
+body.js-anim .pl-card {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity .36s ease, transform .36s ease;
+    transition-delay: var(--delay, 0ms);
+}
+
+body.js-anim .pl-card.is-in {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* =========================
+   B) 페이지 오른쪽으로 빠지는 전환 모션 (플레이어 연결용)
+========================= */
+
+
+/* ✅ 무조건 오른쪽으로 빠짐 */
+.pl-card.is-exit-right {
+    transform: translateX(140%) !important;
+    opacity: 0 !important;
+    transition: transform 1.5s cubic-bezier(.2, .8, .2, 1), opacity .25s ease !important;
+    /* 겹침 때문에 안 보이는 경우 방지 */
+}
+
+/* 클릭 순간 살짝 눌림(선택) */
+.pl-stack.is-lock .pl-card:not(.is-exit-right) {
+    pointer-events: none;
 }
