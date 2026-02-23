@@ -1,0 +1,192 @@
+/* =========================
+   Color Chart Page
+   ========================= */
+
+.cc-page {
+    padding: 14px 16px 18px;
+}
+
+.cc-title {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 4px 0 10px;
+    color: rgba(25, 30, 35, 0.86);
+}
+
+.cc-list {
+    display: grid;
+    gap: 10px;
+}
+
+/* 카드(리스트 아이템) */
+.cc-item {
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.78);
+    border: 1px solid rgba(10, 12, 18, 0.06);
+    box-shadow: 0 6px 18px rgba(11, 14, 25, 0.06);
+    overflow: hidden;
+}
+
+.cc-link {
+    position: relative;
+    display: flex;
+    min-height: 72px;
+    text-decoration: none;
+    color: inherit;
+}
+
+/* 왼쪽 텍스트 영역 */
+.cc-left {
+    flex: 1;
+    padding: 10px 12px;
+    padding-right: 56px;
+    /* 바이닐이 겹치니까 여유 */
+}
+
+.cc-kicker {
+    font-size: 10px;
+    font-weight: 700;
+    color: rgba(25, 30, 35, 0.46);
+    margin-bottom: 6px;
+}
+
+.cc-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+}
+
+.cc-no {
+    font-size: 18px;
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: rgba(25, 30, 35, 0.88);
+    min-width: 24px;
+}
+
+.cc-meta {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+}
+
+.cc-code {
+    font-size: 10px;
+    font-weight: 700;
+    color: rgba(25, 30, 35, 0.52);
+}
+
+.cc-name {
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    color: rgba(25, 30, 35, 0.88);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 바이닐(중간 겹침) */
+.cc-vinyl {
+    position: absolute;
+    right: 92px;
+    /* 오른쪽 컬러 영역 폭 기준 */
+    top: 50%;
+    transform: translateY(-50%);
+    width: 64px;
+    height: 64px;
+    opacity: 0.92;
+    pointer-events: none;
+    filter: drop-shadow(0 8px 12px rgba(11, 14, 25, 0.12));
+}
+
+.cc-vinyl img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* 오른쪽 컬러 영역 */
+.cc-right {
+    width: 120px;
+    position: relative;
+    background: var(--grad);
+}
+
+.cc-right::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(0, 0, 0, 0.06));
+    pointer-events: none;
+}
+
+/* 좋아요(상단 우측) */
+.cc-like {
+    position: absolute;
+    right: 10px;
+    top: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.cc-like-count {
+    font-size: 10px;
+    font-weight: 800;
+    color: rgba(25, 30, 35, 0.62);
+}
+
+.cc-like-btn {
+    width: 18px;
+    height: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    background: transparent;
+    padding: 0;
+}
+
+.cc-like-btn img {
+    width: 16px;
+    height: 16px;
+    opacity: 0.75;
+}
+
+/* add 버튼(하단 우측) */
+.cc-add {
+    position: absolute;
+    right: 10px;
+    bottom: 8px;
+    width: 22px;
+    height: 22px;
+    border: 0;
+    background: rgba(255, 255, 255, 0.72);
+    border: 1px solid rgba(10, 12, 18, 0.08);
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    box-shadow: 0 8px 16px rgba(11, 14, 25, 0.12);
+}
+
+.cc-add img {
+    width: 14px;
+    height: 14px;
+    opacity: 0.85;
+}
+
+/* 터치/호버 */
+.cc-item:active {
+    transform: translateY(1px);
+}
+
+.cc-link:focus-visible {
+    outline: 2px solid rgba(110, 131, 247, 0.55);
+    outline-offset: 2px;
+    border-radius: 12px;
+}
