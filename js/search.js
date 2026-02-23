@@ -1,12 +1,14 @@
 const searchData = {
   tags: ['Coral', 'White', '카더가든', '파란색', '여름노래'],
   recentColors: [
-    { name: 'Coral', code: '#E89B92' },
-    { name: 'White', code: '#FFFFFF' },
-    { name: 'Gray', code: '#C0C0C0' },
-    { name: 'Olive', code: '#ADB696' },
-    { name: 'Purple', code: '#8D91C7' },
-    { name: 'Pink', code: '#FFC0CB' }
+    { name: 'Butter cream', code: '#EFE1A7' },
+    { name: 'Cerulean', code: '#9BB7D4' },
+    { name: 'Tangerine', code: '#DD4124' },
+    { name: 'Rose Quartz', code: '#F7CAC9' },
+    { name: 'Classic Blue', code: '#0F4C81' },
+    { name: 'Green Ash', code: '#A0DAA9' },
+    { name: 'Viva Magenta', code: '#BE3455' },
+    { name: 'Ultimate Gray', code: '#939597' }
   ],
   recommended: [
     { brand: 'PANTONE', name: 'Pale Khaki', code: '#C4B495' },
@@ -19,8 +21,14 @@ const searchData = {
 };
 
 function renderSearchPage() {
+  const tagListEl = document.getElementById('tag-list');
+  const colorCircleListEl = document.getElementById('color-circle-list');
+  const colorCardGridEl = document.getElementById('color-card-grid');
+
+  if (!tagListEl || !colorCircleListEl || !colorCardGridEl) return;
+
   // 1. 최근 검색어 (가로 스크롤)
-  document.getElementById('tag-list').innerHTML = searchData.tags
+  tagListEl.innerHTML = searchData.tags
     .map(
       (t) => `
         <div class="tag">
@@ -31,8 +39,8 @@ function renderSearchPage() {
     )
     .join('');
 
-  // 2. 최근 컬러 (가로 스크롤)
-  document.getElementById('color-circle-list').innerHTML = searchData.recentColors
+  // 2. 최근 컬러 (아이템은 한 줄, 텍스트는 최대 2줄 래핑)
+  colorCircleListEl.innerHTML = searchData.recentColors
     .map(
       (c) => `
         <div class="color-item">
@@ -44,7 +52,7 @@ function renderSearchPage() {
     .join('');
 
   // 3. 인기 추천 컬러 (2열 그리드)
-  document.getElementById('color-card-grid').innerHTML = searchData.recommended
+  colorCardGridEl.innerHTML = searchData.recommended
     .map(
       (r) => `
         <article class="pantone-card">
@@ -60,4 +68,14 @@ function renderSearchPage() {
 }
 
 // 페이지 로드 시 실행
-document.addEventListener('DOMContentLoaded', renderSearchPage);
+document.addEventListener('DOMContentLoaded', () => {
+  renderSearchPage();
+
+  const searchFormEl = document.querySelector('.search-input-box');
+  if (!searchFormEl) return;
+
+  // 디자인 단계에서는 페이지 리로드 없이 검색 UI만 유지한다.
+  searchFormEl.addEventListener('submit', (event) => {
+    event.preventDefault();
+  });
+});
