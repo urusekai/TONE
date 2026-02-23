@@ -209,7 +209,6 @@ body.js-anim .pl-card.is-in {
     transform: translateX(140%) !important;
     opacity: 0 !important;
     transition: transform 1.5s cubic-bezier(.2, .8, .2, 1), opacity .25s ease !important;
-    z-index: 9999;
     /* 겹침 때문에 안 보이는 경우 방지 */
 }
 

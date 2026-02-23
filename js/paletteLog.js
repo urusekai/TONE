@@ -77,7 +77,6 @@ document.addEventListener('DOMContentLoaded', () => {
     stack.classList.add('is-lock');
 
     // exit하는 카드는 무조건 최상단
-    card.style.zIndex = '9999';
     card.classList.add('is-exit-right');
 
     const payload = {
