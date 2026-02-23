@@ -1,9 +1,15 @@
 /* =========================
    Color Chart Page
    ========================= */
+.app.has-tabs.has-mini main {
+    display: block;
+    /* flex 제거 */
+    justify-content: unset;
+    align-items: unset;
+}
 
 .cc-page {
-    padding: 14px 16px 18px;
+    padding: 0 25px;
 }
 
 .cc-title {
@@ -11,7 +17,6 @@
     font-weight: 800;
     letter-spacing: -0.02em;
     margin: 4px 0 10px;
-    color: rgba(25, 30, 35, 0.86);
 }
 
 .cc-list {
@@ -21,6 +26,9 @@
 
 /* 카드(리스트 아이템) */
 .cc-item {
+    width: 100%;
+    max-width: 363px;
+    height: 80px;
     border-radius: 12px;
     background: rgba(255, 255, 255, 0.78);
     border: 1px solid rgba(10, 12, 18, 0.06);
@@ -31,58 +39,62 @@
 .cc-link {
     position: relative;
     display: flex;
-    min-height: 72px;
+    min-height: 80px;
     text-decoration: none;
     color: inherit;
 }
 
 /* 왼쪽 텍스트 영역 */
 .cc-left {
-    flex: 1;
-    padding: 10px 12px;
-    padding-right: 56px;
-    /* 바이닐이 겹치니까 여유 */
+    flex: 0 0 50%;
+    padding: 3px 0 5px 10px;
+    min-width: 0;
+    /* 레코드 키우면 여유도 같이 */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    /* 카드 높이 안에서 가운데 느낌 */
+    align-items: flex-start;
+    /* ✅ 전부 왼쪽 정렬 */
 }
 
 .cc-kicker {
-    font-size: 10px;
-    font-weight: 700;
-    color: rgba(25, 30, 35, 0.46);
-    margin-bottom: 6px;
+    font-size: 12px;
+    font-weight: 800;
+    color: rgba(25, 30, 35, 0.40);
 }
 
 .cc-row {
     display: flex;
-    gap: 10px;
+    flex-direction: column;
+    /* ✅ 01이 아래로 내려감 */
     align-items: flex-start;
 }
 
 .cc-no {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 900;
     line-height: 1;
-    letter-spacing: -0.02em;
-    color: rgba(25, 30, 35, 0.88);
-    min-width: 24px;
+    min-width: 0;
+    margin-bottom: 6px;
 }
 
 .cc-meta {
-    display: grid;
-    gap: 2px;
-    min-width: 0;
+    display: flex;
+    flex-direction: column;
 }
 
 .cc-code {
     font-size: 10px;
-    font-weight: 700;
-    color: rgba(25, 30, 35, 0.52);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: -1px;
 }
 
 .cc-name {
-    font-size: 13px;
-    font-weight: 800;
-    letter-spacing: -0.01em;
-    color: rgba(25, 30, 35, 0.88);
+    font-size: 16px;
+    font-weight: 900;
+    line-height: 1.05;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -91,12 +103,15 @@
 /* 바이닐(중간 겹침) */
 .cc-vinyl {
     position: absolute;
-    right: 92px;
-    /* 오른쪽 컬러 영역 폭 기준 */
-    top: 50%;
-    transform: translateY(-50%);
-    width: 64px;
-    height: 64px;
+
+    left: 50%;
+    /* ✅ 좌/우 경계선 */
+    top: calc(50% - 1px);
+    transform: translate(-50%, -50%);
+    /* ✅ 레코드 중심을 경계에 */
+
+    width: 82px;
+    height: 82px;
     opacity: 0.92;
     pointer-events: none;
     filter: drop-shadow(0 8px 12px rgba(11, 14, 25, 0.12));
@@ -110,9 +125,11 @@
 
 /* 오른쪽 컬러 영역 */
 .cc-right {
-    width: 120px;
+    flex: 0 0 50%;
+    width: auto;
+    /* ✅ 고정폭 제거 */
     position: relative;
-    background: var(--grad);
+    background: var(--color);
 }
 
 .cc-right::before {
@@ -164,14 +181,11 @@
     width: 22px;
     height: 22px;
     border: 0;
-    background: rgba(255, 255, 255, 0.72);
-    border: 1px solid rgba(10, 12, 18, 0.08);
     border-radius: 6px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     padding: 0;
-    box-shadow: 0 8px 16px rgba(11, 14, 25, 0.12);
 }
 
 .cc-add img {
