@@ -14,7 +14,7 @@
 
   <body>
     <!-- 컨테이너 -->
-    <div class="app has-tabs has-mini">
+    <div class="app has-tabs has-mini page-playlist">
       <!-- 헤더 -->
       <header class="header">
         <button type="button">
@@ -35,115 +35,145 @@
 
       <!-- 페이지 내용 -->
       <main id="playlist">
-        <section class="playlist-player">
-          <img
-            class="playlist-cover"
-            src="./assets/images/thumb-color.png"
-            alt="플레이리스트표지"
-          />
-          <div class="playlist-controls">
-            <button type="button" class="control-btn control-btn-shuffle">
-              <img class="control-icon" src="./assets/icons/shuffle.svg" alt="셔플" />
-            </button>
-            <button type="button" class="control-btn control-btn-prev">
-              <img class="control-icon" src="./assets/icons/prev-song.svg" alt="이전곡" />
-            </button>
-            <button type="button" class="control-btn control-btn-play">
-              <img
-                class="control-icon icon-play"
-                src="./assets/icons/play-circle.svg"
-                alt="재생"
-              /><img
-                class="control-icon icon-pause"
-                src="./assets/icons/pause-circle.svg"
-                alt="일시정지"
-              />
-            </button>
-            <button type="button" class="control-btn control-btn-next">
-              <img class="control-icon" src="./assets/icons/next-song.svg" alt="다음곡" />
-            </button>
-            <button type="button" class="control-btn control-btn-repeat">
-              <img class="control-icon" src="./assets/icons/repeat.svg" alt="반복" />
-            </button>
+        <section class="playlist-hero">
+          <img class="playlist-hero__thumb" src="./assets/images/thumb-color.png" alt="썸네일" />
+          <div class="playlist-hero__content">
+            <div class="playlist-hero__text">
+              <p class="playlist-hero__title">Color Name</p>
+              <p class="playlist-hero__code">12-3456</p>
+            </div>
+            <div class="playlist-hero__actions">
+              <div class="playlist-hero__likes">
+                <img src="./assets/icons/like.svg" alt="좋아요" />
+                <span>12,300</span>
+              </div>
+              <button class="playlist-hero__play-button">
+                <img src="./assets/icons/play-circle.svg" alt="재생" />
+              </button>
+            </div>
           </div>
         </section>
-        <section class="track-list-section">
-          <ul class="track-list">
-            <li class="track-item">
-              <img class="track-thumb" src="./assets/images/thumb-track.png" alt="썸네일" />
-              <div class="track-meta">
-                <p class="track-title">Title</p>
-                <p class="track-artist">Artist</p>
+        <section class="playlist-tracks">
+          <ul class="playlist-tracks__list">
+            <li class="playlist-track-item">
+              <img
+                class="playlist-track-item__thumb"
+                src="./assets/images/thumb-track.png"
+                alt="썸네일"
+              />
+              <div class="playlist-track-item__meta">
+                <p class="playlist-track-item__title">Title</p>
+                <p class="playlist-track-item__artist">Artist</p>
               </div>
             </li>
-            <li class="track-item">
-              <img class="track-thumb" src="./assets/images/thumb-track.png" alt="썸네일" />
-              <div class="track-meta">
-                <p class="track-title">Title</p>
-                <p class="track-artist">Artist</p>
+            <li class="playlist-track-item">
+              <img
+                class="playlist-track-item__thumb"
+                src="./assets/images/thumb-track.png"
+                alt="썸네일"
+              />
+              <div class="playlist-track-item__meta">
+                <p class="playlist-track-item__title">Title</p>
+                <p class="playlist-track-item__artist">Artist</p>
               </div>
             </li>
-            <li class="track-item">
-              <img class="track-thumb" src="./assets/images/thumb-track.png" alt="썸네일" />
-              <div class="track-meta">
-                <p class="track-title">Title</p>
-                <p class="track-artist">Artist</p>
+            <li class="playlist-track-item">
+              <img
+                class="playlist-track-item__thumb"
+                src="./assets/images/thumb-track.png"
+                alt="썸네일"
+              />
+              <div class="playlist-track-item__meta">
+                <p class="playlist-track-item__title">Title</p>
+                <p class="playlist-track-item__artist">Artist</p>
               </div>
             </li>
-            <li class="track-item">
-              <img class="track-thumb" src="./assets/images/thumb-track.png" alt="썸네일" />
-              <div class="track-meta">
-                <p class="track-title">Title</p>
-                <p class="track-artist">Artist</p>
+            <li class="playlist-track-item">
+              <img
+                class="playlist-track-item__thumb"
+                src="./assets/images/thumb-track.png"
+                alt="썸네일"
+              />
+              <div class="playlist-track-item__meta">
+                <p class="playlist-track-item__title">Title</p>
+                <p class="playlist-track-item__artist">Artist</p>
               </div>
             </li>
-            <li class="track-item">
-              <img class="track-thumb" src="./assets/images/thumb-track.png" alt="썸네일" />
-              <div class="track-meta">
-                <p class="track-title">Title</p>
-                <p class="track-artist">Artist</p>
+            <li class="playlist-track-item">
+              <img
+                class="playlist-track-item__thumb"
+                src="./assets/images/thumb-track.png"
+                alt="썸네일"
+              />
+              <div class="playlist-track-item__meta">
+                <p class="playlist-track-item__title">Title</p>
+                <p class="playlist-track-item__artist">Artist</p>
               </div>
             </li>
-            <li class="track-item">
-              <img class="track-thumb" src="./assets/images/thumb-track.png" alt="썸네일" />
-              <div class="track-meta">
-                <p class="track-title">Title</p>
-                <p class="track-artist">Artist</p>
+            <li class="playlist-track-item">
+              <img
+                class="playlist-track-item__thumb"
+                src="./assets/images/thumb-track.png"
+                alt="썸네일"
+              />
+              <div class="playlist-track-item__meta">
+                <p class="playlist-track-item__title">Title</p>
+                <p class="playlist-track-item__artist">Artist</p>
               </div>
             </li>
-            <li class="track-item">
-              <img class="track-thumb" src="./assets/images/thumb-track.png" alt="썸네일" />
-              <div class="track-meta">
-                <p class="track-title">Title</p>
-                <p class="track-artist">Artist</p>
+            <li class="playlist-track-item">
+              <img
+                class="playlist-track-item__thumb"
+                src="./assets/images/thumb-track.png"
+                alt="썸네일"
+              />
+              <div class="playlist-track-item__meta">
+                <p class="playlist-track-item__title">Title</p>
+                <p class="playlist-track-item__artist">Artist</p>
               </div>
             </li>
-            <li class="track-item">
-              <img class="track-thumb" src="./assets/images/thumb-track.png" alt="썸네일" />
-              <div class="track-meta">
-                <p class="track-title">Title</p>
-                <p class="track-artist">Artist</p>
+            <li class="playlist-track-item">
+              <img
+                class="playlist-track-item__thumb"
+                src="./assets/images/thumb-track.png"
+                alt="썸네일"
+              />
+              <div class="playlist-track-item__meta">
+                <p class="playlist-track-item__title">Title</p>
+                <p class="playlist-track-item__artist">Artist</p>
               </div>
             </li>
-            <li class="track-item">
-              <img class="track-thumb" src="./assets/images/thumb-track.png" alt="썸네일" />
-              <div class="track-meta">
-                <p class="track-title">Title</p>
-                <p class="track-artist">Artist</p>
+            <li class="playlist-track-item">
+              <img
+                class="playlist-track-item__thumb"
+                src="./assets/images/thumb-track.png"
+                alt="썸네일"
+              />
+              <div class="playlist-track-item__meta">
+                <p class="playlist-track-item__title">Title</p>
+                <p class="playlist-track-item__artist">Artist</p>
               </div>
             </li>
-            <li class="track-item">
-              <img class="track-thumb" src="./assets/images/thumb-track.png" alt="썸네일" />
-              <div class="track-meta">
-                <p class="track-title">Title</p>
-                <p class="track-artist">Artist</p>
+            <li class="playlist-track-item">
+              <img
+                class="playlist-track-item__thumb"
+                src="./assets/images/thumb-track.png"
+                alt="썸네일"
+              />
+              <div class="playlist-track-item__meta">
+                <p class="playlist-track-item__title">Title</p>
+                <p class="playlist-track-item__artist">Artist</p>
               </div>
             </li>
-            <li class="track-item">
-              <img class="track-thumb" src="./assets/images/thumb-track.png" alt="썸네일" />
-              <div class="track-meta">
-                <p class="track-title">Title</p>
-                <p class="track-artist">Artist</p>
+            <li class="playlist-track-item">
+              <img
+                class="playlist-track-item__thumb"
+                src="./assets/images/thumb-track.png"
+                alt="썸네일"
+              />
+              <div class="playlist-track-item__meta">
+                <p class="playlist-track-item__title">Title</p>
+                <p class="playlist-track-item__artist">Artist</p>
               </div>
             </li>
           </ul>
