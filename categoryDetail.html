@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TONE</title>
+
+  <!-- 공통 CSS -->
+  <link rel="stylesheet" href="./css/reset.css" />
+  <link rel="stylesheet" href="./css/font.css" />
+  <link rel="stylesheet" href="./css/common.css" />
+
+  <!-- 페이지 CSS -->
+  <link rel="stylesheet" href="./css/categoryDetail.css" />
+</head>
+
+<body>
+  <!-- 컨테이너 -->
+  <div class="app has-mini">
+    <!-- 헤더 -->
+    <header class="header">
+      <button type="button" class="hd-back" onclick="history.back()">
+        <img src="./assets/icons/arrow-right.svg" alt="뒤로가기" />
+      </button>
+
+      <a href="javascript:void(0);">
+        <div class="avatar"></div>
+      </a>
+    </header>
+
+    <!-- 페이지 내용 -->
+    <main id="category-detail-page">
+
+      <section class="mood-header">
+        <div class="cg-grad" style="--c1:#FF5E5B; --c2:#FF8E53; --c3:#FDC830;">
+        </div>
+        <h1 class="mood-title">Energetic</h1>
+        <div class="mood-tags">
+          <span>#대담한</span>
+          <span>#압도적</span>
+          <span>#맥박수</span>
+        </div>
+      </section>
+
+      <section class="color-list">
+
+        <article class="color-card">
+          <div class="color-bar" style="background:#BB2649;"></div>
+
+          <div class="color-content">
+            <div class="color-top">
+              <h3 class="color-name">Viva Magenta</h3>
+              <div class="color-right">
+                <span class="arrow"><img src="./assets/icons/arrow-right.svg" alt=">"></span>
+              </div>
+            </div>
+
+            <div class="song-area">
+              <ul class="song-list">
+                <li>Måneskin - Beggin'</li>
+                <li>화사 - I'm a B</li>
+                <li>Sam Smith - Unholy</li>
+              </ul>
+              <p class="total">총 10곡</p>
+            </div>
+          </div>
+        </article>
+        <article class="color-card">
+          <div class="color-bar" style="background:#003399;"></div>
+
+          <div class="color-content">
+            <div class="color-top">
+              <h3 class="color-name">Electric Blue</h3>
+              <div class="color-right">
+                <span class="arrow"><img src="./assets/icons/arrow-right.svg" alt=">"></span>
+              </div>
+            </div>
+
+            <div class="song-area">
+              <ul class="song-list">
+                <li>Dua Lipa - Levitating</li>
+                <li>블랙핑크 - How You Like That </li>
+                <li>David Guetta - Titanium </li>
+              </ul>
+              <p class="total">총 10곡</p>
+            </div>
+          </div>
+        </article>
+        <article class="color-card">
+          <div class="color-bar" style="background:#FF0000;"></div>
+
+          <div class="color-content">
+            <div class="color-top">
+              <h3 class="color-name">Fiery Red</h3>
+              <div class="color-right">
+                <span class="arrow"><img src="./assets/icons/arrow-right.svg" alt=">"></span>
+              </div>
+            </div>
+
+            <div class="song-area">
+              <ul class="song-list">
+                <li>ITZY - WANNABE</li>
+                <li>(여자)아이들 - 퀸카</li>
+                <li>에스파 - Next Level</li>
+              </ul>
+              <p class="total">총 10곡</p>
+            </div>
+          </div>
+        </article>
+        <article class="color-card">
+          <div class="color-bar" style="background:#FFD300;"></div>
+
+          <div class="color-content">
+            <div class="color-top">
+              <h3 class="color-name">Cyber Yellow</h3>
+              <div class="color-right">
+                <span class="arrow"><img src="./assets/icons/arrow-right.svg" alt=">"></span>
+              </div>
+            </div>
+
+            <div class="song-area">
+              <ul class="song-list">
+                <li>Travis Scott - SICKO MODE</li>
+                <li>21 Savage - Redrum</li>
+                <li>Kendrick Lamar - HUMBLE.</li>
+              </ul>
+              <p class="total">총 10곡</p>
+            </div>
+          </div>
+        </article>
+      </section>
+
+    </main>
+    <!-- 미니플레이어 -->
+    <section class="mini-player">
+      <button type="button" class="mini-thumb">
+        <img src="./assets/images/thumb.png" alt="앨범 커버" />
+      </button>
+      <div class="mini-body">
+        <div class="mini-top">
+          <p class="mini-title">Falling Behind</p>
+          <div class="mini-actions">
+            <button type="button" class="mini-btn">
+              <img src="./assets/icons/like.svg" alt="좋아요" />
+            </button>
+            <button type="button" class="mini-btn is-playing">
+              <img src="./assets/icons/play.svg" alt="재생" class="icon-play" />
+              <img src="./assets/icons/pause.svg" alt="재생일시정지" class="icon-pause" />
+            </button>
+          </div>
+        </div>
+        <p class="mini-artist">Laufey</p>
+        <div class="mini-progress">
+          <div class="mini-progress-cover" style="--progress: 65%"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 하단바 -->
+    <nav class="bottom-nav">
+      <a class="nav-item is-active" href="javascript:void(0);">
+        <img src="./assets/icons/main.svg" alt="메인" />
+        <img src="./assets/icons/main-active.svg" alt="메인" />
+      </a>
+      <a class="nav-item" href="javascript:void(0);">
+        <img src="./assets/icons/search.svg" alt="검색" />
+        <img src="./assets/icons/search-active.svg" alt="검색" />
+      </a>
+      <a class="nav-item" href="javascript:void(0);">
+        <img src="./assets/icons/calender.svg" alt="캘린더" />
+        <img src="./assets/icons/calender-active.svg" alt="캘린더" />
+      </a>
+      <a class="nav-item" href="javascript:void(0);">
+        <img src="./assets/icons/menu.svg" alt="전체메뉴" />
+        <img src="./assets/icons/menu.svg" alt="전체메인" />
+      </a>
+    </nav>
+  </div>
+</body>
+
+</html>
