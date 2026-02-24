@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TONE</title>
+    <!-- 공통 CSS -->
+    <link rel="stylesheet" href="./css/reset.css" />
+    <link rel="stylesheet" href="./css/font.css" />
+    <link rel="stylesheet" href="./css/common.css" />
+    <!-- 페이지 CSS -->
+    <link rel="stylesheet" href="./css/mypage.css" />
+  </head>
+
+  <body>
+    <!-- 컨테이너 -->
+    <div class="app has-tabs has-mini">
+      <!-- 헤더 -->
+      <header class="header">
+        <button type="button">
+          <img src="./assets/icons/logo.svg" alt="로고" />
+        </button>
+        <a href="javascript:void(0);">
+          <div class="avatar"></div>
+        </a>
+      </header>
+
+      <!-- 탭메뉴 -->
+      <nav class="tabs">
+        <a class="tab is-active" href="javascript:void(0);">For You</a>
+        <a class="tab" href="javascript:void(0);">차트</a>
+        <a class="tab" href="javascript:void(0);">Palette Log</a>
+        <a class="tab" href="javascript:void(0);">카테고리</a>
+      </nav>
+
+      <!-- 페이지 내용 -->
+      <main id="mypage">
+        <div class="mypage-inner">
+          <!-- 프로필 카드 -->
+          <section class="profile-card">
+            <div class="profile-main">
+              <div class="avatar-circle"></div>
+              <div>
+                <div class="name-badge">
+                  <span class="username">toneruser1</span>
+                  <span class="badge">프로</span>
+                </div>
+                <p class="email">toner1234_user@gmail.com</p>
+              </div>
+            </div>
+
+            <div class="profile-actions">
+              <button class="action-btn">프로필 수정</button>
+              <button class="action-btn">이용권 관리</button>
+            </div>
+          </section>
+
+          <div class="logout-row">
+            <button class="logout-btn">로그아웃</button>
+          </div>
+
+          <section class="menu-group">
+            <h2 class="group-title">앱 설정</h2>
+            <div class="menu-item">
+              <span>비밀번호 잠금</span>
+              <span>OFF</span>
+            </div>
+            <div class="menu-item">
+              <span>알림 설정</span>
+              <span>ON</span>
+            </div>
+            <div class="menu-item">
+              <span>재생 환경 설정</span>
+              <img
+                class="menu-arrow"
+                src="./assets/icons/arrow-right.svg"
+                alt=""
+                aria-hidden="true"
+              />
+            </div>
+          </section>
+
+          <section class="menu-group">
+            <h2 class="group-title">서비스</h2>
+            <div class="menu-item">
+              <span>결제내역</span
+              ><img
+                class="menu-arrow"
+                src="./assets/icons/arrow-right.svg"
+                alt=""
+                aria-hidden="true"
+              />
+            </div>
+            <div class="menu-item">
+              <span>적립내역</span
+              ><img
+                class="menu-arrow"
+                src="./assets/icons/arrow-right.svg"
+                alt=""
+                aria-hidden="true"
+              />
+            </div>
+            <div class="menu-item">
+              <span>보관함 관리</span
+              ><img
+                class="menu-arrow"
+                src="./assets/icons/arrow-right.svg"
+                alt=""
+                aria-hidden="true"
+              />
+            </div>
+          </section>
+
+          <section class="menu-group">
+            <h2 class="group-title">고객지원</h2>
+            <div class="menu-item">
+              <span>공지사항</span
+              ><img
+                class="menu-arrow"
+                src="./assets/icons/arrow-right.svg"
+                alt=""
+                aria-hidden="true"
+              />
+            </div>
+            <div class="menu-item">
+              <span>고객센터</span
+              ><img
+                class="menu-arrow"
+                src="./assets/icons/arrow-right.svg"
+                alt=""
+                aria-hidden="true"
+              />
+            </div>
+            <div class="menu-item">
+              <span>서비스 이용약관</span
+              ><img
+                class="menu-arrow"
+                src="./assets/icons/arrow-right.svg"
+                alt=""
+                aria-hidden="true"
+              />
+            </div>
+            <div class="menu-item">
+              <span>고객의 소리</span
+              ><img
+                class="menu-arrow"
+                src="./assets/icons/arrow-right.svg"
+                alt=""
+                aria-hidden="true"
+              />
+            </div>
+            <div class="menu-item">
+              <span>버전 정보</span>
+              <span>v 1.2.0</span>
+            </div>
+          </section>
+
+          <button class="withdraw-btn">회원 탈퇴</button>
+        </div>
+      </main>
+
+      <!-- 미니플레이어 -->
+      <section class="mini-player">
+        <button type="button" class="mini-thumb">
+          <img src="./assets/images/thumb.png" alt="앨범 커버" />
+        </button>
+        <div class="mini-body">
+          <div class="mini-top">
+            <p class="mini-title">Falling Behind</p>
+            <div class="mini-actions">
+              <button type="button" class="mini-btn">
+                <img src="./assets/icons/like.svg" alt="좋아요" />
+              </button>
+              <button type="button" class="mini-btn is-playing">
+                <img src="./assets/icons/play.svg" alt="재생" class="icon-play" />
+                <img src="./assets/icons/pause.svg" alt="재생일시정지" class="icon-pause" />
+              </button>
+            </div>
+          </div>
+          <p class="mini-artist">Laufey</p>
+          <div class="mini-progress">
+            <div class="mini-progress-cover" style="--progress: 65%"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 하단바 -->
+      <nav class="bottom-nav">
+        <a class="nav-item is-active" href="javascript:void(0);">
+          <img src="./assets/icons/main.svg" alt="메인" />
+          <img src="./assets/icons/main-active.svg" alt="메인" />
+        </a>
+        <a class="nav-item" href="javascript:void(0);">
+          <img src="./assets/icons/search.svg" alt="검색" />
+          <img src="./assets/icons/search-active.svg" alt="검색" />
+        </a>
+        <a class="nav-item" href="javascript:void(0);">
+          <img src="./assets/icons/calender.svg" alt="캘린더" />
+          <img src="./assets/icons/calender-active.svg" alt="캘린더" />
+        </a>
+        <a class="nav-item" href="javascript:void(0);">
+          <img src="./assets/icons/menu.svg" alt="전체메뉴" />
+          <img src="./assets/icons/menu.svg" alt="전체메인" />
+        </a>
+      </nav>
+    </div>
+  </body>
+</html>
