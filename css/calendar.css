@@ -3,22 +3,78 @@
   overflow-y: auto;
 }
 
+/* ------------------ CALENDAR HEADER ------------------ */
+#calender .calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* 수직 정렬 (텍스트와 화살표 높이 맞춤) */
+  gap: 20px;
+  /* 화살표와 월 텍스트 사이의 간격 */
+  margin-bottom: 25px;
+  width: 100%;
+}
+
+#calender .calendar-header button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  /* 버튼 내부 아이콘 중앙 정렬 */
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  transition: opacity 0.2s;
+}
+
+#calender .calendar-header button img {
+  width: 8px;
+  height: auto;
+  display: block;
+}
+
+/* 다음달 화살표 뒤집기 */
+#calender #nextMonth img {
+  transform: rotate(180deg);
+}
+
+#calender #monthTitle {
+  margin-bottom: 0;
+  /* 기존 마진 제거 */
+  font-size: 18px;
+  font-weight: 700;
+  color: #3f5f73;
+  line-height: 1;
+  /* 텍스트 상하 여백 제거하여 화살표와 높이 일치 */
+  min-width: 60px;
+  /* 월이 바뀌어도 텍스트 너비 유지 */
+  text-align: center;
+
+  color: #3f5f73;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+/* 텍스트 영역 편집 모드일 때 배경색 살짝 변경 */
+#calender #memoInput:not([readonly]) {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.05);
+}
+
 /* ------------------ CALENDAR ------------------ */
 #calender .calendar-card {
   background: white;
   border-radius: 17px;
   padding: 20px;
-  width: 100%; /* common.css의 main padding에 맞춤 */
+  width: 100%;
+  /* common.css의 main padding에 맞춤 */
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
-#calender #monthTitle {
-  text-align: center;
-  margin-bottom: 20px;
-  color: #3f5f73;
-  font-size: 16px;
-  font-weight: 700;
-}
+
 
 #calender .calendar-grid {
   display: grid;
@@ -48,15 +104,19 @@
   border-color: #3f5f73;
   transform: scale(1.1);
 }
+
 #calender .active-dark .day-dot {
   background: #3f5f73;
 }
+
 #calender .tone-blue .day-dot {
   background: #6faed9;
 }
+
 #calender .tone-lightblue .day-dot {
   background: #8fd8ec;
 }
+
 #calender .tone-pink .day-dot {
   background: #fea1b8;
 }
@@ -93,6 +153,7 @@
   margin-bottom: 4px;
   font-weight: bold;
 }
+
 #calender .pantone-num {
   font-size: 16px;
   color: #3f5f73;
@@ -111,6 +172,7 @@
 #calender .keyword-tags {
   margin-top: 15px;
 }
+
 #calender .keyword-tags span {
   background: rgba(63, 95, 115, 0.15);
   padding: 4px 10px;
@@ -153,8 +215,10 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 54px; /* 최소 너비 확보 */
-  height: 28px; /* 높이 명시 */
+  min-width: 54px;
+  /* 최소 너비 확보 */
+  height: 28px;
+  /* 높이 명시 */
   font-size: 12px;
   font-weight: 600;
   border-radius: 14px;
