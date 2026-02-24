@@ -144,7 +144,8 @@ body {
 
 /* 탭 - 컨테이너 */
 .tabs {
-  top: 84px; /* 헤더 실제 높이에 맞춰 조절 */
+  top: 84px;
+  /* 헤더 실제 높이에 맞춰 조절 */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -176,7 +177,8 @@ body {
 
 /* 미니 플레이어 - 컨테이너 */
 .mini-player {
-  bottom: 75px; /* 하단바 높이에 맞춰 조절 */
+  bottom: 75px;
+  /* 하단바 높이에 맞춰 조절 */
   width: 100%;
 
   background: #ffffff;
@@ -320,6 +322,7 @@ body {
 .bottom-nav .nav-item.is-active img:first-child {
   display: none;
 }
+
 .bottom-nav .nav-item.is-active img:last-child {
   display: block;
 }
