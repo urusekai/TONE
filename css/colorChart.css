@@ -232,3 +232,24 @@
     outline-offset: 2px;
     border-radius: 12px;
 }
+
+
+@keyframes lpSpin {
+    from {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+.cc-item.is-active .cc-vinyl {
+    animation: lpSpin 1.05s linear infinite;
+}
+
+.cc-right::after {
+    opacity: 0 !important;
+    transform: translateX(0) !important;
+    transition: none !important;
+}
