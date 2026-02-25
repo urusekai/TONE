@@ -265,6 +265,14 @@ memoInput.addEventListener('input', () => {
   updateMemoCount(memoInput.value.length);
 });
 
+// 데일리 카드 재생 버튼 클릭 시 플레이리스트 페이지 이동
+const playPauseBtn = document.querySelector('.btn-play-pause');
+if (playPauseBtn) {
+  playPauseBtn.addEventListener('click', () => {
+    window.location.href = './playlist.html';
+  });
+}
+
 // 프로필 설정 버튼 클릭 시 아바타 색상 변경
 const profileSetBtn = document.querySelector('.btn-profile-set');
 const userAvatar = document.getElementById('userAvatar');
