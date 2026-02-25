@@ -1,6 +1,7 @@
 const calendarGrid = document.getElementById('calendarGrid');
 const monthTitle = document.getElementById('monthTitle');
 const memoInput = document.getElementById('memoInput');
+const currentCount = document.getElementById('currentCount');
 const editBtn = document.querySelector('.btn-outline');
 const saveBtn = document.querySelector('.btn-primary');
 const prevBtn = document.getElementById('prevMonth');
@@ -72,6 +73,15 @@ const calendarData = {
   }
 };
 
+function updateMemoCount(length) {
+  currentCount.textContent = length;
+  if (length >= 80) {
+    currentCount.style.color = '#ff6b6b';
+  } else {
+    currentCount.style.color = '#8a8a8a';
+  }
+}
+
 // 2. 달력 생성 함수
 function renderCalendar() {
   calendarGrid.innerHTML = ''; // 기존 달력 제거
@@ -136,14 +146,14 @@ function updateDailyCard(key) {
     document.querySelector('.keyword-tags').innerHTML = data.keywords
       .map((k) => `<span>${k}</span>`)
       .join('');
-    document.getElementById('currentCount').textContent = data.memo.length;
+    updateMemoCount(data.memo.length);
   } else {
     document.querySelector('.tone-text h3').textContent = '기록 없음';
     document.querySelector('.tone-text p').textContent = '00-0000(팬톤 컬러넘버)';
     document.querySelector('.tone-color-preview').style.background = '#d9d9d9';
     memoInput.value = '';
     document.querySelector('.keyword-tags').innerHTML = '<span>#기록없음</span>';
-    document.getElementById('currentCount').textContent = 0;
+    updateMemoCount(0);
   }
 }
 
@@ -187,7 +197,7 @@ function disableEditMode() {
 }
 
 memoInput.addEventListener('input', () => {
-  document.getElementById('currentCount').textContent = memoInput.value.length;
+  updateMemoCount(memoInput.value.length);
 });
 
 // 초기 실행
