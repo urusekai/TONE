@@ -102,6 +102,7 @@
 
     background: #f4f4f4;
     box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+    cursor: pointer;
 }
 
 /* 왼쪽 컬러 바 (rectangle-55 역할) */

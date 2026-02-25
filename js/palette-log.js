@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let isTransitioning = false;
 
   function goToPlayer() {
-    window.location.href = './calendar.html';
+    window.location.href = './playlist.html';
   }
 
   stack.addEventListener('click', (e) => {
