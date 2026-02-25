@@ -14,30 +14,30 @@
 
   <body>
     <!-- 컨테이너 -->
-    <div class="app has-tabs has-mini">
+    <div class="app has-mini">
       <!-- 헤더 -->
       <header class="header">
         <button type="button">
           <img src="./assets/icons/logo.svg" alt="로고" />
         </button>
-        <a href="javascript:void(0);">
+        <a href="./mypage.html">
           <div class="avatar"></div>
         </a>
       </header>
 
-      <!-- 탭메뉴 -->
-      <nav class="tabs">
-        <a class="tab is-active" href="javascript:void(0);">For You</a>
-        <a class="tab" href="javascript:void(0);">차트</a>
-        <a class="tab" href="javascript:void(0);">Palette Log</a>
-        <a class="tab" href="javascript:void(0);">카테고리</a>
-      </nav>
-
       <!-- 페이지 내용 -->
-      <main id="calender">
+      <main id="calendar">
         <!-- 캘린더 카드 -->
         <section class="calendar-card">
-          <h2 id="monthTitle"></h2>
+          <div class="calendar-header">
+            <button type="button" id="prevMonth">
+              <img src="./assets/icons/prev.svg" alt="이전달" />
+            </button>
+            <h2 id="monthTitle"></h2>
+            <button type="button" id="nextMonth">
+              <img src="./assets/icons/prev.svg" alt="다음달" />
+            </button>
+          </div>
           <div class="calendar-grid" id="calendarGrid"></div>
         </section>
 
@@ -111,7 +111,7 @@
 
       <!-- 하단바 -->
       <nav class="bottom-nav">
-        <a class="nav-item is-active" href="javascript:void(0);">
+        <a class="nav-item" href="javascript:void(0);">
           <img src="./assets/icons/main.svg" alt="메인" />
           <img src="./assets/icons/main-active.svg" alt="메인" />
         </a>
@@ -119,7 +119,7 @@
           <img src="./assets/icons/search.svg" alt="검색" />
           <img src="./assets/icons/search-active.svg" alt="검색" />
         </a>
-        <a class="nav-item" href="javascript:void(0);">
+        <a class="nav-item is-active" href="javascript:void(0);">
           <img src="./assets/icons/calender.svg" alt="캘린더" />
           <img src="./assets/icons/calender-active.svg" alt="캘린더" />
         </a>
@@ -130,7 +130,6 @@
       </nav>
     </div>
 
-    <script src="./js/claendar.js"></script>
-    <script src="./js/numCount.js"></script>
+    <script src="./js/calendar.js"></script>
   </body>
 </html>
