@@ -124,9 +124,63 @@ body {
 .header {
   top: 0;
   padding: 25px;
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  align-items: center;
+  column-gap: 12px;
   background: var(--color-bg-app);
+}
+
+.header--logo {
+  grid-template-columns: auto 1fr 34px;
+}
+
+.header--back {
+  grid-template-columns: 34px 1fr 34px;
+}
+
+/* 헤더 - 버튼 공통 */
+.header__left-btn,
+.header__right-btn {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header__left-btn--logo {
+  width: auto;
+  height: 34px;
+}
+
+.header__left-btn--logo img {
+  width: 34px;
+  height: 34px;
+}
+
+.header__left-btn--back {
+  justify-content: flex-start;
+}
+
+.header__left-btn--back img {
+  width: 20px;
+  height: 20px;
+}
+
+/* 헤더 - 제목 */
+.header__title {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.header__title-spacer {
+  width: 100%;
+  height: 1px;
 }
 
 /* 헤더 - 아바타 */

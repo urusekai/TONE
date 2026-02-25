@@ -61,6 +61,11 @@
   justify-content: flex-start;
 }
 
+.main-player__back-btn img {
+  width: 20px;
+  height: 20px;
+}
+
 .main-player__header-info {
   flex: 1;
   text-align: center;
