@@ -71,6 +71,29 @@ function renderSearchPage() {
 document.addEventListener('DOMContentLoaded', () => {
   renderSearchPage();
 
+  const goToPlaylist = () => {
+    window.location.href = './playlist.html';
+  };
+
+  const colorCircleListEl = document.getElementById('color-circle-list');
+  const colorCardGridEl = document.getElementById('color-card-grid');
+
+  if (colorCircleListEl) {
+    colorCircleListEl.addEventListener('click', (event) => {
+      const colorItem = event.target.closest('.color-item');
+      if (!colorItem) return;
+      goToPlaylist();
+    });
+  }
+
+  if (colorCardGridEl) {
+    colorCardGridEl.addEventListener('click', (event) => {
+      const card = event.target.closest('.pantone-card');
+      if (!card) return;
+      goToPlaylist();
+    });
+  }
+
   const searchFormEl = document.querySelector('.search-input-box');
   if (!searchFormEl) return;
 

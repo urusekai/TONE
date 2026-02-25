@@ -1,481 +1,478 @@
 <!doctype html>
 <html lang="ko">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TONE</title>
-  <!-- 공통 CSS -->
-  <link rel="stylesheet" href="./css/reset.css" />
-  <link rel="stylesheet" href="./css/font.css" />
-  <link rel="stylesheet" href="./css/common.css" />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TONE</title>
+    <!-- 공통 CSS -->
+    <link rel="stylesheet" href="./css/reset.css" />
+    <link rel="stylesheet" href="./css/font.css" />
+    <link rel="stylesheet" href="./css/common.css" />
     <link rel="stylesheet" href="./css/mini-player.css" />
     <link rel="stylesheet" href="./css/main-player.css" />
-  <!-- 페이지 CSS -->
-  <link rel="stylesheet" href="./css/color-chart.css" />
+    <!-- 페이지 CSS -->
+    <link rel="stylesheet" href="./css/color-chart.css" />
     <script type="module" src="./js/main-player.js"></script>
   </head>
 
-<body>
-  <!-- 컨테이너 -->
-  <div class="app has-tabs has-mini">
-    <!-- 헤더 -->
-    <header class="header">
-      <button type="button">
-        <img src="./assets/icons/logo.svg" alt="로고" />
-      </button>
-      <a href="javascript:void(0);">
-        <div class="avatar"></div>
-      </a>
-    </header>
+  <body>
+    <!-- 컨테이너 -->
+    <div class="app has-tabs has-mini">
+      <!-- 헤더 -->
+      <header class="header">
+        <button type="button">
+          <img src="./assets/icons/logo.svg" alt="로고" />
+        </button>
+        <a href="./profile-edit.html">
+          <div class="avatar"></div>
+        </a>
+      </header>
 
-    <!-- 탭메뉴 -->
-    <nav class="tabs">
-      <a class="tab" href="./index.html">For You</a>
-      <a class="tab is-active" href="./color-chart.html">차트</a>
-      <a class="tab" href="./palette-log.html">Palette Log</a>
-      <a class="tab" href="./category.html">카테고리</a>
-    </nav>
+      <!-- 탭메뉴 -->
+      <nav class="tabs">
+        <a class="tab" href="./main.html">For You</a>
+        <a class="tab is-active" href="./color-chart.html">차트</a>
+        <a class="tab" href="./palette-log.html">Palette Log</a>
+        <a class="tab" href="./category.html">카테고리</a>
+      </nav>
 
-    <!-- 페이지 내용 -->
-    <main class="cc-page" aria-label="Color Charts">
-      <h1 class="cc-title">Color Charts</h1>
+      <!-- 페이지 내용 -->
+      <main class="cc-page" aria-label="Color Charts">
+        <h1 class="cc-title">Color Charts</h1>
 
-      <ul class="cc-list">
-        <!-- item 01 -->
-        <li class="cc-item" style="--color: #6667AB;">
-          <a class="cc-link" href="./playlist.html" aria-label="플레이리스트 01 열기">
-            <div class="cc-left">
-              <p class="cc-kicker">Playlist</p>
-              <div class="cc-row">
-                <p class="cc-no">01</p>
-                <div class="cc-meta">
-                  <p class="cc-code">17-3938</p>
-                  <p class="cc-name">Very Peri</p>
+        <ul class="cc-list">
+          <!-- item 01 -->
+          <li class="cc-item" style="--color: #6667ab">
+            <a class="cc-link" href="./playlist.html" aria-label="플레이리스트 01 열기">
+              <div class="cc-left">
+                <p class="cc-kicker">Playlist</p>
+                <div class="cc-row">
+                  <p class="cc-no">01</p>
+                  <div class="cc-meta">
+                    <p class="cc-code">17-3938</p>
+                    <p class="cc-name">Very Peri</p>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div class="cc-vinyl" aria-hidden="true">
-              <img src="./assets/images/Ellipse.png" alt="" />
-            </div>
-
-            <div class="cc-right">
-              <div class="cc-like">
-                <span class="cc-like-count">12,300</span>
-                <button type="button" class="cc-like-btn" aria-label="좋아요">
-                  <img src="./assets/icons/like.svg" alt="" />
-                </button>
+              <div class="cc-vinyl" aria-hidden="true">
+                <img src="./assets/images/Ellipse.png" alt="" />
               </div>
 
-              <button type="button" class="cc-add" aria-label="기록에 추가">
-                <img src="./assets/icons/add.svg" alt="" />
-              </button>
-            </div>
-          </a>
-        </li>
+              <div class="cc-right">
+                <div class="cc-like">
+                  <span class="cc-like-count">12,300</span>
+                  <button type="button" class="cc-like-btn" aria-label="좋아요">
+                    <img src="./assets/icons/like.svg" alt="" />
+                  </button>
+                </div>
 
-        <!-- item 02 -->
-        <li class="cc-item" style="--color: #FF6F61;">
-          <a class="cc-link" href="./playlist.html" aria-label="플레이리스트 02 열기">
-            <div class="cc-left">
-              <p class="cc-kicker">Playlist</p>
-              <div class="cc-row">
-                <p class="cc-no">02</p>
-                <div class="cc-meta">
-                  <p class="cc-code">16-1546</p>
-                  <p class="cc-name">Living Coral</p>
+                <button type="button" class="cc-add" aria-label="기록에 추가">
+                  <img src="./assets/icons/add.svg" alt="" />
+                </button>
+              </div>
+            </a>
+          </li>
+
+          <!-- item 02 -->
+          <li class="cc-item" style="--color: #ff6f61">
+            <a class="cc-link" href="./playlist.html" aria-label="플레이리스트 02 열기">
+              <div class="cc-left">
+                <p class="cc-kicker">Playlist</p>
+                <div class="cc-row">
+                  <p class="cc-no">02</p>
+                  <div class="cc-meta">
+                    <p class="cc-code">16-1546</p>
+                    <p class="cc-name">Living Coral</p>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div class="cc-vinyl" aria-hidden="true">
-              <img src="./assets/images/Ellipse.png" alt="" />
-            </div>
-
-            <div class="cc-right">
-              <div class="cc-like">
-                <span class="cc-like-count">12,200</span>
-                <button type="button" class="cc-like-btn" aria-label="좋아요">
-                  <img src="./assets/icons/like.svg" alt="" />
-                </button>
+              <div class="cc-vinyl" aria-hidden="true">
+                <img src="./assets/images/Ellipse.png" alt="" />
               </div>
 
-              <button type="button" class="cc-add" aria-label="기록에 추가">
-                <img src="./assets/icons/add.svg" alt="" />
-              </button>
-            </div>
-          </a>
-        </li>
+              <div class="cc-right">
+                <div class="cc-like">
+                  <span class="cc-like-count">12,200</span>
+                  <button type="button" class="cc-like-btn" aria-label="좋아요">
+                    <img src="./assets/icons/like.svg" alt="" />
+                  </button>
+                </div>
 
-        <!-- item 03 -->
-        <li class="cc-item" style="--color: #BB2649;">
-          <a class="cc-link" href="./playlist.html" aria-label="플레이리스트 03 열기">
-            <div class="cc-left">
-              <p class="cc-kicker">Playlist</p>
-              <div class="cc-row">
-                <p class="cc-no">03</p>
-                <div class="cc-meta">
-                  <p class="cc-code">18-1750</p>
-                  <p class="cc-name">Viva Magenta</p>
+                <button type="button" class="cc-add" aria-label="기록에 추가">
+                  <img src="./assets/icons/add.svg" alt="" />
+                </button>
+              </div>
+            </a>
+          </li>
+
+          <!-- item 03 -->
+          <li class="cc-item" style="--color: #bb2649">
+            <a class="cc-link" href="./playlist.html" aria-label="플레이리스트 03 열기">
+              <div class="cc-left">
+                <p class="cc-kicker">Playlist</p>
+                <div class="cc-row">
+                  <p class="cc-no">03</p>
+                  <div class="cc-meta">
+                    <p class="cc-code">18-1750</p>
+                    <p class="cc-name">Viva Magenta</p>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div class="cc-vinyl" aria-hidden="true">
-              <img src="./assets/images/Ellipse.png" alt="" />
-            </div>
-
-            <div class="cc-right">
-              <div class="cc-like">
-                <span class="cc-like-count">11,700</span>
-                <button type="button" class="cc-like-btn" aria-label="좋아요">
-                  <img src="./assets/icons/like.svg" alt="" />
-                </button>
+              <div class="cc-vinyl" aria-hidden="true">
+                <img src="./assets/images/Ellipse.png" alt="" />
               </div>
 
-              <button type="button" class="cc-add" aria-label="기록에 추가">
-                <img src="./assets/icons/add.svg" alt="" />
-              </button>
-            </div>
-          </a>
-        </li>
+              <div class="cc-right">
+                <div class="cc-like">
+                  <span class="cc-like-count">11,700</span>
+                  <button type="button" class="cc-like-btn" aria-label="좋아요">
+                    <img src="./assets/icons/like.svg" alt="" />
+                  </button>
+                </div>
 
-        <!-- item 04 -->
-        <li class="cc-item" style="--color: #34568B;">
-          <a class="cc-link" href="./playlist.html" aria-label="플레이리스트 04 열기">
-            <div class="cc-left">
-              <p class="cc-kicker">Playlist</p>
-              <div class="cc-row">
-                <p class="cc-no">04</p>
-                <div class="cc-meta">
-                  <p class="cc-code">19-4052</p>
-                  <p class="cc-name">Classic Blue</p>
+                <button type="button" class="cc-add" aria-label="기록에 추가">
+                  <img src="./assets/icons/add.svg" alt="" />
+                </button>
+              </div>
+            </a>
+          </li>
+
+          <!-- item 04 -->
+          <li class="cc-item" style="--color: #34568b">
+            <a class="cc-link" href="./playlist.html" aria-label="플레이리스트 04 열기">
+              <div class="cc-left">
+                <p class="cc-kicker">Playlist</p>
+                <div class="cc-row">
+                  <p class="cc-no">04</p>
+                  <div class="cc-meta">
+                    <p class="cc-code">19-4052</p>
+                    <p class="cc-name">Classic Blue</p>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div class="cc-vinyl" aria-hidden="true">
-              <img src="./assets/images/Ellipse.png" alt="" />
-            </div>
-
-            <div class="cc-right">
-              <div class="cc-like">
-                <span class="cc-like-count">11,056</span>
-                <button type="button" class="cc-like-btn" aria-label="좋아요">
-                  <img src="./assets/icons/like.svg" alt="" />
-                </button>
+              <div class="cc-vinyl" aria-hidden="true">
+                <img src="./assets/images/Ellipse.png" alt="" />
               </div>
 
-              <button type="button" class="cc-add" aria-label="기록에 추가">
-                <img src="./assets/icons/add.svg" alt="" />
-              </button>
-            </div>
-          </a>
-        </li>
+              <div class="cc-right">
+                <div class="cc-like">
+                  <span class="cc-like-count">11,056</span>
+                  <button type="button" class="cc-like-btn" aria-label="좋아요">
+                    <img src="./assets/icons/like.svg" alt="" />
+                  </button>
+                </div>
 
-        <!-- item 05 -->
-        <li class="cc-item" style="--color: #F5DF4D;">
-          <a class="cc-link" href="./playlist.html" aria-label="플레이리스트 05 열기">
-            <div class="cc-left">
-              <p class="cc-kicker">Playlist</p>
-              <div class="cc-row">
-                <p class="cc-no">05</p>
-                <div class="cc-meta">
-                  <p class="cc-code">13-0647</p>
-                  <p class="cc-name">Illuminating</p>
+                <button type="button" class="cc-add" aria-label="기록에 추가">
+                  <img src="./assets/icons/add.svg" alt="" />
+                </button>
+              </div>
+            </a>
+          </li>
+
+          <!-- item 05 -->
+          <li class="cc-item" style="--color: #f5df4d">
+            <a class="cc-link" href="./playlist.html" aria-label="플레이리스트 05 열기">
+              <div class="cc-left">
+                <p class="cc-kicker">Playlist</p>
+                <div class="cc-row">
+                  <p class="cc-no">05</p>
+                  <div class="cc-meta">
+                    <p class="cc-code">13-0647</p>
+                    <p class="cc-name">Illuminating</p>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div class="cc-vinyl" aria-hidden="true">
-              <img src="./assets/images/Ellipse.png" alt="" />
-            </div>
-
-            <div class="cc-right">
-              <div class="cc-like">
-                <span class="cc-like-count">10,500</span>
-                <button type="button" class="cc-like-btn" aria-label="좋아요">
-                  <img src="./assets/icons/like.svg" alt="" />
-                </button>
+              <div class="cc-vinyl" aria-hidden="true">
+                <img src="./assets/images/Ellipse.png" alt="" />
               </div>
 
-              <button type="button" class="cc-add" aria-label="기록에 추가">
-                <img src="./assets/icons/add.svg" alt="" />
-              </button>
-            </div>
-          </a>
-        </li>
+              <div class="cc-right">
+                <div class="cc-like">
+                  <span class="cc-like-count">10,500</span>
+                  <button type="button" class="cc-like-btn" aria-label="좋아요">
+                    <img src="./assets/icons/like.svg" alt="" />
+                  </button>
+                </div>
 
-        <!-- item 06 -->
-        <li class="cc-item" style="--color: #7FCDCD;">
-          <a class="cc-link" href="./playlist.html" aria-label="플레이리스트 06 열기">
-            <div class="cc-left">
-              <p class="cc-kicker">Playlist</p>
-              <div class="cc-row">
-                <p class="cc-no">06</p>
-                <div class="cc-meta">
-                  <p class="cc-code">15-5519</p>
-                  <p class="cc-name">Turquoise</p>
+                <button type="button" class="cc-add" aria-label="기록에 추가">
+                  <img src="./assets/icons/add.svg" alt="" />
+                </button>
+              </div>
+            </a>
+          </li>
+
+          <!-- item 06 -->
+          <li class="cc-item" style="--color: #7fcdcd">
+            <a class="cc-link" href="./playlist.html" aria-label="플레이리스트 06 열기">
+              <div class="cc-left">
+                <p class="cc-kicker">Playlist</p>
+                <div class="cc-row">
+                  <p class="cc-no">06</p>
+                  <div class="cc-meta">
+                    <p class="cc-code">15-5519</p>
+                    <p class="cc-name">Turquoise</p>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div class="cc-vinyl" aria-hidden="true">
-              <img src="./assets/images/Ellipse.png" alt="" />
-            </div>
-
-            <div class="cc-right">
-              <div class="cc-like">
-                <span class="cc-like-count">10,120</span>
-                <button type="button" class="cc-like-btn" aria-label="좋아요">
-                  <img src="./assets/icons/like.svg" alt="" />
-                </button>
+              <div class="cc-vinyl" aria-hidden="true">
+                <img src="./assets/images/Ellipse.png" alt="" />
               </div>
 
-              <button type="button" class="cc-add" aria-label="기록에 추가">
-                <img src="./assets/icons/add.svg" alt="" />
-              </button>
-            </div>
-          </a>
-        </li>
+              <div class="cc-right">
+                <div class="cc-like">
+                  <span class="cc-like-count">10,120</span>
+                  <button type="button" class="cc-like-btn" aria-label="좋아요">
+                    <img src="./assets/icons/like.svg" alt="" />
+                  </button>
+                </div>
 
-        <!-- item 07 -->
-        <li class="cc-item" style="--color: #D19C97;">
-          <a class="cc-link" href="./playlist.html" aria-label="플레이리스트 07 열기">
-            <div class="cc-left">
-              <p class="cc-kicker">Playlist</p>
-              <div class="cc-row">
-                <p class="cc-no">07</p>
-                <div class="cc-meta">
-                  <p class="cc-code">13-1023</p>
-                  <p class="cc-name">Rose Quartz</p>
+                <button type="button" class="cc-add" aria-label="기록에 추가">
+                  <img src="./assets/icons/add.svg" alt="" />
+                </button>
+              </div>
+            </a>
+          </li>
+
+          <!-- item 07 -->
+          <li class="cc-item" style="--color: #d19c97">
+            <a class="cc-link" href="./playlist.html" aria-label="플레이리스트 07 열기">
+              <div class="cc-left">
+                <p class="cc-kicker">Playlist</p>
+                <div class="cc-row">
+                  <p class="cc-no">07</p>
+                  <div class="cc-meta">
+                    <p class="cc-code">13-1023</p>
+                    <p class="cc-name">Rose Quartz</p>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div class="cc-vinyl" aria-hidden="true">
-              <img src="./assets/images/Ellipse.png" alt="" />
-            </div>
-
-            <div class="cc-right">
-              <div class="cc-like">
-                <span class="cc-like-count">9,880</span>
-                <button type="button" class="cc-like-btn" aria-label="좋아요">
-                  <img src="./assets/icons/like.svg" alt="" />
-                </button>
+              <div class="cc-vinyl" aria-hidden="true">
+                <img src="./assets/images/Ellipse.png" alt="" />
               </div>
 
-              <button type="button" class="cc-add" aria-label="기록에 추가">
-                <img src="./assets/icons/add.svg" alt="" />
-              </button>
-            </div>
-          </a>
-        </li>
+              <div class="cc-right">
+                <div class="cc-like">
+                  <span class="cc-like-count">9,880</span>
+                  <button type="button" class="cc-like-btn" aria-label="좋아요">
+                    <img src="./assets/icons/like.svg" alt="" />
+                  </button>
+                </div>
 
-        <!-- item 08 -->
-        <li class="cc-item" style="--color: #44B5AA;">
-          <a class="cc-link" href="./playlist.html" aria-label="플레이리스트 08 열기">
-            <div class="cc-left">
-              <p class="cc-kicker">Playlist</p>
-              <div class="cc-row">
-                <p class="cc-no">08</p>
-                <div class="cc-meta">
-                  <p class="cc-code">17-1463</p>
-                  <p class="cc-name">Tiffany Blue</p>
+                <button type="button" class="cc-add" aria-label="기록에 추가">
+                  <img src="./assets/icons/add.svg" alt="" />
+                </button>
+              </div>
+            </a>
+          </li>
+
+          <!-- item 08 -->
+          <li class="cc-item" style="--color: #44b5aa">
+            <a class="cc-link" href="./playlist.html" aria-label="플레이리스트 08 열기">
+              <div class="cc-left">
+                <p class="cc-kicker">Playlist</p>
+                <div class="cc-row">
+                  <p class="cc-no">08</p>
+                  <div class="cc-meta">
+                    <p class="cc-code">17-1463</p>
+                    <p class="cc-name">Tiffany Blue</p>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div class="cc-vinyl" aria-hidden="true">
-              <img src="./assets/images/Ellipse.png" alt="" />
-            </div>
-
-            <div class="cc-right">
-              <div class="cc-like">
-                <span class="cc-like-count">9,540</span>
-                <button type="button" class="cc-like-btn" aria-label="좋아요">
-                  <img src="./assets/icons/like.svg" alt="" />
-                </button>
+              <div class="cc-vinyl" aria-hidden="true">
+                <img src="./assets/images/Ellipse.png" alt="" />
               </div>
 
-              <button type="button" class="cc-add" aria-label="기록에 추가">
-                <img src="./assets/icons/add.svg" alt="" />
-              </button>
-            </div>
-          </a>
-        </li>
+              <div class="cc-right">
+                <div class="cc-like">
+                  <span class="cc-like-count">9,540</span>
+                  <button type="button" class="cc-like-btn" aria-label="좋아요">
+                    <img src="./assets/icons/like.svg" alt="" />
+                  </button>
+                </div>
 
-        <!-- item 09 -->
-        <li class="cc-item" style="--color: #00539C;">
-          <a class="cc-link" href="./playlist.html" aria-label="플레이리스트 09 열기">
-            <div class="cc-left">
-              <p class="cc-kicker">Playlist</p>
-              <div class="cc-row">
-                <p class="cc-no">09</p>
-                <div class="cc-meta">
-                  <p class="cc-code">19-4050</p>
-                  <p class="cc-name">Blue Iris</p>
+                <button type="button" class="cc-add" aria-label="기록에 추가">
+                  <img src="./assets/icons/add.svg" alt="" />
+                </button>
+              </div>
+            </a>
+          </li>
+
+          <!-- item 09 -->
+          <li class="cc-item" style="--color: #00539c">
+            <a class="cc-link" href="./playlist.html" aria-label="플레이리스트 09 열기">
+              <div class="cc-left">
+                <p class="cc-kicker">Playlist</p>
+                <div class="cc-row">
+                  <p class="cc-no">09</p>
+                  <div class="cc-meta">
+                    <p class="cc-code">19-4050</p>
+                    <p class="cc-name">Blue Iris</p>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div class="cc-vinyl" aria-hidden="true">
-              <img src="./assets/images/Ellipse.png" alt="" />
-            </div>
-
-            <div class="cc-right">
-              <div class="cc-like">
-                <span class="cc-like-count">9,120</span>
-                <button type="button" class="cc-like-btn" aria-label="좋아요">
-                  <img src="./assets/icons/like.svg" alt="" />
-                </button>
+              <div class="cc-vinyl" aria-hidden="true">
+                <img src="./assets/images/Ellipse.png" alt="" />
               </div>
 
-              <button type="button" class="cc-add" aria-label="기록에 추가">
-                <img src="./assets/icons/add.svg" alt="" />
-              </button>
-            </div>
-          </a>
-        </li>
+              <div class="cc-right">
+                <div class="cc-like">
+                  <span class="cc-like-count">9,120</span>
+                  <button type="button" class="cc-like-btn" aria-label="좋아요">
+                    <img src="./assets/icons/like.svg" alt="" />
+                  </button>
+                </div>
 
-        <!-- item 10 -->
-        <li class="cc-item" style="--color: #88B04B;">
-          <a class="cc-link" href="./playlist.html" aria-label="플레이리스트 10 열기">
-            <div class="cc-left">
-              <p class="cc-kicker">Playlist</p>
-              <div class="cc-row">
-                <p class="cc-no">10</p>
-                <div class="cc-meta">
-                  <p class="cc-code">15-0343</p>
-                  <p class="cc-name">Greenery</p>
+                <button type="button" class="cc-add" aria-label="기록에 추가">
+                  <img src="./assets/icons/add.svg" alt="" />
+                </button>
+              </div>
+            </a>
+          </li>
+
+          <!-- item 10 -->
+          <li class="cc-item" style="--color: #88b04b">
+            <a class="cc-link" href="./playlist.html" aria-label="플레이리스트 10 열기">
+              <div class="cc-left">
+                <p class="cc-kicker">Playlist</p>
+                <div class="cc-row">
+                  <p class="cc-no">10</p>
+                  <div class="cc-meta">
+                    <p class="cc-code">15-0343</p>
+                    <p class="cc-name">Greenery</p>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div class="cc-vinyl" aria-hidden="true">
-              <img src="./assets/images/Ellipse.png" alt="" />
-            </div>
-
-            <div class="cc-right">
-              <div class="cc-like">
-                <span class="cc-like-count">8,760</span>
-                <button type="button" class="cc-like-btn" aria-label="좋아요">
-                  <img src="./assets/icons/like.svg" alt="" />
-                </button>
+              <div class="cc-vinyl" aria-hidden="true">
+                <img src="./assets/images/Ellipse.png" alt="" />
               </div>
 
-              <button type="button" class="cc-add" aria-label="기록에 추가">
-                <img src="./assets/icons/add.svg" alt="" />
+              <div class="cc-right">
+                <div class="cc-like">
+                  <span class="cc-like-count">8,760</span>
+                  <button type="button" class="cc-like-btn" aria-label="좋아요">
+                    <img src="./assets/icons/like.svg" alt="" />
+                  </button>
+                </div>
+
+                <button type="button" class="cc-add" aria-label="기록에 추가">
+                  <img src="./assets/icons/add.svg" alt="" />
+                </button>
+              </div>
+            </a>
+          </li>
+        </ul>
+      </main>
+
+      <!-- 미니플레이어 -->
+      <section class="mini-player">
+        <button type="button" class="mini-thumb">
+          <img src="./assets/images/thumb.png" alt="앨범 커버" />
+        </button>
+        <div class="mini-body">
+          <div class="mini-top">
+            <p class="mini-title">Falling Behind</p>
+            <div class="mini-actions">
+              <button type="button" class="mini-btn">
+                <img src="./assets/icons/like.svg" alt="좋아요" />
+              </button>
+              <button type="button" class="mini-btn is-playing">
+                <img src="./assets/icons/play.svg" alt="재생" class="icon-play" />
+                <img src="./assets/icons/pause.svg" alt="재생일시정지" class="icon-pause" />
               </button>
             </div>
-          </a>
-        </li>
-      </ul>
-    </main>
-
-
-    <!-- 미니플레이어 -->
-    <section class="mini-player">
-      <button type="button" class="mini-thumb">
-        <img src="./assets/images/thumb.png" alt="앨범 커버" />
-      </button>
-      <div class="mini-body">
-        <div class="mini-top">
-          <p class="mini-title">Falling Behind</p>
-          <div class="mini-actions">
-            <button type="button" class="mini-btn">
-              <img src="./assets/icons/like.svg" alt="좋아요" />
-            </button>
-            <button type="button" class="mini-btn is-playing">
-              <img src="./assets/icons/play.svg" alt="재생" class="icon-play" />
-              <img src="./assets/icons/pause.svg" alt="재생일시정지" class="icon-pause" />
-            </button>
+          </div>
+          <p class="mini-artist">Laufey</p>
+          <div class="mini-progress">
+            <div class="mini-progress-cover" style="--progress: 65%"></div>
           </div>
         </div>
-        <p class="mini-artist">Laufey</p>
-        <div class="mini-progress">
-          <div class="mini-progress-cover" style="--progress: 65%"></div>
+      </section>
+
+      <!-- 메인플레이어 -->
+      <section class="main-player">
+        <header class="main-player__header">
+          <button type="button" class="main-player__back-btn">
+            <img src="./assets/icons/arrow-down.svg" alt="메인플레이어 닫기" />
+          </button>
+          <div class="main-player__header-info">
+            <p class="main-player__header-label">PLAYLIST</p>
+            <p class="main-player__header-name">Color Name</p>
+          </div>
+          <button type="button" class="main-player__profile-btn" aria-label="프로필">
+            <span class="main-player__profile-avatar"></span>
+          </button>
+        </header>
+        <img src="./assets/images/thumb.png" alt="앨범커버" class="main-player__cover" />
+        <div class="main-player__info">
+          <p class="main-player__title">Falling Behind</p>
+          <p class="main-player__artist">Laufey</p>
         </div>
-      </div>
-    </section>
-
-    <!-- 메인플레이어 -->
-    <section class="main-player">
-      <header class="main-player__header">
-        <button type="button" class="main-player__back-btn">
-          <img src="./assets/icons/arrow-down.svg" alt="메인플레이어 닫기" />
-        </button>
-        <div class="main-player__header-info">
-          <p class="main-player__header-label">PLAYLIST</p>
-          <p class="main-player__header-name">Color Name</p>
+        <div class="main-player__progress">
+          <div class="main-player__progress-cover" style="--progress: 65%"></div>
         </div>
-        <button type="button" class="main-player__profile-btn" aria-label="프로필">
-          <span class="main-player__profile-avatar"></span>
-        </button>
-      </header>
-      <img src="./assets/images/thumb.png" alt="앨범커버" class="main-player__cover" />
-      <div class="main-player__info">
-        <p class="main-player__title">Falling Behind</p>
-        <p class="main-player__artist">Laufey</p>
-      </div>
-      <div class="main-player__progress">
-        <div class="main-player__progress-cover" style="--progress: 65%"></div>
-      </div>
-      <div class="main-player__time">
-        <span>00:00</span>
-        <span>00:00</span>
-      </div>
-      <div class="main-player__actions-top">
-        <button type="button" class="main-player__prev-btn">
-          <img src="./assets/icons/prev-song.svg" alt="이전곡" />
-        </button>
-        <button type="button" class="main-player__play-toggle-btn is-playing">
-          <img src="./assets/icons/pause-circle.svg" alt="일시정지" />
-          <img src="./assets/icons/play-circle.svg" alt="재생" />
-        </button>
-        <button type="button" class="main-player__next-btn">
-          <img src="./assets/icons/next-song.svg" alt="다음곡" />
-        </button>
-      </div>
-      <div class="main-player__actions-bottom">
-        <button type="button" class="main-player__like-btn">
-          <img src="./assets/icons/like.svg" alt="좋아요" />
-          <img src="./assets/icons/like_full.svg" alt="좋아요" />
-        </button>
-        <button type="button" class="main-player__shuffle-btn">
-          <img src="./assets/icons/shuffle.svg" alt="셔플" />
-        </button>
-        <button type="button" class="main-player__repeat-btn">
-          <img src="./assets/icons/repeat.svg" alt="반복" />
-        </button>
-        <button type="button" class="main-player__add-btn">
-          <img src="./assets/icons/add.svg" alt="좋아요" />
-        </button>
-      </div>
-    </section>
+        <div class="main-player__time">
+          <span>00:00</span>
+          <span>00:00</span>
+        </div>
+        <div class="main-player__actions-top">
+          <button type="button" class="main-player__prev-btn">
+            <img src="./assets/icons/prev-song.svg" alt="이전곡" />
+          </button>
+          <button type="button" class="main-player__play-toggle-btn is-playing">
+            <img src="./assets/icons/pause-circle.svg" alt="일시정지" />
+            <img src="./assets/icons/play-circle.svg" alt="재생" />
+          </button>
+          <button type="button" class="main-player__next-btn">
+            <img src="./assets/icons/next-song.svg" alt="다음곡" />
+          </button>
+        </div>
+        <div class="main-player__actions-bottom">
+          <button type="button" class="main-player__like-btn">
+            <img src="./assets/icons/like.svg" alt="좋아요" />
+            <img src="./assets/icons/like_full.svg" alt="좋아요" />
+          </button>
+          <button type="button" class="main-player__shuffle-btn">
+            <img src="./assets/icons/shuffle.svg" alt="셔플" />
+          </button>
+          <button type="button" class="main-player__repeat-btn">
+            <img src="./assets/icons/repeat.svg" alt="반복" />
+          </button>
+          <button type="button" class="main-player__add-btn">
+            <img src="./assets/icons/add.svg" alt="좋아요" />
+          </button>
+        </div>
+      </section>
 
-    <!-- 하단바 -->
-    <nav class="bottom-nav">
-      <a class="nav-item is-active" href="./index.html">
-        <img src="./assets/icons/main.svg" alt="메인" />
-        <img src="./assets/icons/main-active.svg" alt="메인" />
-      </a>
-      <a class="nav-item" href="./search.html">
-        <img src="./assets/icons/search.svg" alt="검색" />
-        <img src="./assets/icons/search-active.svg" alt="검색" />
-      </a>
-      <a class="nav-item" href="./calendar.html">
-        <img src="./assets/icons/calendar.svg" alt="캘린더" />
-        <img src="./assets/icons/calendar-active.svg" alt="캘린더" />
-      </a>
-      <a class="nav-item" href="./my-page.html">
-        <img src="./assets/icons/menu.svg" alt="전체메뉴" />
-        <img src="./assets/icons/menu.svg" alt="전체메인" />
-      </a>
-    </nav>
-  </div>
-  <script src="./js/color-chart.js"></script>
-</body>
-
+      <!-- 하단바 -->
+      <nav class="bottom-nav">
+        <a class="nav-item is-active" href="./main.html">
+          <img src="./assets/icons/main.svg" alt="메인" />
+          <img src="./assets/icons/main-active.svg" alt="메인" />
+        </a>
+        <a class="nav-item" href="./search.html">
+          <img src="./assets/icons/search.svg" alt="검색" />
+          <img src="./assets/icons/search-active.svg" alt="검색" />
+        </a>
+        <a class="nav-item" href="./calendar.html">
+          <img src="./assets/icons/calendar.svg" alt="캘린더" />
+          <img src="./assets/icons/calendar-active.svg" alt="캘린더" />
+        </a>
+        <a class="nav-item" href="./my-page.html">
+          <img src="./assets/icons/menu.svg" alt="전체메뉴" />
+          <img src="./assets/icons/menu.svg" alt="전체메인" />
+        </a>
+      </nav>
+    </div>
+    <script src="./js/color-chart.js"></script>
+  </body>
 </html>

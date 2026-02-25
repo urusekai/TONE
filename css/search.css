@@ -151,6 +151,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
+  cursor: pointer;
 }
 
 .color-circle {
@@ -194,6 +195,7 @@
   display: flex;
   flex-direction: column;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+  cursor: pointer;
 }
 
 .card-color-top {
