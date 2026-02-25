@@ -7,33 +7,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 30px;
+  gap: 40px;
 }
 
-/* 상단 타이틀 */
-.profile-header {
-  width: 100%;
-  position: relative;
-  text-align: center;
-}
-
-.profile-header h1 {
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--color-text-primary);
-}
-
-.profile-header .back-btn {
-  position: absolute;
-  left: 0;
-  top: 0;
-  font-size: 22px;
-  background: none;
-  border: none;
-  color: var(--color-text-primary);
-}
-
-/* 프로필 이미지 */
 .profile-image-area {
   display: flex;
   flex-direction: column;
@@ -44,19 +20,20 @@
 .profile-image {
   width: 96px;
   height: 96px;
-  border-radius: 50%;
-  background: #6f6fb5;
+  border-radius: 999px;
+  background-color: var(--color-pantone-primary);
 }
 
 .profile-color-btn {
-  padding: 6px 14px;
-  font-size: 12px;
-  border-radius: 20px;
-  background: var(--color-primary);
-  color: #fff;
+  min-height: 36px;
+  background-color: var(--color-primary);
+  color: #ffffff;
+  padding: 0 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
 }
 
-/* 폼 간격만 조정 */
 #profile-page .register-form {
   width: 100%;
   display: flex;
@@ -64,7 +41,10 @@
   gap: 10px;
 }
 
-/* 하단 버튼 여백 */
-#profile-page .form-submit-box {
-  margin-top: 40px;
+#profile-page .form-input-box span {
+  flex-shrink: 0;
+}
+
+#profile-page .register-form button[type='submit'] {
+  margin-top: 50px;
 }
