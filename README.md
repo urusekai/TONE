@@ -29,12 +29,12 @@ TONE/
 │
 │── js/                     # 페이지별 스크립트
 │
-│── index.html              # 메인 페이지
+│── index.html              # 스플래시(엔트리) 페이지
+│── main.html               # 메인(For You) 페이지
 │   ...                     # 페이지별 HTML 파일
 │
 │── .prettierrc             # 코드 포맷 설정 파일
 ```
-
 
 ## 📜 컨벤션
 
@@ -46,20 +46,21 @@ TONE/
 - `refactor/브랜치명` : UI 수정, HTML/CSS 구조 변경
 
 #### 브랜치명 예시
+
 - `feature/calendar`
 - `refactor/playlist`
 
 ### 2. 커밋 메시지 규칙
 
-- `feat:` 기능 추가  
-- `refactor:` UI 수정, 구조 변경  
-- `fix:` 버그 수정  
+- `feat:` 기능 추가
+- `refactor:` UI 수정, 구조 변경
+- `fix:` 버그 수정
 
 #### 커밋 메시지 예시
+
 - `feat: 캘린더 페이지 구현`
 - `refactor: 캘린더 페이지 레이아웃 수정`
 - `fix: 플레이어 진행바 오류 수정`
-
 
 ## 🛠 작업 순서
 
@@ -75,6 +76,7 @@ git pull origin develop
 ```bash
 git checkout -b 브랜치명
 ```
+
 > 예시: `git checkout -b feature/calendar`
 
 ### 3. 현재 브랜치가 작업할 브랜치가 맞는지 확인
@@ -82,6 +84,7 @@ git checkout -b 브랜치명
 ```bash
 git branch
 ```
+
 > 현재 브랜치가 다르면 `git checkout 브랜치명` 으로 이동
 
 ### 4. 작업 후 커밋
@@ -90,6 +93,7 @@ git branch
 git add .
 git commit -m "feat: 작업 내용"
 ```
+
 > 예시: `git commit -m "feat: 캘린더 페이지 구현"`
 
 ### 5. 푸시
@@ -97,4 +101,5 @@ git commit -m "feat: 작업 내용"
 ```bash
 git push origin 브랜치명
 ```
+
 > 예시: `git push origin feature/calendar`
