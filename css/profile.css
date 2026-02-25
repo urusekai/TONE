@@ -1,0 +1,70 @@
+/* =========================
+   PROFILE PAGE
+========================= */
+
+#profile-page {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+}
+
+/* 상단 타이틀 */
+.profile-header {
+  width: 100%;
+  position: relative;
+  text-align: center;
+}
+
+.profile-header h1 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.profile-header .back-btn {
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-size: 22px;
+  background: none;
+  border: none;
+  color: var(--color-text-primary);
+}
+
+/* 프로필 이미지 */
+.profile-image-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.profile-image {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: #6f6fb5;
+}
+
+.profile-color-btn {
+  padding: 6px 14px;
+  font-size: 12px;
+  border-radius: 20px;
+  background: var(--color-primary);
+  color: #fff;
+}
+
+/* 폼 간격만 조정 */
+#profile-page .register-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* 하단 버튼 여백 */
+#profile-page .form-submit-box {
+  margin-top: 40px;
+}

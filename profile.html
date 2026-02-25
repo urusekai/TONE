@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TONE</title>
+  <!-- 공통 CSS -->
+  <link rel="stylesheet" href="./css/reset.css" />
+  <link rel="stylesheet" href="./css/font.css" />
+  <link rel="stylesheet" href="./css/common.css" />
+  <!-- 페이지 CSS -->
+  <link rel="stylesheet" href="./css/profile.css" />
+</head>
+
+<body>
+  <!-- 컨테이너 -->
+  <div class="app has-tabs has-mini">
+    <!-- 헤더 -->
+    <header class="header">
+      <button type="button">
+        <img src="./assets/icons/logo.svg" alt="로고" />
+      </button>
+      <a href="javascript:void(0);">
+        <div class="avatar"></div>
+      </a>
+    </header>
+
+    <!-- 탭메뉴 -->
+    <nav class="tabs">
+      <a class="tab is-active" href="javascript:void(0);">For You</a>
+      <a class="tab" href="javascript:void(0);">차트</a>
+      <a class="tab" href="javascript:void(0);">Palette Log</a>
+      <a class="tab" href="javascript:void(0);">카테고리</a>
+    </nav>
+
+    <!-- 페이지 내용 -->
+
+    <main id="profile-page">
+
+      <!-- 상단 타이틀 -->
+      <div class="profile-header">
+        <button class="back-btn">‹</button>
+        <h1>프로필 수정</h1>
+      </div>
+
+      <!-- 프로필 이미지 -->
+      <div class="profile-image-area">
+        <div class="profile-image"></div>
+        <button class="profile-color-btn">색상 변경</button>
+      </div>
+
+      <!-- ✅ register와 동일한 폼 구조 -->
+      <form class="register-form" action="javascript:void(0);" method="post">
+
+        <div class="form-input-box">
+          <span><img src="./assets/icons/id.svg" alt="이메일" /></span>
+          <input type="email" placeholder="이메일을 입력하세요" />
+        </div>
+
+        <div class="form-input-box">
+          <span><img src="./assets/icons/password.svg" alt="비밀번호" /></span>
+          <input type="password" placeholder="비밀번호를 입력하세요." />
+        </div>
+
+        <div class="form-input-box">
+          <span><img src="./assets/icons/password.svg" alt="비밀번호 확인" /></span>
+          <input type="password" placeholder="비밀번호 확인" />
+        </div>
+
+        <div class="form-input-box">
+          <span><img src="./assets/icons/id.svg" alt="닉네임" /></span>
+          <input type="text" placeholder="닉네임을 2~5자 내에 입력하세요." />
+        </div>
+
+        <!-- 버튼도 공통 컴포넌트 -->
+        <button type="submit" class="form-submit-box">
+          수정 완료
+        </button>
+
+      </form>
+    </main>
+  </div>
+
+  <!-- 미니플레이어 -->
+  <section class="mini-player">
+    <button type="button" class="mini-thumb">
+      <img src="./assets/images/thumb.png" alt="앨범 커버" />
+    </button>
+    <div class="mini-body">
+      <div class="mini-top">
+        <p class="mini-title">Falling Behind</p>
+        <div class="mini-actions">
+          <button type="button" class="mini-btn">
+            <img src="./assets/icons/like.svg" alt="좋아요" />
+          </button>
+          <button type="button" class="mini-btn is-playing">
+            <img src="./assets/icons/play.svg" alt="재생" class="icon-play" />
+            <img src="./assets/icons/pause.svg" alt="재생일시정지" class="icon-pause" />
+          </button>
+        </div>
+      </div>
+      <p class="mini-artist">Laufey</p>
+      <div class="mini-progress">
+        <div class="mini-progress-cover" style="--progress: 65%"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 하단바 -->
+  <nav class="bottom-nav">
+    <a class="nav-item is-active" href="javascript:void(0);">
+      <img src="./assets/icons/main.svg" alt="메인" />
+      <img src="./assets/icons/main-active.svg" alt="메인" />
+    </a>
+    <a class="nav-item" href="javascript:void(0);">
+      <img src="./assets/icons/search.svg" alt="검색" />
+      <img src="./assets/icons/search-active.svg" alt="검색" />
+    </a>
+    <a class="nav-item" href="javascript:void(0);">
+      <img src="./assets/icons/calender.svg" alt="캘린더" />
+      <img src="./assets/icons/calender-active.svg" alt="캘린더" />
+    </a>
+    <a class="nav-item" href="javascript:void(0);">
+      <img src="./assets/icons/menu.svg" alt="전체메뉴" />
+      <img src="./assets/icons/menu.svg" alt="전체메인" />
+    </a>
+  </nav>
+  </div>
+</body>
+
+</html>
