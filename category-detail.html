@@ -12,8 +12,9 @@
   <link rel="stylesheet" href="./css/common.css" />
 
   <!-- 페이지 CSS -->
-  <link rel="stylesheet" href="./css/categoryDetail.css" />
-</head>
+  <link rel="stylesheet" href="./css/category-detail.css" />
+    <script type="module" src="./js/main-player.js"></script>
+  </head>
 
 <body>
   <!-- 컨테이너 -->
@@ -157,6 +158,61 @@
       </div>
     </section>
 
+    <!-- 메인플레이어 -->
+    <section class="main-player">
+      <header class="main-player__header">
+        <button type="button" class="main-player__back-btn">
+          <img src="./assets/icons/arrow-down.svg" alt="메인플레이어 닫기" />
+        </button>
+        <div class="main-player__header-info">
+          <p class="main-player__header-label">PLAYLIST</p>
+          <p class="main-player__header-name">Color Name</p>
+        </div>
+        <button type="button" class="main-player__profile-btn" aria-label="프로필">
+          <span class="main-player__profile-avatar"></span>
+        </button>
+      </header>
+      <img src="./assets/images/thumb.png" alt="앨범커버" class="main-player__cover" />
+      <div class="main-player__info">
+        <p class="main-player__title">Falling Behind</p>
+        <p class="main-player__artist">Laufey</p>
+      </div>
+      <div class="main-player__progress">
+        <div class="main-player__progress-cover" style="--progress: 65%"></div>
+      </div>
+      <div class="main-player__time">
+        <span>00:00</span>
+        <span>00:00</span>
+      </div>
+      <div class="main-player__actions-top">
+        <button type="button" class="main-player__prev-btn">
+          <img src="./assets/icons/prev-song.svg" alt="이전곡" />
+        </button>
+        <button type="button" class="main-player__play-toggle-btn is-playing">
+          <img src="./assets/icons/pause-circle.svg" alt="일시정지" />
+          <img src="./assets/icons/play-circle.svg" alt="재생" />
+        </button>
+        <button type="button" class="main-player__next-btn">
+          <img src="./assets/icons/next-song.svg" alt="다음곡" />
+        </button>
+      </div>
+      <div class="main-player__actions-bottom">
+        <button type="button" class="main-player__like-btn">
+          <img src="./assets/icons/like.svg" alt="좋아요" />
+          <img src="./assets/icons/like_full.svg" alt="좋아요" />
+        </button>
+        <button type="button" class="main-player__shuffle-btn">
+          <img src="./assets/icons/shuffle.svg" alt="셔플" />
+        </button>
+        <button type="button" class="main-player__repeat-btn">
+          <img src="./assets/icons/repeat.svg" alt="반복" />
+        </button>
+        <button type="button" class="main-player__add-btn">
+          <img src="./assets/icons/add.svg" alt="좋아요" />
+        </button>
+      </div>
+    </section>
+
     <!-- 하단바 -->
     <nav class="bottom-nav">
       <a class="nav-item is-active" href="javascript:void(0);">
@@ -168,8 +224,8 @@
         <img src="./assets/icons/search-active.svg" alt="검색" />
       </a>
       <a class="nav-item" href="javascript:void(0);">
-        <img src="./assets/icons/calender.svg" alt="캘린더" />
-        <img src="./assets/icons/calender-active.svg" alt="캘린더" />
+        <img src="./assets/icons/calendar.svg" alt="캘린더" />
+        <img src="./assets/icons/calendar-active.svg" alt="캘린더" />
       </a>
       <a class="nav-item" href="javascript:void(0);">
         <img src="./assets/icons/menu.svg" alt="전체메뉴" />
