@@ -1,4 +1,4 @@
-/* paletteLog.js - stable */
+/* palette-log.js - stable */
 
 document.addEventListener('DOMContentLoaded', () => {
   const stack = document.querySelector('.pl-stack');
