@@ -8,9 +8,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  /* 수직 정렬 (텍스트와 화살표 높이 맞춤) */
   gap: 20px;
-  /* 화살표와 월 텍스트 사이의 간격 */
   margin-bottom: 25px;
   width: 100%;
 }
@@ -21,7 +19,6 @@
   padding: 0;
   cursor: pointer;
   display: flex;
-  /* 버튼 내부 아이콘 중앙 정렬 */
   align-items: center;
   justify-content: center;
   width: 32px;
@@ -35,20 +32,15 @@
   display: block;
 }
 
-/* 다음달 화살표 뒤집기 */
 #calendar #nextMonth img {
   transform: rotate(180deg);
 }
 
 #calendar #monthTitle {
   margin-bottom: 0;
-  /* 기존 마진 제거 */
   line-height: 1;
-  /* 텍스트 상하 여백 제거하여 화살표와 높이 일치 */
   min-width: 60px;
-  /* 월이 바뀌어도 텍스트 너비 유지 */
   text-align: center;
-
   color: #3f5f73;
   font-size: 16px;
   font-weight: 700;
@@ -56,11 +48,10 @@
 
 /* ------------------ CALENDAR ------------------ */
 #calendar .calendar-card {
-  background: white;
+  background: #fff;
   border-radius: 17px;
   padding: 20px;
   width: 100%;
-  /* common.css의 main padding에 맞춤 */
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
@@ -87,7 +78,6 @@
   transition: all 0.2s ease;
 }
 
-/* 선택 및 컬러 상태 (기존 코드 유지) */
 #calendar .calendar-day.selected .day-dot {
   border-color: #3f5f73;
   transform: scale(1.1);
@@ -111,67 +101,159 @@
 
 /* ------------------ DAILY CARD ------------------ */
 #calendar .daily-tone-card {
-  background: white;
+  background: #fff;
   border-radius: 17px;
   padding: 20px;
   margin-top: 24px;
   width: 100%;
-  position: relative;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
-#calendar .today-badge {
-  background: #3f5f73;
-  color: #fff;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 700;
-}
-
-#calendar .tone-content {
+#calendar .tone-main-row {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-top: 15px;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+#calendar .tone-left {
+  flex: 1;
+}
+
+#calendar .date-badge {
+  display: inline-block;
+  background: #3f5f73;
+  color: #fff;
+  padding: 6px 18px;
+  border-radius: 15px;
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 15px;
 }
 
 #calendar .tone-text h3 {
   font-size: 20px;
+  color: #3f5f73;
+  font-weight: 800;
   margin-bottom: 4px;
-  font-weight: bold;
 }
 
 #calendar .pantone-num {
-  font-size: 16px;
+  font-size: 15px;
   color: #3f5f73;
   font-weight: 600;
 }
 
+#calendar .tone-controls {
+  display: flex;
+  align-items: center;
+  background: #f2f2ee;
+  border-radius: 25px;
+  width: fit-content;
+  padding: 4px;
+  margin-top: 15px;
+  box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.25);
+}
+
+#calendar .btn-play-pause {
+  background: #3f5f73;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+#calendar .btn-play-pause img {
+  width: 14px;
+  filter: brightness(0) invert(1);
+}
+
+#calendar .btn-add-list {
+  background: transparent;
+  border: none;
+  padding: 0 12px;
+  cursor: pointer;
+}
+
+#calendar .btn-add-list img {
+  width: 14px;
+  height: 14px;
+}
+
+#calendar .tone-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
 #calendar .tone-color-preview {
-  width: 55px;
-  height: 100px;
+  width: 59px;
+  height: 110px;
   border-radius: 30px;
   background: #6b6aa8;
   border: 3px solid #fff;
-  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.25);
 }
 
-#calendar .keyword-tags {
-  margin-top: 15px;
-}
-
-#calendar .keyword-tags span {
-  background: rgba(63, 95, 115, 0.15);
-  padding: 4px 10px;
-  border-radius: 10px;
+#calendar .btn-profile-set {
+  background: #fff;
+  border: 1px solid #3f5f73;
+  color: #3f5f73;
+  padding: 6px 10px;
+  border-radius: 20px;
   font-size: 10px;
-  margin-right: 4px;
+  font-weight: 700;
+  margin-top: 5px;
+}
+
+#calendar .tone-music-info {
+  background: #f2f2ee;
+  border-radius: 20px;
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.25);
+}
+
+#calendar .music-thumb {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+#calendar .music-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+#calendar .music-text {
+  display: flex;
+  flex-direction: column;
+}
+
+#calendar .music-title {
+  font-weight: 800;
+  color: #3f5f73;
+  font-size: 15px;
+}
+
+#calendar .music-artist {
+  font-size: 12px;
+  color: #777;
+  margin-top: 2px;
 }
 
 /* ------------------ MEMO ------------------ */
 #calendar .memo-card {
-  background: white;
+  background: #fff;
   border-radius: 17px;
   padding: 20px;
   margin-top: 24px;
@@ -189,10 +271,9 @@
 
 #calendar .memo-header h4 {
   font-size: 15px;
-  font-weight: bold;
+  font-weight: 700;
 }
 
-/* 메모 버튼 디자인 */
 #calendar .memo-buttons {
   display: flex;
   gap: 8px;
@@ -204,9 +285,7 @@
   align-items: center;
   justify-content: center;
   min-width: 54px;
-  /* 최소 너비 확보 */
   height: 28px;
-  /* 높이 명시 */
   font-size: 12px;
   font-weight: 600;
   border-radius: 14px;
@@ -214,18 +293,16 @@
   transition: all 0.2s;
 }
 
-/* 수정 버튼 (테두리형) */
 #calendar .btn-outline {
-  background: #ffffff;
+  background: #fff;
   border: 1px solid #3f5f73;
   color: #3f5f73;
 }
 
-/* 저장 버튼 (색상 채우기형) */
 #calendar .btn-primary {
   background: #3f5f73;
   border: 1px solid #3f5f73;
-  color: #ffffff;
+  color: #fff;
 }
 
 #calendar .memo-box {
@@ -243,6 +320,11 @@
   resize: none;
   font-size: 13px;
   outline: none;
+}
+
+#calendar #memoInput {
+  color: #3f5f73;
+  font-weight: 700;
 }
 
 #calendar #memoInput:not([readonly]) {

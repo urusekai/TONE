@@ -25,7 +25,7 @@
         </a>
         <h1 class="header__title">캘린더</h1>
         <a class="header__right-btn" href="./profile-edit.html" aria-label="프로필 수정">
-          <div class="avatar"></div>
+          <div class="avatar" id="userAvatar"></div>
         </a>
       </header>
 
@@ -47,20 +47,37 @@
 
         <!-- 데일리 팬톤 카드 -->
         <section class="daily-tone-card">
-          <div class="badge-row">
-            <span class="today-badge">Today</span>
-          </div>
-          <div class="tone-content">
-            <div class="tone-text">
-              <h3>데일리 팬톤 컬러 명</h3>
-              <p class="pantone-num">12-3456</p>
-              <div class="keyword-tags">
-                <span>#키워드</span>
-                <span>#키워드</span>
-                <span>#키워드</span>
+          <div class="tone-main-row">
+            <div class="tone-left">
+              <div class="date-badge">00.00</div>
+              <div class="tone-text">
+                <h3>데일리 팬톤 컬러 명</h3>
+                <p class="pantone-num">12-3456(팬톤 컬러넘버)</p>
+              </div>
+              <div class="tone-controls">
+                <button type="button" class="btn-play-pause">
+                  <img src="./assets/icons/pause.svg" alt="일시정지" />
+                </button>
+                <button type="button" class="btn-add-list">
+                  <img src="./assets/icons/add.svg" alt="추가" />
+                </button>
               </div>
             </div>
-            <div class="tone-color-preview"></div>
+
+            <div class="tone-right">
+              <div class="tone-color-preview"></div>
+              <button type="button" class="btn-profile-set">프로필 설정</button>
+            </div>
+          </div>
+
+          <div class="tone-music-info">
+            <div class="music-thumb">
+              <img src="./assets/images/thumb-track.png" alt="앨범아트" />
+            </div>
+            <div class="music-text">
+              <span class="music-title">Title</span>
+              <span class="music-artist">Artist</span>
+            </div>
           </div>
         </section>
 
