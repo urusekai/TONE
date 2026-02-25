@@ -59,8 +59,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // 5) 클릭한 카드 1장만 오른쪽 슬라이드
   let isTransitioning = false;
 
-  function goToPlayer(payload) {
-    console.log('[TODO] goToPlayer()', payload);
+  function goToPlayer() {
+    window.location.href = './calendar.html';
   }
 
   stack.addEventListener('click', (e) => {
