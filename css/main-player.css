@@ -3,15 +3,11 @@
 ================================================== */
 
 .main-player {
-  display: none;
-}
-
-.main-player.is-active {
   position: fixed;
   top: 0;
   bottom: 0;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, 24px);
   width: 100%;
   max-width: 402px;
   z-index: 2000;
@@ -22,11 +18,27 @@
   background: var(--color-bg-app);
   padding: 0 25px 25px;
   overflow-y: auto;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease,
+    visibility 0s linear 0.3s;
 }
 
-/* ----------------------------------------
-   헤더
----------------------------------------- */
+.main-player.is-active {
+  transform: translate(-50%, 0);
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease,
+    visibility 0s linear 0s;
+}
+
+/* 메인 플레이어 - 헤더 */
 .main-player__header {
   display: flex;
   align-items: center;
@@ -76,9 +88,7 @@
   background-color: var(--color-pantone-primary);
 }
 
-/* ----------------------------------------
-   커버/정보
----------------------------------------- */
+/* 메인 플레이어 - 커버/정보 */
 .main-player__cover {
   width: 100%;
   aspect-ratio: 1 / 1;
@@ -106,9 +116,7 @@
   font-weight: 600;
 }
 
-/* ----------------------------------------
-   진행바
----------------------------------------- */
+/* 메인 플레이어 - 진행바 */
 .main-player__progress {
   position: relative;
   width: 100%;
@@ -138,9 +146,7 @@
   font-weight: 500;
 }
 
-/* ----------------------------------------
-   컨트롤
----------------------------------------- */
+/* 메인 플레이어 - 컨트롤 */
 .main-player__actions-top {
   margin-top: 36px;
   display: flex;
