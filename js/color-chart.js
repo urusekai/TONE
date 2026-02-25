@@ -1,6 +1,10 @@
 document.querySelectorAll('.cc-item').forEach((item) => {
   item.querySelector('.cc-link').addEventListener('click', (e) => {
-    if (e.target.closest('button')) return;
+    if (e.target.closest('button')) {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
 
     document.querySelectorAll('.cc-item.is-active').forEach((el) => {
       if (el !== item) el.classList.remove('is-active');
