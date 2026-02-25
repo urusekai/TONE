@@ -9,7 +9,10 @@
     <link rel="stylesheet" href="./css/font.css" />
     <link rel="stylesheet" href="./css/common.css" />
     <!-- 페이지 CSS -->
-    <link rel="stylesheet" href="./css/calendar.css" />
+    <link rel="stylesheet" href="./css/search.css" />
+
+    <!-- JavaScript -->
+    <script src="./js/search.js"></script>
   </head>
 
   <body>
@@ -20,68 +23,40 @@
         <button type="button">
           <img src="./assets/icons/logo.svg" alt="로고" />
         </button>
-        <a href="./mypage.html">
+        <a href="javascript:void(0);">
           <div class="avatar"></div>
         </a>
       </header>
 
       <!-- 페이지 내용 -->
-      <main id="calendar">
-        <!-- 캘린더 카드 -->
-        <section class="calendar-card">
-          <div class="calendar-header">
-            <button type="button" id="prevMonth">
-              <img src="./assets/icons/prev.svg" alt="이전달" />
+      <main id="search">
+        <section class="search-bar-section">
+          <form class="search-input-box" role="search">
+            <input type="text" placeholder="노래, 아티스트, 색상 검색" />
+            <button type="submit" class="btn-search" aria-label="검색">
+              <img src="./assets/icons/search.svg" alt="" class="icon-search" />
             </button>
-            <h2 id="monthTitle"></h2>
-            <button type="button" id="nextMonth">
-              <img src="./assets/icons/prev.svg" alt="다음달" />
-            </button>
-          </div>
-          <div class="calendar-grid" id="calendarGrid"></div>
+          </form>
         </section>
 
-        <!-- 데일리 팬톤 카드 -->
-        <section class="daily-tone-card">
-          <div class="badge-row">
-            <span class="today-badge">Today</span>
-          </div>
-          <div class="tone-content">
-            <div class="tone-text">
-              <h3>데일리 팬톤 컬러 명</h3>
-              <p class="pantone-num">12-3456</p>
-              <div class="keyword-tags">
-                <span>#키워드</span>
-                <span>#키워드</span>
-                <span>#키워드</span>
-              </div>
-            </div>
-            <div class="tone-color-preview"></div>
-          </div>
-        </section>
+        <div class="search-content-scroll">
+          <section class="search-section">
+            <h3 class="section-title">최근 검색어</h3>
+            <div id="tag-list" class="scroll-container"></div>
+          </section>
 
-        <!-- 메모 영역 -->
-        <section class="memo-card">
-          <div class="memo-section">
-            <div class="memo-header">
-              <h4>기록 메모</h4>
-              <div class="memo-buttons">
-                <button type="button" class="btn-outline">수정</button>
-                <button type="button" class="btn-primary">저장</button>
-              </div>
+          <section class="recent-colors-section">
+            <h3 class="section-title">최근 컬러</h3>
+            <div class="recent-colors-wrapper">
+              <div id="color-circle-list" class="scroll-container"></div>
             </div>
+          </section>
 
-            <div class="memo-box">
-              <textarea
-                id="memoInput"
-                placeholder="오늘의 톤을 한 줄로 남겨주세요!"
-                maxlength="80"
-                readonly
-              ></textarea>
-              <div class="memo-count"><span id="currentCount">0</span>/80</div>
-            </div>
-          </div>
-        </section>
+          <section class="recommended-colors-section">
+            <h3 class="section-title">인기 추천 컬러</h3>
+            <div id="color-card-grid" class="color-card-grid"></div>
+          </section>
+        </div>
       </main>
 
       <!-- 미니플레이어 -->
@@ -111,7 +86,7 @@
 
       <!-- 하단바 -->
       <nav class="bottom-nav">
-        <a class="nav-item" href="javascript:void(0);">
+        <a class="nav-item is-active" href="javascript:void(0);">
           <img src="./assets/icons/main.svg" alt="메인" />
           <img src="./assets/icons/main-active.svg" alt="메인" />
         </a>
@@ -119,7 +94,7 @@
           <img src="./assets/icons/search.svg" alt="검색" />
           <img src="./assets/icons/search-active.svg" alt="검색" />
         </a>
-        <a class="nav-item is-active" href="javascript:void(0);">
+        <a class="nav-item" href="javascript:void(0);">
           <img src="./assets/icons/calender.svg" alt="캘린더" />
           <img src="./assets/icons/calender-active.svg" alt="캘린더" />
         </a>
@@ -129,7 +104,5 @@
         </a>
       </nav>
     </div>
-
-    <script src="./js/calendar.js"></script>
   </body>
 </html>

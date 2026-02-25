@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TONE</title>
+    <!-- 공통 CSS -->
+    <link rel="stylesheet" href="./css/reset.css" />
+    <link rel="stylesheet" href="./css/font.css" />
+    <link rel="stylesheet" href="./css/common.css" />
+    <!-- 페이지 CSS -->
+    <link rel="stylesheet" href="./css/popup.css" />
+  </head>
+
+  <body>
+    <!-- 컨테이너 -->
+    <div class="app has-tabs has-mini">
+      <!-- 헤더 -->
+      <header class="header">
+        <button type="button">
+          <img src="./assets/icons/logo.svg" alt="로고" />
+        </button>
+        <a href="javascript:void(0);">
+          <div class="avatar" id="myAvatar"></div>
+        </a>
+      </header>
+
+      <!-- 탭메뉴 -->
+      <nav class="tabs">
+        <a class="tab is-active" href="javascript:void(0);">For You</a>
+        <a class="tab" href="javascript:void(0);">차트</a>
+        <a class="tab" href="javascript:void(0);">Palette Log</a>
+        <a class="tab" href="javascript:void(0);">카테고리</a>
+      </nav>
+
+      <!-- 페이지 내용 -->
+      <main id="main-page">
+        <section class="popup-test-area">
+          <!-- Vue 전환 시: onclick -> @click / openModal 호출 대신 상태값 true -->
+          <button type="button" class="test-btn" onclick="openModal('duplicate', 'admin')">
+            중복확인 팝업 테스트
+          </button>
+          <button type="button" class="test-btn" onclick="openModal('profile')">
+            프로필 수정 팝업 테스트
+          </button>
+        </section>
+      </main>
+
+      <!-- 미니플레이어 -->
+      <section class="mini-player">
+        <button type="button" class="mini-thumb">
+          <img src="./assets/images/thumb.png" alt="앨범 커버" />
+        </button>
+        <div class="mini-body">
+          <div class="mini-top">
+            <p class="mini-title">Falling Behind</p>
+            <div class="mini-actions">
+              <button type="button" class="mini-btn">
+                <img src="./assets/icons/like.svg" alt="좋아요" />
+              </button>
+              <button type="button" class="mini-btn is-playing">
+                <img src="./assets/icons/play.svg" alt="재생" class="icon-play" />
+                <img src="./assets/icons/pause.svg" alt="재생일시정지" class="icon-pause" />
+              </button>
+            </div>
+          </div>
+          <p class="mini-artist">Laufey</p>
+          <div class="mini-progress">
+            <div class="mini-progress-cover" style="--progress: 65%"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 하단바 -->
+      <nav class="bottom-nav">
+        <a class="nav-item is-active" href="javascript:void(0);">
+          <img src="./assets/icons/main.svg" alt="메인" />
+          <img src="./assets/icons/main-active.svg" alt="메인" />
+        </a>
+        <a class="nav-item" href="javascript:void(0);">
+          <img src="./assets/icons/search.svg" alt="검색" />
+          <img src="./assets/icons/search-active.svg" alt="검색" />
+        </a>
+        <a class="nav-item" href="javascript:void(0);">
+          <img src="./assets/icons/calender.svg" alt="캘린더" />
+          <img src="./assets/icons/calender-active.svg" alt="캘린더" />
+        </a>
+        <a class="nav-item" href="javascript:void(0);">
+          <img src="./assets/icons/menu.svg" alt="전체메뉴" />
+          <img src="./assets/icons/menu.svg" alt="전체메인" />
+        </a>
+      </nav>
+    </div>
+
+    <!-- 팝업창: 중복확인 (Vue에서는 v-if 또는 v-show로 표시 제어) -->
+    <div id="duplicateModal" class="modal-overlay">
+      <div class="modal-container">
+        <h2 class="modal-header">중복확인</h2>
+        <div class="modal-content-card">
+          <p class="modal-body-text">
+            <span class="highlight" id="duplicateIdText">admin</span> 아이디<br />
+            이용가능 합니다.
+          </p>
+        </div>
+        <button type="button" class="modal-confirm-btn" onclick="closeModal('duplicate')">
+          확인
+        </button>
+      </div>
+    </div>
+
+    <!-- 팝업창: 프로필 수정 (Vue에서는 v-if 또는 v-show로 표시 제어) -->
+    <div id="profileModal" class="modal-overlay">
+      <div class="modal-container">
+        <div class="profile-main-circle" id="mainProfileCircle">+</div>
+        <p class="helper-text">프로필 색상을 선택해주세요</p>
+        <div class="modal-content-card">
+          <div class="color-picker-container">
+            <button
+              type="button"
+              class="color-circle color-pink"
+              data-color="#FFB3BA"
+              onclick="selectColor(this)"
+            ></button>
+            <button
+              type="button"
+              class="color-circle color-purple"
+              data-color="#BAE1FF"
+              onclick="selectColor(this)"
+            ></button>
+            <button
+              type="button"
+              class="color-circle color-blue"
+              data-color="#B2E2F2"
+              onclick="selectColor(this)"
+            ></button>
+            <button
+              type="button"
+              class="color-circle color-orange"
+              data-color="#FFDFBA"
+              onclick="selectColor(this)"
+            ></button>
+            <button
+              type="button"
+              class="color-circle color-green"
+              data-color="#D4F1E9"
+              onclick="selectColor(this)"
+            ></button>
+          </div>
+        </div>
+        <button type="button" class="modal-confirm-btn" onclick="closeModal('profile')">
+          확인
+        </button>
+      </div>
+    </div>
+
+    <!-- 자바스크립트 -->
+    <script src="./js/popup.js"></script>
+  </body>
+</html>
