@@ -153,7 +153,7 @@
 
 /* 메인 플레이어 - 컨트롤 */
 .main-player__actions-top {
-  margin-top: 36px;
+  margin-top: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -191,7 +191,7 @@
 }
 
 .main-player__actions-bottom {
-  margin-top: 52px;
+  margin-top: auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
