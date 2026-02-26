@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="./css/common.css" />
     <link rel="stylesheet" href="./css/mini-player.css" />
     <link rel="stylesheet" href="./css/main-player.css" />
+    <link rel="stylesheet" href="./css/plan-card.css" />
     <!-- 페이지 CSS -->
     <link rel="stylesheet" href="./css/payment.css" />
     <script type="module" src="./js/main-player.js"></script>
@@ -34,21 +35,32 @@
         <section class="selected-plan-section">
           <h2 class="section-title">선택한 이용권</h2>
           <!-- 선택한 이용권 카드 -->
-          <section class="plan-card selected">
-            <div class="plan-badge">프로</div>
+          <div class="plan-option">
+            <input
+              id="payment-plan-pro"
+              class="plan-radio"
+              type="radio"
+              name="paymentPlan"
+              value="pro"
+              checked
+              disabled
+            />
+            <label class="plan-card" for="payment-plan-pro">
+              <div class="plan-badge">프로</div>
 
-            <div>
-              <span class="price-main">7,900원</span>
-              <span class="price-period">(매월)</span>
-            </div>
+              <div>
+                <span class="price-main">7,900원</span>
+                <span class="price-period">(매월)</span>
+              </div>
 
-            <ul class="benefit-list">
-              <li>광고 제거</li>
-              <li>자유로운 재생 / 스킵</li>
-              <li>더 향상된 음질</li>
-              <li>오프라인 재생</li>
-            </ul>
-          </section>
+              <ul class="benefit-list">
+                <li>광고 제거</li>
+                <li>자유로운 재생 / 스킵</li>
+                <li>더 향상된 음질</li>
+                <li>오프라인 재생</li>
+              </ul>
+            </label>
+          </div>
         </section>
 
         <!-- 결제 정보 -->

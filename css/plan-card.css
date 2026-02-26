@@ -1,0 +1,104 @@
+/* ==================================================
+   PLAN CARD (Shared: membership, payment)
+================================================== */
+
+.plan-option {
+  position: relative;
+}
+
+.plan-option + .plan-option {
+  margin-top: 18px;
+}
+
+.plan-radio {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.plan-card {
+  background: #ffffff;
+  border-radius: 15px;
+  padding: 15px 20px;
+  border: 2px solid transparent;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.plan-radio:checked + .plan-card {
+  border-color: #3f5f73;
+  box-shadow: 0 8px 20px rgba(63, 95, 115, 0.16);
+}
+
+.plan-radio:focus-visible + .plan-card {
+  outline: 2px solid #3f5f73;
+  outline-offset: 2px;
+}
+
+.plan-radio:disabled + .plan-card {
+  cursor: default;
+}
+
+.plan-badge {
+  width: 70px;
+  display: inline-block;
+  background: #3f5f73;
+  color: #ffffff;
+  font-size: 13px;
+  padding: 8px 0;
+  border-radius: 999px;
+  text-align: center;
+}
+
+.price-main {
+  font-size: 26px;
+  font-weight: 700;
+  color: #3f5f73;
+}
+
+.price-period {
+  font-size: 14px;
+  margin-left: 6px;
+  color: #6d8897;
+}
+
+.benefit-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.benefit-list li {
+  position: relative;
+  padding-left: 14px;
+  font-size: 14px;
+  margin-bottom: 6px;
+  color: #3f5f73;
+}
+
+.benefit-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.7em;
+  width: 4px;
+  height: 4px;
+  transform: translateY(-50%);
+  background: url(../assets/icons/bullet.svg) no-repeat center / contain;
+}
+
+.benefit-list li:last-child {
+  margin-bottom: 0;
+}
+
+.benefit-list li.disabled {
+  opacity: 0.5;
+}

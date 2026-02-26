@@ -29,77 +29,25 @@
   color: #3f5f73;
 }
 
-#payment .plan-card {
-  background: #ffffff;
-  border-radius: 15px;
-  padding: 15px 20px;
-  border: 1px solid #e4ebf0;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 10px;
-}
-
-#payment .plan-card.selected {
-  border: 2px solid #3f5f73;
-}
-
-#payment .plan-badge {
-  width: 70px;
-  display: inline-block;
-  background: #3f5f73;
-  color: #ffffff;
-  font-size: 13px;
-  padding: 8px 0;
-  border-radius: 999px;
-  text-align: center;
-}
-
-#payment .price-main {
-  font-size: 26px;
-  font-weight: 700;
-  color: #3f5f73;
-}
-
-#payment .price-period {
-  font-size: 14px;
-  margin-left: 6px;
-  color: #6d8897;
-}
-
-#payment .benefit-list,
 #payment .policy-list {
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
-#payment .benefit-list li,
 #payment .policy-list li {
   position: relative;
   padding-left: 14px;
   font-size: 14px;
-  color: #3f5f73;
-  line-height: 1.5;
-}
-
-#payment .benefit-list li {
-  margin-bottom: 6px;
-}
-
-#payment .policy-list li {
-  margin-bottom: 5px;
   color: #4c6a7a;
+  line-height: 1.5;
+  margin-bottom: 5px;
 }
 
-#payment .benefit-list li:last-child,
 #payment .policy-list li:last-child {
   margin-bottom: 0;
 }
 
-#payment .benefit-list li::before,
 #payment .policy-list li::before {
   content: '';
   position: absolute;
