@@ -82,6 +82,11 @@
   height: 18px;
 }
 
+.mini-player .mini-top .mini-actions .mini-btn .icon-close {
+  width: 20px;
+  height: 20px;
+}
+
 /* 재생 중 상태 */
 .mini-player .mini-top .mini-actions .mini-btn.is-playing .icon-play {
   display: none;
