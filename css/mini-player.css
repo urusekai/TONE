@@ -25,6 +25,10 @@
   box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.25);
 }
 
+.mini-player.is-hidden {
+  display: none;
+}
+
 /* 미니 플레이어 - 썸네일 */
 .mini-player .mini-thumb {
   width: 60px;
