@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="./css/main-player.css" />
     <!-- 페이지 CSS -->
     <link rel="stylesheet" href="./css/profile-edit.css" />
+    <link rel="stylesheet" href="./css/popup.css" />
     <script type="module" src="./js/main-player.js"></script>
   </head>
 
@@ -25,14 +26,14 @@
         </a>
         <h1 class="header__title">프로필 수정</h1>
         <a class="header__right-btn" href="./profile-edit.html" aria-label="프로필 수정">
-          <div class="avatar"></div>
+          <div class="avatar" id="profileHeaderAvatar"></div>
         </a>
       </header>
 
       <!-- 페이지 내용 -->
       <main id="profile-page">
         <div class="profile-image-area">
-          <div class="profile-image"></div>
+          <div class="profile-image" id="profileMainAvatar"></div>
           <button type="button" class="profile-color-btn">색상 변경</button>
         </div>
 
@@ -191,5 +192,32 @@
         </a>
       </nav>
     </div>
+
+    <div id="profileModal" class="modal-overlay">
+      <div class="modal-container">
+        <div class="profile-main-circle" id="mainProfileCircle">+</div>
+        <p class="helper-text">프로필 색상을 선택해주세요</p>
+        <div class="modal-content-card">
+          <div class="color-picker-container">
+            <button type="button" class="color-circle color-pink" data-color="#FFB3BA"></button>
+            <button type="button" class="color-circle color-purple" data-color="#BAE1FF"></button>
+            <button type="button" class="color-circle color-blue" data-color="#B2E2F2"></button>
+            <button type="button" class="color-circle color-orange" data-color="#FFDFBA"></button>
+            <button type="button" class="color-circle color-green" data-color="#D4F1E9"></button>
+          </div>
+        </div>
+        <button
+          type="button"
+          class="modal-confirm-btn"
+          data-popup-close="profile"
+          data-popup-confirm="true"
+        >
+          확인
+        </button>
+      </div>
+    </div>
+
+    <script src="./js/popup.js"></script>
+    <script src="./js/profile-edit.js"></script>
   </body>
 </html>

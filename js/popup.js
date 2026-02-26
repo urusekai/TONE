@@ -1,63 +1,146 @@
-// popup.js
-
 const duplicateModal = document.getElementById('duplicateModal');
 const profileModal = document.getElementById('profileModal');
 const duplicateIdText = document.getElementById('duplicateIdText');
-const myAvatar = document.getElementById('myAvatar');
+const profilePreview = document.getElementById('mainProfileCircle');
 
 let selectedTempColor = '';
+let profileTargets = [];
+let profileConfirmCallback = null;
 
-function openModal(type, data = '') {
-  // Vue 전환 시: classList.add('active') 대신 isDuplicateOpen / isProfileOpen 같은 상태값 사용
-  if (type === 'duplicate' && duplicateModal) {
-    if (duplicateIdText) {
-      duplicateIdText.textContent = data || 'admin';
+function resolveTarget(target) {
+  if (!target) return null;
+  if (typeof target === 'string') return document.querySelector(target);
+  return target;
+}
+
+function getBaseColor() {
+  for (const target of profileTargets) {
+    const element = resolveTarget(target);
+    if (!element) continue;
+    const color = window.getComputedStyle(element).backgroundColor;
+    if (color) return color;
+  }
+  return '#B7AEA6';
+}
+
+function resetProfileModal() {
+  if (!profileModal) return;
+  selectedTempColor = '';
+  profileModal.querySelectorAll('.color-circle').forEach((circle) => circle.classList.remove('selected'));
+  if (profilePreview) {
+    profilePreview.style.backgroundColor = getBaseColor();
+  }
+}
+
+function applyProfileColor(color) {
+  if (!color) return;
+  profileTargets.forEach((target) => {
+    const element = resolveTarget(target);
+    if (element) {
+      element.style.backgroundColor = color;
     }
-    duplicateModal.classList.add('active');
-    return;
+  });
+}
+
+function openDuplicateModal(idValue = 'admin') {
+  if (!duplicateModal) return;
+  if (duplicateIdText) {
+    duplicateIdText.textContent = idValue || 'admin';
+  }
+  duplicateModal.classList.add('active');
+}
+
+function closeDuplicateModal() {
+  if (!duplicateModal) return;
+  duplicateModal.classList.remove('active');
+}
+
+function openProfileModal(options = {}) {
+  if (!profileModal) return;
+  profileTargets = Array.isArray(options.targets) ? options.targets : [];
+  profileConfirmCallback = typeof options.onConfirm === 'function' ? options.onConfirm : null;
+  resetProfileModal();
+  profileModal.classList.add('active');
+}
+
+function closeProfileModal(confirm = false) {
+  if (!profileModal) return;
+  if (confirm && selectedTempColor) {
+    applyProfileColor(selectedTempColor);
+  }
+  profileModal.classList.remove('active');
+
+  if (confirm && profileConfirmCallback) {
+    profileConfirmCallback(selectedTempColor);
   }
 
-  if (type === 'profile' && profileModal) {
-    selectedTempColor = '';
-    const circles = profileModal.querySelectorAll('.color-circle');
-    circles.forEach((circle) => circle.classList.remove('selected'));
-
-    const preview = document.getElementById('mainProfileCircle');
-    if (preview) {
-      preview.style.backgroundColor = '#B7AEA6';
-    }
-
-    profileModal.classList.add('active');
-  }
+  selectedTempColor = '';
+  profileTargets = [];
+  profileConfirmCallback = null;
 }
 
 function selectColor(button) {
-  if (!profileModal) return;
+  if (!profileModal || !button) return;
 
-  const circles = profileModal.querySelectorAll('.color-circle');
-  circles.forEach((circle) => circle.classList.remove('selected'));
+  profileModal.querySelectorAll('.color-circle').forEach((circle) => circle.classList.remove('selected'));
   button.classList.add('selected');
 
   selectedTempColor = button.dataset.color || window.getComputedStyle(button).backgroundColor;
-
-  const preview = document.getElementById('mainProfileCircle');
-  if (preview) {
-    preview.style.backgroundColor = selectedTempColor;
+  if (profilePreview) {
+    profilePreview.style.backgroundColor = selectedTempColor;
   }
 }
 
-function closeModal(type) {
-  // Vue 전환 시: classList.remove('active') 대신 상태값 false 처리
-  if (type === 'duplicate' && duplicateModal) {
-    duplicateModal.classList.remove('active');
+document.addEventListener('click', (event) => {
+  const colorCircle = event.target.closest('.color-circle');
+  if (colorCircle && profileModal && profileModal.contains(colorCircle)) {
+    selectColor(colorCircle);
     return;
   }
 
-  if (type === 'profile' && profileModal) {
-    if (selectedTempColor && myAvatar) {
-      myAvatar.style.backgroundColor = selectedTempColor;
-    }
-    profileModal.classList.remove('active');
-    selectedTempColor = '';
+  const closeButton = event.target.closest('[data-popup-close]');
+  if (!closeButton) return;
+
+  const type = closeButton.dataset.popupClose;
+  const confirm = closeButton.dataset.popupConfirm === 'true';
+
+  if (type === 'duplicate') {
+    closeDuplicateModal();
+    return;
   }
-}
+
+  if (type === 'profile') {
+    closeProfileModal(confirm);
+  }
+});
+
+// 레거시 인라인 호출 호환을 위한 전역 함수
+window.openModal = (type, data = '') => {
+  if (type === 'duplicate') {
+    openDuplicateModal(data);
+    return;
+  }
+  if (type === 'profile') {
+    openProfileModal();
+  }
+};
+
+window.closeModal = (type) => {
+  if (type === 'duplicate') {
+    closeDuplicateModal();
+    return;
+  }
+  if (type === 'profile') {
+    closeProfileModal(true);
+  }
+};
+
+window.selectColor = selectColor;
+
+// 페이지별 스크립트에서 사용하는 전역 API
+window.TonePopup = {
+  openDuplicateModal,
+  openProfileModal,
+  closeDuplicateModal,
+  closeProfileModal
+};
