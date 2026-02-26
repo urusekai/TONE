@@ -16,7 +16,7 @@
   flex-direction: column;
 
   background: var(--color-bg-app);
-  padding: 0 25px 25px;
+  padding: 0 25px;
   overflow-y: auto;
   opacity: 0;
   visibility: hidden;
@@ -191,6 +191,7 @@
 }
 
 .main-player__actions-bottom {
+  padding: 25px 25px;
   margin-top: auto;
   display: flex;
   align-items: center;
@@ -199,8 +200,8 @@
 }
 
 .main-player__actions-bottom button img {
-  width: 20px;
-  height: 20px;
+  width: 25px;
+  height: 25px;
 }
 
 .main-player__like-btn img:last-child {
