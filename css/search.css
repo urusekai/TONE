@@ -45,7 +45,7 @@
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding-bottom: calc(var(--main-bottom) + var(--section-gap));
+  padding-bottom: calc(var(--app-main-bottom) + var(--section-gap));
 }
 
 .search-content-scroll::-webkit-scrollbar {

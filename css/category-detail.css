@@ -2,48 +2,31 @@
     background-color: transparent;
 }
 
-.hd-back {
-    background: none;
-    border: none;
-    padding: 0;
-    display: flex;
-    align-items: center;
-}
-
-.hd-back img {
-    width: 20px;
-    height: 20px;
-    transform: scaleX(-1);
-    /* ← 이게 핵심 */
-}
-
 /* ===== 전체 ===== */
 #category-detail-page {
     width: 100%;
-    height: auto;
+    display: flex;
+    flex-direction: column;
     justify-content: flex-start;
-    margin-top: -96px;
-    /* 세로 가운데 -> 위로 */
     align-items: stretch;
-    padding-bottom: 210px;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    min-height: 0;
+    overflow: hidden;
 }
 
 /* ===== 무드 헤더 ===== */
 .mood-header {
-    position: sticky;
-    top: 0;
+    position: relative;
     z-index: 50;
-
-    width: calc(100% + 50px);
-    margin-left: -25px;
-    margin-right: -25px;
-
-    padding: 85px 25px 26px;
+    width: 100%;
+    flex: 0 0 auto;
+    margin: 0;
+    padding: calc(var(--app-header-height) + 16px) var(--layout-x) 20px;
     text-align: center;
-
     background: #ffffff;
-    /* 추가 */
-
     box-shadow: 0px 2px 6.5px rgba(0, 0, 0, 0.22);
 }
 
@@ -84,7 +67,13 @@
 
 /* ===== 컬러 리스트 ===== */
 .color-list {
-    padding-top: 22px;
+    flex: 1 1 auto;
+    height: 0;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    padding: 22px var(--layout-x) calc(var(--app-main-bottom) + 12px);
     display: flex;
     flex-direction: column;
     gap: 18px;
@@ -92,7 +81,9 @@
 
 /* 카드 컨테이너 (group-35 역할) */
 .color-card {
-    width: 352px;
+    flex: 0 0 auto;
+    width: 100%;
+    max-width: 352px;
     height: 120px;
     margin: 0 auto;
 
@@ -187,9 +178,3 @@
     /* '총 00곡' 줄바꿈 방지 */
 }
 
-/* 메타 */
-.meta {
-    margin-top: 8px;
-    font-size: 12px;
-    opacity: 0.5;
-}

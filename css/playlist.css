@@ -1,5 +1,5 @@
 #playlist {
-  --main-bottom-gap: 0;
+  --app-main-bottom-gap: 0px;
   --playlist-main-side-padding: 25px;
   width: 100%;
   min-height: 0;
@@ -83,7 +83,7 @@
 
 #playlist .playlist-tracks__list {
   padding-top: 10px;
-  padding-bottom: var(--main-bottom);
+  padding-bottom: var(--app-main-bottom);
 }
 
 #playlist .playlist-track-item {

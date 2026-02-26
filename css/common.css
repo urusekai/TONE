@@ -66,6 +66,14 @@ body {
   flex-direction: column;
 }
 
+/* 인증(스플래시/로그인/회원가입) 레이아웃 */
+.app.layout-auth {
+  --app-header-height: 0px;
+  --app-bottom-fixed-height: 0px;
+  --app-main-top-gap: 0px;
+  --app-main-bottom-gap: 0px;
+}
+
 /* 탭메뉴가 있는 페이지 */
 .app.has-tabs {
   --app-tabs-height: 34px;
@@ -84,8 +92,8 @@ body {
 
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  justify-content: flex-start;
+  align-items: stretch;
 
   padding-left: var(--layout-x);
   padding-right: var(--layout-x);
