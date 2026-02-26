@@ -20,6 +20,20 @@
   margin: 0 auto;
 }
 
+#membership .plan-option {
+  position: relative;
+}
+
+#membership .plan-option + .plan-option {
+  margin-top: 18px;
+}
+
+#membership .plan-radio {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
 /* 타이틀 */
 #membership .section-title {
   font-size: 16px;
@@ -33,21 +47,27 @@
   background: #ffffff;
   border-radius: 15px;
   padding: 15px 20px;
-  border: 1px solid #e4ebf0;
+  border: 2px solid transparent;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 10px;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-#membership .plan-card + .plan-card {
-  margin-top: 18px;
+#membership .plan-radio:checked + .plan-card {
+  border-color: #3f5f73;
+  box-shadow: 0 8px 20px rgba(63, 95, 115, 0.16);
 }
 
-#membership .plan-card.selected {
-  border: 2px solid #3f5f73;
+#membership .plan-radio:focus-visible + .plan-card {
+  outline: 2px solid #3f5f73;
+  outline-offset: 2px;
 }
 
 /* 뱃지 */
