@@ -103,7 +103,7 @@
 }
 
 .main-player__info {
-  margin-top: 36px;
+  margin-top: auto;
   text-align: center;
 }
 
@@ -126,7 +126,7 @@
   position: relative;
   width: 100%;
   height: 5px;
-  margin-top: 56px;
+  margin-top: auto;
   border-radius: 999px;
   overflow: hidden;
   background: linear-gradient(90deg, #a8d4e6 0%, #c3b7d6 49%, #f5c9c6 100%);
@@ -143,17 +143,32 @@
 }
 
 .main-player__time {
-  margin-top: 8px;
-  display: flex;
-  justify-content: space-between;
+  position: relative;
+  width: 100%;
+  height: 0;
+  margin-top: 0;
   color: var(--color-text-primary);
   font-size: 14px;
   font-weight: 500;
 }
 
+.main-player__time span {
+  position: absolute;
+  top: 8px;
+  line-height: 1;
+}
+
+.main-player__time span:first-child {
+  left: 0;
+}
+
+.main-player__time span:last-child {
+  right: 0;
+}
+
 /* 메인 플레이어 - 컨트롤 */
 .main-player__actions-top {
-  margin-top: 48px;
+  margin-top: auto;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -191,7 +206,7 @@
 }
 
 .main-player__actions-bottom {
-  padding: 25px 25px;
+  padding: 0 25px 25px;
   margin-top: auto;
   display: flex;
   align-items: center;
