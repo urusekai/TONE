@@ -1,3 +1,7 @@
+import { initMiniPlayer } from './mini-player.js';
+
+initMiniPlayer();
+
 const mainPlayer = document.querySelector('.main-player');
 const closeBtn = document.querySelector('.main-player__back-btn');
 const profileBtn = document.querySelector('.main-player__profile-btn');
