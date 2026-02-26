@@ -8,78 +8,15 @@
     <link rel="stylesheet" href="./css/reset.css" />
     <link rel="stylesheet" href="./css/font.css" />
     <link rel="stylesheet" href="./css/common.css" />
-    <!-- 페이지 CSS -->
-    <link rel="stylesheet" href="./css/현재페이지에사용할.css" />
+    <!-- 페이지 전용 CSS -->
+    <link rel="stylesheet" href="./css/splash.css" />
+    <script src="./js/splash.js" defer></script>
   </head>
-
   <body>
-    <!-- 컨테이너 -->
-    <div class="app has-tabs has-mini">
-      <!-- 헤더 -->
-      <header class="header">
-        <button type="button">
-          <img src="./assets/icons/logo.svg" alt="로고" />
-        </button>
-        <a href="javascript:void(0);">
-          <div class="avatar"></div>
-        </a>
-      </header>
-
-      <!-- 탭메뉴 -->
-      <nav class="tabs">
-        <a class="tab is-active" href="javascript:void(0);">For You</a>
-        <a class="tab" href="javascript:void(0);">차트</a>
-        <a class="tab" href="javascript:void(0);">Palette Log</a>
-        <a class="tab" href="javascript:void(0);">카테고리</a>
-      </nav>
-
-      <!-- 페이지 내용 -->
-      <main id="main-page">페이지 내용</main>
-
-      <!-- 미니플레이어 -->
-      <section class="mini-player">
-        <button type="button" class="mini-thumb">
-          <img src="./assets/images/thumb.png" alt="앨범 커버" />
-        </button>
-        <div class="mini-body">
-          <div class="mini-top">
-            <p class="mini-title">Falling Behind</p>
-            <div class="mini-actions">
-              <button type="button" class="mini-btn">
-                <img src="./assets/icons/like.svg" alt="좋아요" />
-              </button>
-              <button type="button" class="mini-btn is-playing">
-                <img src="./assets/icons/play.svg" alt="재생" class="icon-play" />
-                <img src="./assets/icons/pause.svg" alt="재생일시정지" class="icon-pause" />
-              </button>
-            </div>
-          </div>
-          <p class="mini-artist">Laufey</p>
-          <div class="mini-progress">
-            <div class="mini-progress-cover" style="--progress: 65%"></div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 하단바 -->
-      <nav class="bottom-nav">
-        <a class="nav-item is-active" href="javascript:void(0);">
-          <img src="./assets/icons/main.svg" alt="메인" />
-          <img src="./assets/icons/main-active.svg" alt="메인" />
-        </a>
-        <a class="nav-item" href="javascript:void(0);">
-          <img src="./assets/icons/search.svg" alt="검색" />
-          <img src="./assets/icons/search-active.svg" alt="검색" />
-        </a>
-        <a class="nav-item" href="javascript:void(0);">
-          <img src="./assets/icons/calender.svg" alt="캘린더" />
-          <img src="./assets/icons/calender-active.svg" alt="캘린더" />
-        </a>
-        <a class="nav-item" href="javascript:void(0);">
-          <img src="./assets/icons/menu.svg" alt="전체메뉴" />
-          <img src="./assets/icons/menu.svg" alt="전체메인" />
-        </a>
-      </nav>
+    <div class="app layout-auth">
+      <main id="splash">
+        <img class="logo" src="./assets/icons/logo-full.svg" alt="로고" />
+      </main>
     </div>
   </body>
 </html>

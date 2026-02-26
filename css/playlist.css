@@ -1,0 +1,115 @@
+#playlist {
+  --app-main-bottom-gap: 0px;
+  --playlist-main-side-padding: 25px;
+  width: 100%;
+  min-height: 0;
+  justify-content: flex-start;
+  align-items: stretch;
+  overflow: hidden;
+  padding-bottom: 0;
+}
+
+#playlist .playlist-hero {
+  display: flex;
+  flex: 0 0 auto;
+  width: auto;
+  gap: 20px;
+  margin-inline: calc(var(--playlist-main-side-padding) * -1);
+  padding: 0 var(--playlist-main-side-padding) 20px;
+  box-shadow: 0 10px 12px -12px rgba(0, 0, 0, 0.45);
+}
+
+#playlist .playlist-hero__thumb {
+  border-radius: 20px;
+  border: 5px solid white;
+  width: 100px;
+  height: 100px;
+}
+
+#playlist .playlist-hero__content {
+  width: 100%;
+  padding: 5px 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+#playlist .playlist-hero__title {
+  font-size: 26px;
+  font-weight: bold;
+}
+
+#playlist .playlist-hero__code {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+#playlist .playlist-hero__actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+#playlist .playlist-hero__likes {
+  margin-top: auto;
+  padding-bottom: 3px;
+  display: flex;
+  gap: 3px;
+}
+
+#playlist .playlist-hero__likes img {
+  width: 15px;
+  height: 15px;
+}
+
+#playlist .playlist-hero__play-button {
+  width: 35px;
+  height: 35px;
+}
+
+#playlist .playlist-hero__play-button img {
+  height: 100%;
+  width: 100%;
+}
+
+#playlist .playlist-tracks {
+  width: 100%;
+  flex: 1 1 auto;
+  height: 0;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+#playlist .playlist-tracks__list {
+  padding-top: 10px;
+  padding-bottom: var(--app-main-bottom);
+}
+
+#playlist .playlist-track-item {
+  display: flex;
+  gap: 10px;
+  padding: 10px 5px;
+}
+
+#playlist .playlist-track-item__thumb {
+  width: 45px;
+  height: 45px;
+  flex: 0 0 45px;
+  border-radius: 999px;
+}
+
+#playlist .playlist-track-item__title {
+  font-size: 15px;
+  font-weight: bold;
+}
+
+#playlist .playlist-track-item__artist {
+  color: var(--color-text-secondary);
+}
+
+#playlist .playlist-track-item__meta {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}

@@ -1,0 +1,121 @@
+/* ===========================
+   PAYMENT PAGE
+=========================== */
+
+#payment {
+  width: 100%;
+  justify-content: flex-start;
+  align-items: stretch;
+  gap: 50px;
+  padding-top: calc(var(--app-main-top) + 16px);
+  padding-bottom: calc(var(--app-main-bottom) + 16px);
+  box-sizing: border-box;
+}
+
+#payment .selected-plan-section,
+#payment .info-section,
+#payment .notice-section,
+#payment .amount-section,
+#payment .payment-action-section {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+#payment .section-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: #3f5f73;
+}
+
+#payment .policy-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+#payment .policy-list li {
+  position: relative;
+  padding-left: 14px;
+  font-size: 14px;
+  color: #4c6a7a;
+  line-height: 1.5;
+  margin-bottom: 5px;
+}
+
+#payment .policy-list li:last-child {
+  margin-bottom: 0;
+}
+
+#payment .policy-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.7em;
+  width: 4px;
+  height: 4px;
+  transform: translateY(-50%);
+  background: url(../assets/icons/bullet.svg) no-repeat center / contain;
+}
+
+#payment .info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: #3f5f73;
+}
+
+#payment .info-card .info-row,
+#payment .amount-card .info-row {
+  padding: 12px 0;
+  border-bottom: 1px solid #d6dee3;
+}
+
+#payment .clickable {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #3f5f73;
+  font-weight: 400;
+  text-decoration: none;
+}
+
+#payment .row-arrow {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+#payment .total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12px;
+}
+
+#payment .total-row span:first-child {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+#payment .total-price {
+  font-size: 18px;
+  font-weight: 700;
+  color: #3f5f73;
+}
+
+#payment .btn-primary {
+  width: 100%;
+  height: 54px;
+  border-radius: 14px;
+  border: none;
+  background: #3f5f73;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
