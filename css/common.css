@@ -12,6 +12,7 @@
   --color-text-secondary: #b7aea6;
   --color-primary: #3f5f73;
   --color-pantone-primary: #6969ad;
+  --layout-x: 25px;
 }
 
 /* ----------------------------------------
@@ -43,17 +44,17 @@ body {
 ---------------------------------------- */
 .app {
   /* 고정 레이어 높이 */
-  --header-height: 84px;
-  --tabs-height: 0px;
-  --bottom-fixed-height: 75px;
+  --app-header-height: 84px;
+  --app-tabs-height: 0px;
+  --app-bottom-fixed-height: 75px;
 
   /* 콘텐츠 여유 간격 */
-  --main-top-gap: 12px;
-  --main-bottom-gap: 12px;
+  --app-main-top-gap: 12px;
+  --app-main-bottom-gap: 12px;
 
   /* 페이지별 main padding (fixed 요소에 가리지 않도록) */
-  --main-top: calc(var(--header-height) + var(--tabs-height) + var(--main-top-gap));
-  --main-bottom: calc(var(--bottom-fixed-height) + var(--main-bottom-gap));
+  --app-main-top: calc(var(--app-header-height) + var(--app-tabs-height) + var(--app-main-top-gap));
+  --app-main-bottom: calc(var(--app-bottom-fixed-height) + var(--app-main-bottom-gap));
 
   max-width: 402px;
   width: 100%;
@@ -67,12 +68,12 @@ body {
 
 /* 탭메뉴가 있는 페이지 */
 .app.has-tabs {
-  --tabs-height: 34px;
+  --app-tabs-height: 34px;
 }
 
 /* 미니플레이어가 있는 페이지 */
 .app.has-mini {
-  --bottom-fixed-height: 185px;
+  --app-bottom-fixed-height: 185px;
 }
 
 /* ----------------------------------------
@@ -86,12 +87,12 @@ body {
   justify-content: center;
   align-items: center;
 
-  padding-left: 25px;
-  padding-right: 25px;
+  padding-left: var(--layout-x);
+  padding-right: var(--layout-x);
 
   /* 페이지별 padding */
-  padding-top: var(--main-top);
-  padding-bottom: var(--main-bottom);
+  padding-top: var(--app-main-top);
+  padding-bottom: var(--app-main-bottom);
 }
 
 /* ==================================================
@@ -123,7 +124,7 @@ body {
 /* 헤더 - 구조 */
 .header {
   top: 0;
-  padding: 25px;
+  padding: 25px var(--layout-x);
   display: grid;
   align-items: center;
   column-gap: 12px;
@@ -203,7 +204,7 @@ body {
   justify-content: space-between;
   align-items: center;
 
-  padding: 0px 50px 10px;
+  padding: 0px var(--layout-x) 10px;
   font-size: 16px;
   font-weight: 700;
   color: var(--color-text-secondary);
@@ -232,7 +233,7 @@ body {
   width: 100%;
 
   display: flex;
-  padding: 25px 50px;
+  padding: 25px var(--layout-x);
   justify-content: space-between;
 
   background: #ffffff;

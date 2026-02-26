@@ -18,7 +18,7 @@
   /* 하단바 높이에 맞춰 조절 */
   background: #ffffff;
   border-radius: 20px 20px 0 0;
-  padding: 25px 50px;
+  padding: 25px var(--layout-x);
 
   display: flex;
   gap: 15px;
