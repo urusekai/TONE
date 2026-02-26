@@ -1,5 +1,6 @@
 const mainPlayer = document.querySelector('.main-player');
 const closeBtn = document.querySelector('.main-player__back-btn');
+const profileBtn = document.querySelector('.main-player__profile-btn');
 const openTriggers = document.querySelectorAll(
   '.mini-player .mini-thumb, .playlist-hero__play-button, .playlist-track-item'
 );
@@ -14,4 +15,9 @@ if (!mainPlayer || !closeBtn) {
     trigger.addEventListener('click', openMainPlayer);
   });
   closeBtn.addEventListener('click', closeMainPlayer);
+  if (profileBtn) {
+    profileBtn.addEventListener('click', () => {
+      window.location.href = './profile-edit.html';
+    });
+  }
 }
