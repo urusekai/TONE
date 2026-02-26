@@ -1,14 +1,15 @@
 /* palette-log.js - stable */
 
 document.addEventListener('DOMContentLoaded', () => {
+  const page = document.getElementById('palette-log-page');
   const stack = document.querySelector('.pl-stack');
-  if (!stack) return;
+  if (!page || !stack) return;
 
   // 카드 목록 가져오기
-  const getCards = () => Array.from(document.querySelectorAll('.pl-card'));
+  const getCards = () => Array.from(stack.querySelectorAll('.pl-card'));
 
   // 1) 순차 등장
-  document.body.classList.add('js-anim');
+  page.classList.add('is-anim');
   getCards().forEach((card, i) => {
     card.style.setProperty('--delay', `${i * 50}ms`);
     requestAnimationFrame(() => card.classList.add('is-in'));
@@ -30,7 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!cards.length) return;
 
     const overlap = 50; // CSS margin-top:-28px
-    const firstExtra = 0; // 첫 카드 -70 보정(70-28)
 
     const cardHeight = cards[0].offsetHeight;
     const total = cards.length;

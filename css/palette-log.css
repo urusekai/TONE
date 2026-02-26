@@ -7,15 +7,10 @@
 
 /* main 영역: 부모 flex 센터링 영향 차단 */
 #palette-log-page {
-    display: block !important;
-    width: 100% !important;
-    /* 모바일 프레임 유지 */
-    margin: 0 !important;
-    align-self: stretch !important;
-    padding-left: var(--layout-x);
-    padding-right: var(--layout-x);
-    padding-top: var(--app-main-top);
-    padding-bottom: var(--app-main-bottom);
+    display: block;
+    width: 100%;
+    margin: 0;
+    align-self: stretch;
     position: relative;
     z-index: 2;
     will-change: transform;
@@ -187,14 +182,14 @@
    A) 카드 순차 등장 (JS 있으면 순서대로, 없으면 그냥 보임)
 ========================= */
 
-body.js-anim .pl-card {
+#palette-log-page.is-anim .pl-card {
     opacity: 0;
     transform: translateY(10px);
     transition: opacity .36s ease, transform .36s ease;
     transition-delay: var(--delay, 0ms);
 }
 
-body.js-anim .pl-card.is-in {
+#palette-log-page.is-anim .pl-card.is-in {
     opacity: 1;
     transform: translateY(0);
 }
@@ -205,10 +200,10 @@ body.js-anim .pl-card.is-in {
 
 
 /* ✅ 무조건 오른쪽으로 빠짐 */
-.pl-card.is-exit-right {
-    transform: translateX(140%) !important;
-    opacity: 0 !important;
-    transition: transform 1.5s cubic-bezier(.2, .8, .2, 1), opacity .25s ease !important;
+#palette-log-page.is-anim .pl-card.is-exit-right {
+    transform: translateX(140%);
+    opacity: 0;
+    transition: transform 1.5s cubic-bezier(.2, .8, .2, 1), opacity .25s ease;
     /* 겹침 때문에 안 보이는 경우 방지 */
 }
 
