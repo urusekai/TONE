@@ -16,7 +16,7 @@
   flex-direction: column;
 
   background: var(--color-bg-app);
-  padding: 0 25px;
+  padding: 0 var(--layout-x) 25px;
   overflow-y: auto;
   opacity: 0;
   visibility: hidden;
@@ -206,7 +206,7 @@
 }
 
 .main-player__actions-bottom {
-  padding: 0 25px 25px;
+  padding: 0;
   margin-top: auto;
   display: flex;
   align-items: center;
