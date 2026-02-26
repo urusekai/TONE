@@ -7,8 +7,8 @@
   justify-content: flex-start;
   align-items: stretch;
   gap: 50px;
-  padding-top: calc(var(--main-top) + 16px);
-  padding-bottom: calc(var(--main-bottom) + 16px);
+  padding-top: calc(var(--app-main-top) + 16px);
+  padding-bottom: calc(var(--app-main-bottom) + 16px);
   box-sizing: border-box;
 }
 
@@ -74,3 +74,4 @@
   cursor: pointer;
   text-decoration: none;
 }
+
