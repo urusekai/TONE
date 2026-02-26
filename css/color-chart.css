@@ -1,15 +1,13 @@
 /* =========================
    Color Chart Page
    ========================= */
-.app.has-tabs.has-mini main {
+.app main.cc-page {
     display: block;
-    /* flex 제거 */
+    width: 100%;
+    margin: 0;
+    align-self: stretch;
     justify-content: unset;
     align-items: unset;
-}
-
-.cc-page {
-    padding: 0 25px;
 }
 
 .cc-title {
