@@ -233,6 +233,11 @@ body {
   border-bottom: 2px solid var(--color-text-primary);
 }
 
+.tabs .tab.router-link-active {
+  color: var(--color-text-primary);
+  border-bottom: 2px solid var(--color-text-primary);
+}
+
 /* ----------------------------------------
    하단 메뉴
 ---------------------------------------- */
@@ -266,6 +271,14 @@ body {
 }
 
 .bottom-nav .nav-item.is-active img:last-child {
+  display: block;
+}
+
+.bottom-nav .nav-item.router-link-active img:first-child {
+  display: none;
+}
+
+.bottom-nav .nav-item.router-link-active img:last-child {
   display: block;
 }
 
