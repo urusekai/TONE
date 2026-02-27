@@ -307,8 +307,8 @@ spec-track {
 
 .echo-text {
     margin: 0 0 18px;
-    font-size: 18px;
-    font-weight: 900;
+    font-size: 20px;
+    font-weight: 600;
     color: rgba(30, 35, 40, .68);
 }
 
@@ -320,7 +320,7 @@ spec-track {
 
 .echo-date {
     margin: 0;
-    font-size: 12px;
-    font-weight: 900;
+    font-size: 10px;
+    font-weight: 600;
     color: rgba(30, 35, 40, .35);
 }
