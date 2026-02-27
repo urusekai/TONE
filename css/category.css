@@ -62,19 +62,25 @@
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
 }
 
-/* 오른쪽 화살표 */
+/* 오른쪽 화살표 (SVG 아이콘 사용) */
+.cg-link {
+    position: relative;
+}
+
 .cg-link::after {
-    content: "›";
+    content: "";
     position: absolute;
     right: 16px;
     top: 50%;
     transform: translateY(-50%);
 
-    font-size: 22px;
-    font-weight: 700;
-    color: rgba(63, 95, 115, 0.55);
+    width: 18px;
+    height: 18px;
 
-    z-index: 2;
+    background: url("../assets/icons/arrow-right.svg") no-repeat center;
+    background-size: contain;
+
+    opacity: 0.6;
 }
 
 /* 카드 전체 배경 그라디언트 레이어 */
