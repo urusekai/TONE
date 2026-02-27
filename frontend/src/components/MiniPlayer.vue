@@ -1,0 +1,162 @@
+<script setup>
+const emit = defineEmits(['close']);
+</script>
+
+<template>
+  <section class="mini-player">
+    <button type="button" class="mini-thumb">
+      <img src="@/assets/images/thumb.png" alt="앨범 커버" />
+    </button>
+    <div class="mini-body">
+      <div class="mini-top">
+        <p class="mini-title">Falling Behind</p>
+        <div class="mini-actions">
+          <button type="button" class="mini-btn">
+            <img src="@/assets/icons/like.svg" alt="좋아요" />
+          </button>
+          <button type="button" class="mini-btn is-playing">
+            <img src="@/assets/icons/play.svg" alt="재생" class="icon-play" />
+            <img src="@/assets/icons/pause.svg" alt="재생일시정지" class="icon-pause" />
+          </button>
+          <button type="button" class="mini-btn mini-btn--close" @click="emit('close')">
+            <img src="@/assets/icons/close.svg" alt="닫기" class="icon-close" />
+          </button>
+        </div>
+      </div>
+      <p class="mini-artist">Laufey</p>
+      <div class="mini-progress">
+        <div class="mini-progress-cover" style="--progress: 65%"></div>
+      </div>
+    </div>
+  </section>
+</template>
+
+<style scoped>
+/* 미니 플레이어 - 컨테이너 */
+.mini-player {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 402px;
+  z-index: 1001;
+
+  bottom: 75px;
+  /* 하단바 높이에 맞춰 조절 */
+  background: #ffffff;
+  border-radius: 20px 20px 0 0;
+  padding: 25px var(--layout-x);
+
+  display: flex;
+  gap: 15px;
+  box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.25);
+}
+
+.mini-player.is-hidden {
+  display: none;
+}
+
+/* 미니 플레이어 - 썸네일 */
+.mini-player .mini-thumb {
+  width: 60px;
+  height: 60px;
+  border-radius: 999px;
+  overflow: hidden;
+  display: flex;
+}
+
+.mini-player .mini-thumb img {
+  width: 100%;
+  height: 100%;
+}
+
+/* 미니 플레이어 - 오른쪽 영역 */
+.mini-player .mini-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 미니 플레이어 - 상단 줄 */
+.mini-player .mini-top {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* 미니 플레이어 - 제목 */
+.mini-player .mini-top .mini-title {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* 미니 플레이어 - 버튼 영역 */
+.mini-player .mini-top .mini-actions {
+  display: flex;
+  gap: 15px;
+}
+
+/* 재생/일시정지 아이콘 기본 상태 */
+.mini-player .mini-top .mini-actions .mini-btn .icon-pause {
+  display: none;
+}
+
+.mini-player .mini-top .mini-actions .mini-btn .icon-pause {
+  width: 20px;
+  height: 20px;
+}
+
+.mini-player .mini-top .mini-actions .mini-btn .icon-play {
+  width: 20px;
+  height: 18px;
+}
+
+.mini-player .mini-top .mini-actions .mini-btn .icon-close {
+  width: 20px;
+  height: 20px;
+}
+
+/* 재생 중 상태 */
+.mini-player .mini-top .mini-actions .mini-btn.is-playing .icon-play {
+  display: none;
+}
+
+.mini-player .mini-top .mini-actions .mini-btn.is-playing .icon-pause {
+  display: block;
+}
+
+/* 미니 플레이어 - 아티스트 */
+.mini-player .mini-artist {
+  color: var(--color-text-secondary);
+  font-size: 14px;
+}
+
+/* 미니 플레이어 - 재생바 배경 */
+.mini-player .mini-progress {
+  position: relative;
+  width: 100%;
+  height: 5px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: linear-gradient(90deg, #a8d4e6 0%, #c3b7d6 49%, #f5c9c6 100%);
+  margin-top: auto;
+  margin-bottom: 2px;
+}
+
+/* 미니 플레이어 - 재생바 */
+.mini-player .mini-progress-cover {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+
+  /* 진행률만큼 왼쪽 남기고 오른쪽 덮기 */
+  width: calc(100% - var(--progress, 0%));
+  background: #e5e6e5;
+
+  /* 애니메이션 대응 */
+  transition: width 0.2s linear;
+}
+</style>
