@@ -10,60 +10,41 @@ TONE은 사용자에게 매일 팬톤컬러 기반의 색상과 그에 맞는 �
 하루의 감정을 색과 음악으로 기록할 수 있는 뮤직 플랫폼입니다.
 </p>
 
-## 📂 디렉터리 구조
+<br>
 
-```
-TONE/
-│── .vscode/                # VSCode 설정 파일
-│   └── settings.json
-│
-│── assets/                 # 정적 파일 폴더
-│   ├── icons/              # 아이콘 이미지
-│   └── images/             # 일반 이미지
-│
-│── css/                    # 페이지별 스타일 파일
-│   ├── reset.css           # 기본 스타일 초기화
-│   ├── common.css          # 공통 스타일
-│   └── font.css            # 폰트 설정
-│       ...                 # 페이지별 CSS 파일
-│
-│── js/                     # 페이지별 스크립트
-│
-│── index.html              # 스플래시(엔트리) 페이지
-│── main.html               # 메인(For You) 페이지
-│   ...                     # 페이지별 HTML 파일
-│
-│── .prettierrc             # 코드 포맷 설정 파일
-```
+## ⚙ 기술 스택
+![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white)
+![CSS](https://img.shields.io/badge/css-%23663399.svg?style=for-the-badge&logo=css&logoColor=white)
+![Vue.js](https://img.shields.io/badge/vuejs-%2335495e.svg?style=for-the-badge&logo=vuedotjs&logoColor=%234FC08D)
+![Vite](https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white)
+![Axios](https://img.shields.io/badge/Axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white)
+![Pinia](https://img.shields.io/badge/Pinia-FFD859?style=for-the-badge&logo=pinia&logoColor=black)
+![PHP](https://img.shields.io/badge/php-%23777BB4.svg?style=for-the-badge&logo=php&logoColor=white)
+![MySQL](https://img.shields.io/badge/mysql-4479A1.svg?style=for-the-badge&logo=mysql&logoColor=white)
+
+<br>
 
 ## 📜 컨벤션
+### 1. 브랜치명
 
-### 1. 브랜치 규칙
-
-- `main` : 최종 배포/제출용
-- `develop` : 개발 통합 브랜치
 - `feature/브랜치명` : 기능 추가
-- `refactor/브랜치명` : UI 수정, HTML/CSS 구조 변경
+- `refactor/브랜치명` : UI 수정, 코드 구조 변경
+- `fix/브랜치명` : 버그 수정
+- `style/브랜치명` : CSS 수정
 
-#### 브랜치명 예시
+### 2. 커밋 메시지
 
-- `feature/calendar`
-- `refactor/playlist`
+- `feat: 커밋 메시지 내용` : 기능 추가
+- `refactor: 커밋 메시지 내용` : UI 수정, 코드 구조 변경
+- `fix: 커밋 메시지 내용` : 버그 수정
+- `style: 커밋 메시지 내용` : CSS 수정
 
-### 2. 커밋 메시지 규칙
+<br>
 
-- `feat:` 기능 추가
-- `refactor:` UI 수정, 구조 변경
-- `fix:` 버그 수정
-
-#### 커밋 메시지 예시
-
-- `feat: 캘린더 페이지 구현`
-- `refactor: 캘린더 페이지 레이아웃 수정`
-- `fix: 플레이어 진행바 오류 수정`
+## 🖥 실행 방법
+Vue / PHP 세팅 완료되면 추가 예정
 
 ## 🛠 작업 순서
-
 ### 1. develop 브랜치 최신화
 
 ```bash
