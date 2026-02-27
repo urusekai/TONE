@@ -69,10 +69,6 @@
 .icon-btn {
     width: 34px;
     height: 34px;
-    border-radius: 12px;
-    border: 0;
-    background: rgba(255, 255, 255, .92);
-    box-shadow: 0 10px 22px rgba(0, 0, 0, .10);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -80,16 +76,16 @@
 }
 
 .icon-btn.big {
-    width: 44px;
-    height: 44px;
+    width: 41px;
+    height: 41px;
     padding-left: 3px;
     border-radius: 999px;
     background: rgba(95, 96, 170, .95);
 }
 
 .icon-btn img {
-    width: 11px;
-    height: 14px;
+    width: 18px;
+    height: 18px;
 }
 
 .icon-btn.big img {
@@ -108,13 +104,12 @@
 }
 
 /* ===== Spectrum ===== */
-.spec-track {
-    background: #fff;
+spec-track {
     border-radius: 18px;
-    overflow: hidden;
-    /* 여기서 깔끔하게 자름 */
-    padding: 6px 0 10px;
-    /* 위아래 숨 쉴 공간 */
+
+    /* 그림자 씹히는거 수정용 */
+    background: transparent;
+    overflow: visible;
 }
 
 .spec-row {
@@ -126,10 +121,13 @@
     /* ✅ 스와이프 */
     overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
-
-    padding: 0 16px;
     /* 좌우 패딩 */
     scroll-snap-type: x mandatory;
+
+    /* 그림자 씹히는거 수정용 */
+    padding: 20px 16px;
+    margin: -20px -16px;
+    border-radius: 18px;
 }
 
 .spec-row::-webkit-scrollbar {
@@ -152,7 +150,7 @@
     margin: 0;
     font-size: 16px;
     font-weight: 700;
-    letter-spacing: -.2px;
+    letter-spacing: -0.2px;
 }
 
 .hint,
@@ -162,7 +160,6 @@
     text-decoration: none;
 }
 
-
 .spec-card {
     flex: 0 0 268px;
     border-radius: 17px;
@@ -170,12 +167,10 @@
     box-shadow: 0px 0px 21.3px -3px rgba(0, 0, 0, 0.25);
     text-decoration: none;
     overflow: hidden;
-    border: 1px solid rgba(0, 0, 0, .05);
+    border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-.spec-card.is-next {
-    opacity: .95;
-}
+
 
 .spec-color {
     height: 90px;
@@ -203,9 +198,7 @@
 .mini-add {
     width: 26px;
     height: 26px;
-    border-radius: 8px;
-    border: 1px solid rgba(0, 0, 0, .12);
-    background: rgba(255, 255, 255, .9);
+
     display: flex;
     align-items: center;
     justify-content: center;
