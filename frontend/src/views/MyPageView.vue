@@ -1,3 +1,3 @@
 <template>
-  <RouterView />
+  <main>My Page</main>
 </template>

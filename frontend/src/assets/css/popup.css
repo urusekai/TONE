@@ -39,10 +39,16 @@
   height: 100%;
   padding: 20px;
   background: rgba(0, 0, 0, 0.65);
+  display: none;
   justify-content: center;
   align-items: center;
   box-sizing: border-box;
   z-index: 9999;
+}
+
+/* JS가 active를 붙이면 보이고, 떼면 숨김. Vue에서는 v-if/v-show로 이 역할을 대체 가능 */
+.modal-overlay.active {
+  display: flex;
 }
 
 .modal-container {
