@@ -41,7 +41,9 @@
         />
       </div>
 
-      <button type="submit" class="form-submit-box">회원가입</button>
+      <button type="submit" class="form-submit-box" :disabled="isRegistering">
+        {{ isRegistering ? '가입중...' : '회원가입' }}
+      </button>
     </form>
 
     <DuplicateModal
@@ -50,6 +52,12 @@
       :available="isIdAvailable"
       @close="closeDuplicateModal"
     />
+    <ProfileModal
+      :open="isProfileModalOpen"
+      @close="closeProfileModal"
+      @select-color="handleProfileColorChange"
+      @confirm="handleProfileConfirm"
+    />
   </main>
 </template>
 
@@ -57,7 +65,8 @@
 import { reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import DuplicateModal from '@/components/DuplicateModal.vue';
-import { checkDuplicateId } from '@/services/authService';
+import ProfileModal from '@/components/ProfileModal.vue';
+import { checkDuplicateId, registerUser } from '@/services/authService';
 
 const router = useRouter();
 
@@ -66,11 +75,14 @@ const form = reactive({
   email: '',
   pw: '',
   pwConfirm: '',
-  nickname: ''
+  nickname: '',
+  profileColor: ''
 });
 
 const isCheckingDuplicate = ref(false);
 const isDuplicateModalOpen = ref(false);
+const isProfileModalOpen = ref(false);
+const isRegistering = ref(false);
 const lastCheckedId = ref('');
 const isIdAvailable = ref(false);
 
@@ -97,8 +109,8 @@ function handleRegister() {
     return;
   }
 
-  // TODO: 백엔드 연결 시 이 위치에서 회원가입 API 요청 후 이동 처리
-  router.push('/main');
+  // 회원가입 버튼을 누르면 색상 선택 모달을 연다.
+  isProfileModalOpen.value = true;
 }
 
 async function handleDuplicate() {
@@ -125,6 +137,48 @@ async function handleDuplicate() {
 
 function closeDuplicateModal() {
   isDuplicateModalOpen.value = false;
+}
+
+function closeProfileModal() {
+  if (isRegistering.value) return;
+  isProfileModalOpen.value = false;
+}
+
+function handleProfileColorChange(color) {
+  form.profileColor = color;
+}
+
+async function handleProfileConfirm(color) {
+  if (isRegistering.value) return;
+
+  form.profileColor = color;
+
+  if (!form.profileColor) {
+    window.alert('프로필 색상을 선택해주세요.');
+    return;
+  }
+
+  isRegistering.value = true;
+
+  try {
+    const payload = {
+      id: form.id.trim(),
+      email: form.email.trim(),
+      password: form.pw,
+      nickname: form.nickname.trim(),
+      profileColor: form.profileColor
+    };
+
+    await registerUser(payload);
+    isProfileModalOpen.value = false;
+    router.push('/main');
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : '회원가입 중 오류가 발생했습니다. 다시 시도해주세요.';
+    window.alert(message);
+  } finally {
+    isRegistering.value = false;
+  }
 }
 </script>
 
@@ -162,5 +216,10 @@ function closeDuplicateModal() {
 
 #register-page .register-form button[type='submit'] {
   margin-top: 50px;
+}
+
+#register-page .register-form button[type='submit']:disabled {
+  opacity: 0.7;
+  cursor: default;
 }
 </style>
