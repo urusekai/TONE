@@ -1,15 +1,25 @@
 <script setup>
-const emit = defineEmits(['close', 'open-main-player']);
+import { usePlayerStore } from '@/stores/player';
+
+const player = usePlayerStore();
+
+function handleOpenMain() {
+  player.openMain();
+}
+
+function handleCloseMini() {
+  player.closeAll();
+}
 </script>
 
 <template>
   <section class="mini-player">
-    <button type="button" class="mini-thumb" @click="emit('open-main-player')">
-      <img src="@/assets/images/thumb.png" alt="앨범 커버" />
+    <button type="button" class="mini-thumb" @click="handleOpenMain">
+      <img :src="player.currentTrack.cover" alt="앨범 커버" />
     </button>
     <div class="mini-body">
       <div class="mini-top">
-        <p class="mini-title">Falling Behind</p>
+        <p class="mini-title">{{ player.currentTrack.title }}</p>
         <div class="mini-actions">
           <button type="button" class="mini-btn">
             <img src="@/assets/icons/like.svg" alt="좋아요" />
@@ -18,12 +28,12 @@ const emit = defineEmits(['close', 'open-main-player']);
             <img src="@/assets/icons/play.svg" alt="재생" class="icon-play" />
             <img src="@/assets/icons/pause.svg" alt="재생일시정지" class="icon-pause" />
           </button>
-          <button type="button" class="mini-btn mini-btn--close" @click="emit('close')">
+          <button type="button" class="mini-btn mini-btn--close" @click="handleCloseMini">
             <img src="@/assets/icons/close.svg" alt="닫기" class="icon-close" />
           </button>
         </div>
       </div>
-      <p class="mini-artist">Laufey</p>
+      <p class="mini-artist">{{ player.currentTrack.artist }}</p>
       <div class="mini-progress">
         <div class="mini-progress-cover" style="--progress: 65%"></div>
       </div>
@@ -32,7 +42,6 @@ const emit = defineEmits(['close', 'open-main-player']);
 </template>
 
 <style scoped>
-/* 미니 플레이어 - 컨테이너 */
 .mini-player {
   position: fixed;
   left: 50%;
@@ -52,12 +61,7 @@ const emit = defineEmits(['close', 'open-main-player']);
   box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.25);
 }
 
-.mini-player.is-hidden {
-  display: none;
-}
-
-/* 미니 플레이어 - 썸네일 */
-.mini-player .mini-thumb {
+.mini-thumb {
   width: 60px;
   height: 60px;
   border-radius: 999px;
@@ -65,76 +69,64 @@ const emit = defineEmits(['close', 'open-main-player']);
   display: flex;
 }
 
-.mini-player .mini-thumb img {
+.mini-thumb img {
   width: 100%;
   height: 100%;
 }
 
-/* 미니 플레이어 - 오른쪽 영역 */
-.mini-player .mini-body {
+.mini-body {
   flex: 1;
   display: flex;
   flex-direction: column;
 }
 
-/* 미니 플레이어 - 상단 줄 */
-.mini-player .mini-top {
+.mini-top {
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-/* 미니 플레이어 - 제목 */
-.mini-player .mini-top .mini-title {
+.mini-title {
   font-size: 20px;
   font-weight: 700;
   line-height: 1;
 }
 
-/* 미니 플레이어 - 버튼 영역 */
-.mini-player .mini-top .mini-actions {
+.mini-actions {
   display: flex;
   gap: 15px;
 }
 
-/* 재생/일시정지 아이콘 기본 상태 */
-.mini-player .mini-top .mini-actions .mini-btn .icon-pause {
-  display: none;
-}
-
-.mini-player .mini-top .mini-actions .mini-btn .icon-pause {
-  width: 20px;
-  height: 20px;
-}
-
-.mini-player .mini-top .mini-actions .mini-btn .icon-play {
+.icon-play {
   width: 20px;
   height: 18px;
 }
 
-.mini-player .mini-top .mini-actions .mini-btn .icon-close {
+.icon-pause,
+.icon-close {
   width: 20px;
   height: 20px;
 }
 
-/* 재생 중 상태 */
-.mini-player .mini-top .mini-actions .mini-btn.is-playing .icon-play {
+.icon-pause {
   display: none;
 }
 
-.mini-player .mini-top .mini-actions .mini-btn.is-playing .icon-pause {
+.mini-btn.is-playing .icon-play {
+  display: none;
+}
+
+.mini-btn.is-playing .icon-pause {
   display: block;
 }
 
-/* 미니 플레이어 - 아티스트 */
-.mini-player .mini-artist {
+.mini-artist {
   color: var(--color-text-secondary);
   font-size: 14px;
 }
 
-/* 미니 플레이어 - 재생바 배경 */
-.mini-player .mini-progress {
+.mini-progress {
   position: relative;
   width: 100%;
   height: 5px;
@@ -145,8 +137,7 @@ const emit = defineEmits(['close', 'open-main-player']);
   margin-bottom: 2px;
 }
 
-/* 미니 플레이어 - 재생바 */
-.mini-player .mini-progress-cover {
+.mini-progress-cover {
   position: absolute;
   top: 0;
   right: 0;

@@ -1,12 +1,17 @@
 <script setup>
-defineProps({ open: Boolean });
-const emit = defineEmits(['close']);
+import { usePlayerStore } from '@/stores/player';
+
+const player = usePlayerStore();
+
+function handleCloseMain() {
+  player.closeMain();
+}
 </script>
 
 <template>
-  <section class="main-player" :class="{ 'is-active': open }">
+  <section class="main-player" :class="{ 'is-active': player.isMain }">
     <header class="main-player__header">
-      <button type="button" class="main-player__back-btn" @click="emit('close')">
+      <button type="button" class="main-player__back-btn" @click="handleCloseMain">
         <img src="@/assets/icons/arrow-down.svg" alt="메인플레이어 닫기" />
       </button>
       <div class="main-player__header-info">
@@ -17,10 +22,10 @@ const emit = defineEmits(['close']);
         <span class="main-player__profile-avatar"></span>
       </button>
     </header>
-    <img src="@/assets/images/thumb.png" alt="앨범커버" class="main-player__cover" />
+    <img :src="player.currentTrack.cover" alt="앨범커버" class="main-player__cover" />
     <div class="main-player__info">
-      <p class="main-player__title">Falling Behind</p>
-      <p class="main-player__artist">Laufey</p>
+      <p class="main-player__title">{{ player.currentTrack.title }}</p>
+      <p class="main-player__artist">{{ player.currentTrack.artist }}</p>
     </div>
     <div class="main-player__progress">
       <div class="main-player__progress-cover" style="--progress: 65%"></div>
