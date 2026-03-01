@@ -1,10 +1,10 @@
 <script setup>
-const emit = defineEmits(['close']);
+const emit = defineEmits(['close', 'open-main-player']);
 </script>
 
 <template>
   <section class="mini-player">
-    <button type="button" class="mini-thumb">
+    <button type="button" class="mini-thumb" @click="emit('open-main-player')">
       <img src="@/assets/images/thumb.png" alt="앨범 커버" />
     </button>
     <div class="mini-body">
