@@ -274,14 +274,6 @@ body {
   display: block;
 }
 
-.bottom-nav .nav-item.router-link-active img:first-child {
-  display: none;
-}
-
-.bottom-nav .nav-item.router-link-active img:last-child {
-  display: block;
-}
-
 /* ----------------------------------------
    폼
 ---------------------------------------- */
