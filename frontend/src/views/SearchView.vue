@@ -1,3 +1,407 @@
+<script setup>
+import { reactive, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
+const STORAGE_KEY = 'tone_recent_tags_v1';
+const MAX_TAGS = 12;
+
+// localStorage에서 불러오기
+const loadTags = () => {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    const parsed = raw ? JSON.parse(raw) : null;
+    return Array.isArray(parsed) ? parsed : ['Coral', 'White', '카더가든', '파란색', '여름노래'];
+  } catch {
+    return ['Coral', 'White', '카더가든', '파란색', '여름노래'];
+  }
+};
+
+const searchData = reactive({
+  tags: loadTags(),
+  recentColors: [
+    { name: 'Butter cream', code: '#EFE1A7' },
+    { name: 'Cerulean', code: '#9BB7D4' },
+    { name: 'Tangerine', code: '#DD4124' },
+    { name: 'Rose Quartz', code: '#F7CAC9' },
+    { name: 'Classic Blue', code: '#0F4C81' },
+    { name: 'Green Ash', code: '#A0DAA9' },
+    { name: 'Viva Magenta', code: '#BE3455' },
+    { name: 'Ultimate Gray', code: '#939597' }
+  ],
+  recommended: [
+    { brand: 'PANTONE', name: 'Pale Khaki', code: '#C4B495' },
+    { brand: 'PANTONE', name: 'Gray Lilac', code: '#D6CBD3' },
+    { brand: 'PANTONE', name: 'Gray Sand', code: '#E7D1B6' },
+    { brand: 'PANTONE', name: 'Viva Magenta', code: '#BE3455' },
+    { brand: 'PANTONE', name: 'Pale Dogwood', code: '#8D91C7' },
+    { brand: 'PANTONE', name: 'Color Pale Dogwood', code: '#ADB696' }
+  ]
+});
+
+const keyword = ref('');
+
+// tags가 바뀔 때마다 localStorage 저장
+watch(
+  () => searchData.tags,
+  (newTags) => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(newTags));
+  },
+  { deep: true }
+);
+
+function normalizeTag(text) {
+  return text.trim().replace(/\s+/g, ' ');
+}
+
+function addRecentTag(text) {
+  const t = normalizeTag(text);
+  if (!t) return;
+
+  // 이미 있으면 맨 앞으로 올리기
+  const existIdx = searchData.tags.findIndex((x) => x.toLowerCase() === t.toLowerCase());
+  if (existIdx !== -1) searchData.tags.splice(existIdx, 1);
+
+  // 맨 앞에 추가
+  searchData.tags.unshift(t);
+
+  // 최대 개수 제한
+  if (searchData.tags.length > MAX_TAGS) searchData.tags.length = MAX_TAGS;
+}
+
+function removeTag(tag) {
+  const idx = searchData.tags.indexOf(tag);
+  if (idx !== -1) searchData.tags.splice(idx, 1);
+}
+
+function goToPlaylist(payload) {
+  // 필요하면 query로 넘기기 (playlist에서 검색값 받기 가능)
+  // 예: router.push({ path: '/playlist', query: { q: payload?.name ?? '' } })
+  router.push('/playlist');
+}
+
+function onSubmit(e) {
+  e.preventDefault();
+
+  // 양쪽 공백 제거
+  const t = keyword.value.trim();
+  if (!t) return; // 빈 문자열이면 무시
+
+  searchData.tags.unshift(t); // 맨 앞에 추가
+  keyword.value = ''; // 입력창 초기화
+}
+</script>
+
 <template>
-  <main>Search Page</main>
+  <main id="search">
+    <section class="search-bar-section">
+      <form class="search-input-box" role="search" @submit="onSubmit">
+        <input v-model="keyword" type="text" placeholder="노래, 아티스트, 색상 검색" />
+        <button type="submit" class="btn-search" aria-label="검색">
+          <img src="@/assets/icons/search.svg" alt="" class="icon-search" />
+        </button>
+      </form>
+    </section>
+
+    <div class="search-content-scroll">
+      <!-- 최근 검색어 -->
+      <section class="search-section">
+        <h3 class="section-title">최근 검색어</h3>
+
+        <div class="scroll-container" id="tag-list">
+          <div v-for="t in searchData.tags" :key="t" class="tag">
+            {{ t }}
+            <button class="btn-delete" type="button" @click.stop="removeTag(t)">
+              <img src="@/assets/icons/remove.svg" alt="삭제" />
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 최근 컬러 -->
+      <section class="recent-colors-section">
+        <h3 class="section-title">최근 컬러</h3>
+
+        <div class="recent-colors-wrapper">
+          <div class="scroll-container" id="color-circle-list">
+            <div
+              v-for="c in searchData.recentColors"
+              :key="c.name"
+              class="color-item"
+              @click="goToPlaylist(c)"
+            >
+              <div class="color-circle" :style="{ backgroundColor: c.code }"></div>
+              <span class="color-label">{{ c.name }}</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 인기 추천 컬러 -->
+      <section class="recommended-colors-section">
+        <h3 class="section-title">인기 추천 컬러</h3>
+
+        <div class="color-card-grid" id="color-card-grid">
+          <article
+            v-for="r in searchData.recommended"
+            :key="`${r.brand}-${r.name}`"
+            class="pantone-card"
+            @click="goToPlaylist(r)"
+          >
+            <div class="card-color-top" :style="{ backgroundColor: r.code }"></div>
+            <div class="card-info-bottom">
+              <span class="brand-name">{{ r.brand }}</span>
+              <p class="color-detail-name">{{ r.name }}</p>
+            </div>
+          </article>
+        </div>
+      </section>
+    </div>
+  </main>
 </template>
+
+<style scoped>
+/* 1. 기본 배경 및 텍스트 설정 */
+#search {
+  --section-gap: 30px;
+  --title-content-gap: 12px;
+
+  justify-content: flex-start;
+  align-items: stretch;
+  min-height: 0;
+  overflow: hidden;
+  padding-bottom: 0;
+  background-color: #f2f2ee;
+  box-sizing: border-box;
+}
+
+/* 섹션 타이틀 */
+.section-title {
+  font-size: 17px;
+  font-weight: 700;
+  margin: 0 0 var(--title-content-gap);
+}
+
+.search-section,
+.recent-colors-section,
+.recommended-colors-section {
+  width: 100%;
+  margin-bottom: var(--section-gap);
+}
+
+.recommended-colors-section {
+  margin-bottom: 0;
+}
+
+/* 2. 검색창 섹션 */
+.search-bar-section {
+  flex: 0 0 auto;
+  width: 100%;
+  padding: 0 0 var(--section-gap);
+  margin: 0;
+  background-color: #f2f2ee;
+}
+
+.search-content-scroll {
+  flex: 1 1 auto;
+  height: 0;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-bottom: calc(var(--app-main-bottom) + var(--section-gap));
+}
+
+.search-content-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.search-input-box {
+  display: flex;
+  width: 100%;
+  height: 50px;
+  align-items: center;
+  background-color: #e8e3df;
+  padding: 0 18px;
+  border-radius: 15px;
+}
+
+.icon-search {
+  width: 18px;
+  margin: 0;
+  display: block;
+}
+
+.btn-search {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  margin-left: 10px;
+}
+
+.search-input-box input {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 12px;
+  font-weight: 700;
+  width: 100%;
+  min-width: 0;
+  opacity: 0.5;
+}
+
+/* 3. 가로 스크롤 공통 */
+.scroll-container {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 14px;
+  padding: 0 10px;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+}
+
+/* ✅ 최근 컬러 스크롤 줄(진짜 스크롤되는 요소) */
+#color-circle-list {
+  padding: 0 18px; /* ✅ 양쪽 여백 */
+  gap: 14px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.scroll-container::-webkit-scrollbar {
+  display: none;
+}
+
+/* (선택) 스냅: 아이템이 딱딱 붙게 */
+.recent-colors-wrapper .color-item {
+  scroll-snap-align: start;
+}
+
+/* 반쯤 잘린 채로 시작 */
+.recent-colors-wrapper .color-item:first-child {
+  margin-left: -10px; /* 원하는 만큼 조절 */
+}
+
+/* 최근 검색어 태그 */
+.tag {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  background: #fff;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 14px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.btn-delete {
+  background: none;
+  border: none;
+  margin-left: 6px;
+  padding: 0;
+  cursor: pointer;
+}
+
+.btn-delete img {
+  width: 10px;
+  height: 10px;
+  vertical-align: middle;
+}
+
+/* 최근 컬러 흰색 배경 박스 */
+.recent-colors-wrapper {
+  width: 100%;
+  margin: 0;
+  padding: 15px 0px 10px;
+  background: #ffffff;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  overflow: hidden;
+
+  position: relative;
+}
+
+.color-item {
+  flex: 0 0 auto;
+  width: 65px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  cursor: pointer;
+}
+
+.color-circle {
+  width: 43px;
+  height: 43px;
+  border-radius: 50%;
+  margin-bottom: 6px;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.18);
+}
+
+.color-label {
+  font-size: 12px;
+  line-height: 0.9;
+  width: 100%;
+  height: 2.3em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  white-space: normal;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  overflow: hidden;
+}
+
+/* 4. 인기 추천 컬러 */
+.color-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 25px;
+  row-gap: 15px;
+  padding: 0;
+}
+
+.pantone-card {
+  width: 100%;
+  height: 85px;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+}
+
+.card-color-top {
+  flex: 1;
+}
+
+.card-info-bottom {
+  background: #ffffff;
+  height: 34px;
+  padding: 0 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.brand-name {
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-top: 5px;
+}
+
+.color-detail-name {
+  font-size: 10px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  line-height: 1.2;
+}
+</style>
