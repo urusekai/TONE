@@ -18,6 +18,11 @@ export const usePlayerStore = defineStore('player', () => {
     mode.value = 'main';
   }
 
+  function openMini(track) {
+    if (track) currentTrack.value = track;
+    mode.value = 'mini';
+  }
+
   function closeMain() {
     mode.value = 'mini';
   }
@@ -33,6 +38,7 @@ export const usePlayerStore = defineStore('player', () => {
     isMain,
     isHidden,
     openMain,
+    openMini,
     closeMain,
     closeAll
   };

@@ -1,7 +1,14 @@
 <script setup>
+import { ref } from 'vue';
 import { usePlayerStore } from '@/stores/player';
 
 const player = usePlayerStore();
+const miniPlayerRef = ref(null);
+
+const CLOSE_SWIPE_THRESHOLD = 70;
+
+let startY = 0;
+let isSwipingDownOnMini = false;
 
 function handleOpenMain() {
   player.openMain();
@@ -10,10 +17,48 @@ function handleOpenMain() {
 function handleCloseMini() {
   player.closeAll();
 }
+
+function handleMiniTouchStart(event) {
+  startY = event.touches[0].clientY;
+  isSwipingDownOnMini = true;
+}
+
+function handleMiniTouchMove(event) {
+  if (!isSwipingDownOnMini) return;
+
+  const currentY = event.touches[0].clientY;
+  const deltaY = currentY - startY;
+
+  if (deltaY <= 0 || !miniPlayerRef.value) return;
+
+  miniPlayerRef.value.style.transform = `translate(-50%, ${Math.min(deltaY, 140)}px)`;
+}
+
+function handleMiniTouchEnd(event) {
+  if (!isSwipingDownOnMini) return;
+  isSwipingDownOnMini = false;
+
+  const endY = event.changedTouches[0].clientY;
+  const deltaY = endY - startY;
+
+  if (miniPlayerRef.value) {
+    miniPlayerRef.value.style.transform = '';
+  }
+
+  if (deltaY > CLOSE_SWIPE_THRESHOLD) {
+    player.closeAll();
+  }
+}
 </script>
 
 <template>
-  <section class="mini-player">
+  <section
+    ref="miniPlayerRef"
+    class="mini-player"
+    @touchstart.passive="handleMiniTouchStart"
+    @touchmove.passive="handleMiniTouchMove"
+    @touchend="handleMiniTouchEnd"
+  >
     <button type="button" class="mini-thumb" @click="handleOpenMain">
       <img :src="player.currentTrack.cover" alt="앨범 커버" />
     </button>
@@ -59,6 +104,7 @@ function handleCloseMini() {
   display: flex;
   gap: 15px;
   box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s ease;
 }
 
 .mini-thumb {
@@ -107,6 +153,11 @@ function handleCloseMini() {
 .icon-close {
   width: 20px;
   height: 20px;
+}
+
+.icon-close {
+  width: 12px;
+  height: 12px;
 }
 
 .icon-pause {
