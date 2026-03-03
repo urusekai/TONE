@@ -70,7 +70,8 @@
     flex: 1 1 auto;
     height: 0;
     min-height: 0;
-    overflow-y: auto;
+    overflow: visible;
+    /* ✅ 스크롤 제거 */
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
     padding: 22px var(--layout-x) calc(var(--app-main-bottom) + 12px);
@@ -157,9 +158,13 @@
 }
 
 .song-list {
-    list-style: none;
-    padding: 0;
+    flex: 0 0 180px;
+    width: 180px;
     margin: 0;
+    padding: 0;
+    padding: 0px;
+    list-style: none;
+    /* 기본 불릿 끄기(잘림 방지) */
     font-size: 14px;
     color: #b7aeac;
     line-height: 1.1;
@@ -167,9 +172,25 @@
 
 .song-list li {
     margin: 0;
+    position: relative;
+    padding-left: 10px;
+    width: 100%;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ✅ 점을 '안쪽'에 직접 그리기 */
+.song-list li::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    top: 0;
 }
 
 .total {
+    flex: 0 0 auto;
     margin: 0;
     /* p 기본 마진 제거 */
     font-size: 11px;
@@ -177,4 +198,3 @@
     white-space: nowrap;
     /* '총 00곡' 줄바꿈 방지 */
 }
-
