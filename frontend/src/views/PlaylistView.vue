@@ -14,8 +14,13 @@ const trackList = Array.from({ length: 11 }, (_, index) => ({
   cover: trackThumbImage
 }));
 
-function handleOpenMainPlayer(track = trackList[0]) {
+function handleOpenMainPlayer(track) {
   player.openMain(track);
+}
+
+function handleOpenFirstTrack() {
+  if (!trackList.length) return;
+  player.openMain(trackList[0]);
 }
 </script>
 
@@ -33,7 +38,7 @@ function handleOpenMainPlayer(track = trackList[0]) {
             <img :src="likeIcon" alt="좋아요" />
             <span>12,300</span>
           </div>
-          <button type="button" class="playlist-hero__play-button" @click="handleOpenMainPlayer()">
+          <button type="button" class="playlist-hero__play-button" @click="handleOpenFirstTrack">
             <img :src="playCircleIcon" alt="재생" />
           </button>
         </div>
