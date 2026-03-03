@@ -1,0 +1,53 @@
+﻿# 운영체제/에디터 임시 파일
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# 로그/임시 폴더
+*.log
+logs/
+tmp/
+temp/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# 프론트엔드(Vue) 빌드/캐시
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/coverage/
+frontend/.eslintcache
+frontend/*.local
+frontend/*.tsbuildinfo
+frontend/cypress/videos/
+frontend/cypress/screenshots/
+frontend/__screenshots__/
+frontend/*.timestamp-*-*.mjs
+
+# 백엔드(PHP) 의존성/실행파일/캐시
+backend/vendor/
+backend/storage/logs/
+backend/storage/cache/
+backend/storage/sessions/
+backend/storage/views/
+backend/.phpunit.result.cache
+backend/composer.phar
+
+# 백엔드 환경변수 파일(민감정보)
+backend/.env
+backend/.env.*
+!backend/.env.example
+frontend/.vscode/*
+!frontend/.vscode/extensions.json
