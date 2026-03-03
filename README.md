@@ -72,17 +72,13 @@ TONE/
 
 <br>
 
-## 🖥 실행 방법
-
-Vue / PHP 세팅 완료되면 추가 예정
-
 ## 🛠 작업 순서
 
-### 0. 🚫 주의사항 🚫
+### 0. 주의사항
 
-> Git 명령어는 반드시 프로젝트 루트에서만 실행 (TONE/)<br>
-> npm 명령어는 TONE/frontend 폴더에서 실행<br>
-> develop 브랜치에서 직접 작업하지 않기<br>
+<strong>Git 명령어는 반드시 프로젝트 루트에서만 실행 (TONE/)</strong><br>
+<strong>npm 명령어는 TONE/frontend 폴더에서 실행</strong><br>
+<strong>develop 브랜치에서 직접 작업하지 않기</strong><br>
 
 ### 1. develop 브랜치 최신화 (프로젝트 루트에서 실행하기)
 
