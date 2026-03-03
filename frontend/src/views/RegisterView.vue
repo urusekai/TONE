@@ -6,7 +6,12 @@
       <div class="form-input-box">
         <span><img src="@/assets/icons/id.svg" alt="아이디" /></span>
         <input v-model="form.id" type="text" placeholder="아이디를 입력하세요" required />
-        <button type="button" class="id-check" :disabled="isCheckingDuplicate" @click="handleDuplicate">
+        <button
+          type="button"
+          class="id-check"
+          :disabled="isCheckingDuplicate"
+          @click="handleDuplicate"
+        >
           {{ isCheckingDuplicate ? '확인중...' : '중복확인' }}
         </button>
       </div>
@@ -174,7 +179,9 @@ async function handleProfileConfirm(color) {
     router.push('/main');
   } catch (error) {
     const message =
-      error instanceof Error ? error.message : '회원가입 중 오류가 발생했습니다. 다시 시도해주세요.';
+      error instanceof Error
+        ? error.message
+        : '회원가입 중 오류가 발생했습니다. 다시 시도해주세요.';
     window.alert(message);
   } finally {
     isRegistering.value = false;

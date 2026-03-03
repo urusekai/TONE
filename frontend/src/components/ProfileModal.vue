@@ -21,9 +21,7 @@
           ></button>
         </div>
       </div>
-      <button type="button" class="modal-confirm-btn" @click="handleConfirmClick">
-        확인
-      </button>
+      <button type="button" class="modal-confirm-btn" @click="handleConfirmClick">확인</button>
     </div>
   </div>
 </template>

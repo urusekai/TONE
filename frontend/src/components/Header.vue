@@ -2,6 +2,10 @@
 import { computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
+defineOptions({
+  name: 'AppHeader'
+});
+
 const route = useRoute();
 const router = useRouter();
 

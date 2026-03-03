@@ -23,8 +23,11 @@
   display: flex;
   gap: 15px;
   box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.25);
+  /* 애니메이션 대응 */
+  transition: transform 0.2s ease;
 }
 
+/* 미니 플레이어 숨김 상태 */
 .mini-player.is-hidden {
   display: none;
 }
@@ -38,6 +41,7 @@
   display: flex;
 }
 
+/* 미니 플레이어 - 썸네일 이미지 */
 .mini-player .mini-thumb img {
   width: 100%;
   height: 100%;
@@ -86,9 +90,10 @@
   height: 18px;
 }
 
+/* 닫기 아이콘 */
 .mini-player .mini-top .mini-actions .mini-btn .icon-close {
-  width: 20px;
-  height: 20px;
+  width: 12px;
+  height: 12px;
 }
 
 /* 재생 중 상태 */

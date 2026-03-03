@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="./css/register.css" />
     <link rel="stylesheet" href="./css/popup.css" />
   </head>
+
   <body>
     <div class="app layout-auth">
       <main id="register-page">
@@ -19,7 +20,13 @@
         <form class="register-form" action="javascript:void(0);" method="post">
           <div class="form-input-box">
             <span><img src="./assets/icons/id.svg" alt="아이디" /></span>
-            <input id="register-id" type="text" name="id" placeholder="아이디를 입력하세요" required />
+            <input
+              id="register-id"
+              type="text"
+              name="id"
+              placeholder="아이디를 입력하세요"
+              required
+            />
             <button type="button" class="id-check">중복확인</button>
           </div>
           <div class="form-input-box">
@@ -48,6 +55,7 @@
               required
             />
           </div>
+          <a href="./login.html" class="form-login-box">로그인</a>
           <button type="submit" class="form-submit-box">회원가입</button>
         </form>
       </main>

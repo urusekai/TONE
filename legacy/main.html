@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="./css/common.css" />
     <link rel="stylesheet" href="./css/mini-player.css" />
     <link rel="stylesheet" href="./css/main-player.css" />
+    <link rel="stylesheet" href="./css/main.css" />
     <script type="module" src="./js/main-player.js"></script>
   </head>
 
@@ -40,7 +41,148 @@
       </nav>
 
       <!-- 페이지 내용 -->
-      <main id="main-page">Deploy test 11:57</main>
+      <main id="main-page" class="home">
+        <!-- 1) Daily tone -->
+        <section class="panel daily">
+          <div class="daily-pill">Daily tone</div>
+
+          <div class="daily-inner">
+            <div class="daily-text">
+              <h2>데일리 팬톤 컬러 명</h2>
+              <p>오늘의 톤은 <b>Very Peri</b> 입니다.<br />오늘의 톤에 맞는 플레이리스트입니다.</p>
+
+              <div class="daily-actions">
+                <button class="icon-btn big" type="button" aria-label="play">
+                  <img src="./assets/icons/play.svg" alt="" />
+                </button>
+                <button class="icon-btn" type="button" aria-label="save">
+                  <img src="./assets/icons/add.svg" alt="" />
+                </button>
+              </div>
+            </div>
+
+            <div class="daily-swatch" aria-hidden="true"></div>
+          </div>
+        </section>
+
+        <!-- 2) Daily Spectrum -->
+        <section class="panel spectrum">
+          <div class="panel-head">
+            <h3>Daily Spectrum</h3>
+            <span class="hint">오늘 톤과 비슷한 색상 추천</span>
+          </div>
+
+          <div class="spec-track">
+            <div class="spec-row">
+              <a class="spec-card" href="./playlist.html">
+                <div class="spec-color" style="--c: #97637c"></div>
+                <div class="spec-body">
+                  <div class="spec-meta">
+                    <span class="spec-code">17-1710</span>
+                    <button class="mini-add" type="button" aria-label="add">
+                      <img src="./assets/icons/add.svg" alt="" />
+                    </button>
+                  </div>
+                  <div class="spec-name">Bordeaux</div>
+                </div>
+              </a>
+
+              <a class="spec-card is-next" href="./playlist.html" aria-hidden="true">
+                <div class="spec-color" style="--c: #9f2336"></div>
+                <div class="spec-body">
+                  <div class="spec-meta">
+                    <span class="spec-code">19-1558</span>
+                    <button class="mini-add" type="button" aria-label="add">
+                      <img src="./assets/icons/add.svg" alt="" />
+                    </button>
+                  </div>
+                  <div class="spec-name">Scarlet Smile</div>
+                </div>
+              </a>
+
+              <a class="spec-card is-next" href="./playlist.html" aria-hidden="true">
+                <div class="spec-color" style="--c: #ef6f8e"></div>
+                <div class="spec-body">
+                  <div class="spec-meta">
+                    <span class="spec-code">16-1735</span>
+                    <button class="mini-add" type="button" aria-label="add">
+                      <img src="./assets/icons/add.svg" alt="" />
+                    </button>
+                  </div>
+                  <div class="spec-name">Pink Lemonade</div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </section>
+        <!-- 3) Palette Log -->
+        <section class="panel log">
+          <div class="panel-head">
+            <h3>Palette Log</h3>
+            <a class="more" href="./palette-log.html">더보기</a>
+          </div>
+
+          <div class="log-list">
+            <a class="log-item" href="./playlist.html" style="--bg: #cfe6d6">
+              <div class="log-top">13-6008</div>
+              <div class="log-main">
+                <strong>Veiled Vista</strong>
+                <span class="chev icon-white"
+                  ><img src="./assets/icons/arrow-right.svg" alt=">"
+                /></span>
+              </div>
+              <div class="log-sub">♫ 12 Plays</div>
+            </a>
+
+            <a class="log-item" href="./playlist.html" style="--bg: #6faed9">
+              <div class="log-top">16-4120</div>
+              <div class="log-main">
+                <strong>Balric Sea</strong>
+                <span class="chev icon-white"
+                  ><img src="./assets/icons/arrow-right.svg" alt=">"
+                /></span>
+              </div>
+              <div class="log-sub">♫ 12 Plays</div>
+            </a>
+
+            <a class="log-item" href="./playlist.html" style="--bg: #e3d9a3">
+              <div class="log-top">13-0917</div>
+              <div class="log-main">
+                <strong>Golden Mist</strong>
+                <span class="chev icon-white"
+                  ><img src="./assets/icons/arrow-right.svg" alt=">"
+                /></span>
+              </div>
+              <div class="log-sub">♫ 12 Plays</div>
+            </a>
+
+            <a class="log-item" href="./playlist.html" style="--bg: #9b8fb3">
+              <div class="log-top">17-3725</div>
+              <div class="log-main">
+                <strong>Quiet Violet</strong>
+                <span class="chev icon-white"
+                  ><img src="./assets/icons/arrow-right.svg" alt=">"
+                /></span>
+              </div>
+              <div class="log-sub">♫ 12 Plays</div>
+            </a>
+          </div>
+        </section>
+
+        <!-- 4) Echo Notes -->
+        <section class="panel echo">
+          <div class="panel-head">
+            <h3><span class="dot"></span>Echo Notes</h3>
+            <span class="hint">다른 사용자들의 한마디</span>
+          </div>
+
+          <div class="echo-card">
+            <p class="echo-text">오늘은 이 톤이 잘 맞는다</p>
+            <div class="echo-line"></div>
+            <p class="echo-date">02.26</p>
+          </div>
+        </section>
+      </main>
 
       <!-- 미니플레이어 -->
       <section class="mini-player">
@@ -145,5 +287,7 @@
         </a>
       </nav>
     </div>
+
+    <script src="./js/main-card-swipe.js"></script>
   </body>
 </html>

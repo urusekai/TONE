@@ -26,7 +26,9 @@ function getBaseColor() {
 function resetProfileModal() {
   if (!profileModal) return;
   selectedTempColor = '';
-  profileModal.querySelectorAll('.color-circle').forEach((circle) => circle.classList.remove('selected'));
+  profileModal
+    .querySelectorAll('.color-circle')
+    .forEach((circle) => circle.classList.remove('selected'));
   if (profilePreview) {
     profilePreview.style.backgroundColor = getBaseColor();
   }
@@ -82,7 +84,9 @@ function closeProfileModal(confirm = false) {
 function selectColor(button) {
   if (!profileModal || !button) return;
 
-  profileModal.querySelectorAll('.color-circle').forEach((circle) => circle.classList.remove('selected'));
+  profileModal
+    .querySelectorAll('.color-circle')
+    .forEach((circle) => circle.classList.remove('selected'));
   button.classList.add('selected');
 
   selectedTempColor = button.dataset.color || window.getComputedStyle(button).backgroundColor;
