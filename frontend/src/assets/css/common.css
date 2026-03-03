@@ -81,7 +81,7 @@ body {
 
 /* 미니플레이어가 있는 페이지 */
 .app.has-mini {
-  --app-bottom-fixed-height: 185px;
+  --app-bottom-fixed-height: 160px;
 }
 
 /* ----------------------------------------
