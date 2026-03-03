@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TONE</title>
+    <!-- 공통 CSS -->
+    <link rel="stylesheet" href="./css/reset.css" />
+    <link rel="stylesheet" href="./css/font.css" />
+    <link rel="stylesheet" href="./css/common.css" />
+    <link rel="stylesheet" href="./css/mini-player.css" />
+    <link rel="stylesheet" href="./css/main-player.css" />
+    <link rel="stylesheet" href="./css/plan-card.css" />
+    <!-- 페이지 CSS -->
+    <link rel="stylesheet" href="./css/membership.css" />
+    <script type="module" src="./js/main-player.js"></script>
+  </head>
+
+  <body>
+    <!-- 컨테이너 -->
+    <div class="app has-mini">
+      <!-- 헤더 -->
+      <header class="header header--back header--title">
+        <a
+          class="header__left-btn header__left-btn--back"
+          href="./my-page.html"
+          aria-label="뒤로가기"
+        >
+          <img src="./assets/icons/prev.svg" alt="뒤로가기" />
+        </a>
+        <h1 class="header__title">이용권 관리</h1>
+        <a class="header__right-btn" href="./profile-edit.html" aria-label="프로필 수정">
+          <div class="avatar"></div>
+        </a>
+      </header>
+
+      <!-- 페이지 내용 -->
+      <main id="membership">
+        <section class="membership-plans">
+          <h2 class="section-title">이용권 선택</h2>
+
+          <!-- 베이직 -->
+          <div class="plan-option">
+            <input
+              id="plan-basic"
+              class="plan-radio"
+              type="radio"
+              name="membershipPlan"
+              value="basic"
+            />
+            <label class="plan-card" for="plan-basic">
+              <div class="plan-badge">베이직</div>
+
+              <div>
+                <span class="price-main">3,900원</span>
+                <span class="price-period">(매월)</span>
+              </div>
+
+              <ul class="benefit-list">
+                <li>광고 제거</li>
+                <li>자유로운 재생 / 스킵</li>
+                <li class="disabled">더 향상된 음질</li>
+                <li class="disabled">오프라인 재생</li>
+              </ul>
+            </label>
+          </div>
+
+          <!-- 프로 -->
+          <div class="plan-option">
+            <input
+              id="plan-pro"
+              class="plan-radio"
+              type="radio"
+              name="membershipPlan"
+              value="pro"
+              checked
+            />
+            <label class="plan-card" for="plan-pro">
+              <div class="plan-badge">프로</div>
+
+              <div>
+                <span class="price-main">7,900원</span>
+                <span class="price-period">(매월)</span>
+              </div>
+
+              <ul class="benefit-list">
+                <li>광고 제거</li>
+                <li>자유로운 재생 / 스킵</li>
+                <li>더 향상된 음질</li>
+                <li>오프라인 재생</li>
+              </ul>
+            </label>
+          </div>
+        </section>
+
+        <!-- 유의사항 -->
+        <section class="policy-section">
+          <h2 class="section-title">멤버십 유의사항</h2>
+          <ul class="policy-list">
+            <li>본 상품은 매월 자동으로 결제되는 정기구독 상품입니다.</li>
+            <li>언제든지 해지할 수 있으며, 해지 시 다음 결제일로부터 요금이 청구되지 않습니다.</li>
+            <li>해지 전까지는 결제된 이용기간 동안 서비스 이용이 가능합니다.</li>
+            <li>환불은 서비스 이용 여부 및 환불 정책에 따라 처리됩니다.</li>
+            <li>무료 체험 또는 프로모션 적용 시 종료 후 정상 요금이 자동 결제됩니다.</li>
+          </ul>
+        </section>
+
+        <section class="payment-section">
+          <a class="btn-primary" href="./payment.html">결제하기</a>
+        </section>
+      </main>
+      <!-- 미니플레이어 -->
+      <section class="mini-player">
+        <button type="button" class="mini-thumb">
+          <img src="./assets/images/thumb.png" alt="앨범 커버" />
+        </button>
+        <div class="mini-body">
+          <div class="mini-top">
+            <p class="mini-title">Falling Behind</p>
+            <div class="mini-actions">
+              <button type="button" class="mini-btn">
+                <img src="./assets/icons/like.svg" alt="좋아요" />
+              </button>
+              <button type="button" class="mini-btn is-playing">
+                <img src="./assets/icons/play.svg" alt="재생" class="icon-play" />
+                <img src="./assets/icons/pause.svg" alt="재생일시정지" class="icon-pause" />
+              </button>
+              <button type="button" class="mini-btn mini-btn--close">
+                <img src="./assets/icons/close.svg" alt="닫기" class="icon-close" />
+              </button>
+            </div>
+          </div>
+          <p class="mini-artist">Laufey</p>
+          <div class="mini-progress">
+            <div class="mini-progress-cover" style="--progress: 65%"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 메인플레이어 -->
+      <section class="main-player">
+        <header class="main-player__header">
+          <button type="button" class="main-player__back-btn">
+            <img src="./assets/icons/arrow-down.svg" alt="메인플레이어 닫기" />
+          </button>
+          <div class="main-player__header-info">
+            <p class="main-player__header-label">PLAYLIST</p>
+            <p class="main-player__header-name">Color Name</p>
+          </div>
+          <button type="button" class="main-player__profile-btn" aria-label="프로필">
+            <span class="main-player__profile-avatar"></span>
+          </button>
+        </header>
+        <img src="./assets/images/thumb.png" alt="앨범커버" class="main-player__cover" />
+        <div class="main-player__info">
+          <p class="main-player__title">Falling Behind</p>
+          <p class="main-player__artist">Laufey</p>
+        </div>
+        <div class="main-player__progress">
+          <div class="main-player__progress-cover" style="--progress: 65%"></div>
+        </div>
+        <div class="main-player__time">
+          <span>00:00</span>
+          <span>00:00</span>
+        </div>
+        <div class="main-player__actions-top">
+          <button type="button" class="main-player__prev-btn">
+            <img src="./assets/icons/prev-song.svg" alt="이전곡" />
+          </button>
+          <button type="button" class="main-player__play-toggle-btn is-playing">
+            <img src="./assets/icons/pause-circle.svg" alt="일시정지" />
+            <img src="./assets/icons/play-circle.svg" alt="재생" />
+          </button>
+          <button type="button" class="main-player__next-btn">
+            <img src="./assets/icons/next-song.svg" alt="다음곡" />
+          </button>
+        </div>
+        <div class="main-player__actions-bottom">
+          <button type="button" class="main-player__like-btn">
+            <img src="./assets/icons/like.svg" alt="좋아요" />
+            <img src="./assets/icons/like_full.svg" alt="좋아요" />
+          </button>
+          <button type="button" class="main-player__shuffle-btn">
+            <img src="./assets/icons/shuffle.svg" alt="셔플" />
+          </button>
+          <button type="button" class="main-player__repeat-btn">
+            <img src="./assets/icons/repeat.svg" alt="반복" />
+          </button>
+          <button type="button" class="main-player__add-btn">
+            <img src="./assets/icons/add.svg" alt="좋아요" />
+          </button>
+        </div>
+      </section>
+
+      <!-- 하단바 -->
+      <nav class="bottom-nav">
+        <a class="nav-item is-active" href="./main.html">
+          <img src="./assets/icons/main.svg" alt="메인" />
+          <img src="./assets/icons/main-active.svg" alt="메인" />
+        </a>
+        <a class="nav-item" href="./search.html">
+          <img src="./assets/icons/search.svg" alt="검색" />
+          <img src="./assets/icons/search-active.svg" alt="검색" />
+        </a>
+        <a class="nav-item" href="./calendar.html">
+          <img src="./assets/icons/calendar.svg" alt="캘린더" />
+          <img src="./assets/icons/calendar-active.svg" alt="캘린더" />
+        </a>
+        <a class="nav-item" href="./my-page.html">
+          <img src="./assets/icons/menu.svg" alt="전체메뉴" />
+          <img src="./assets/icons/menu.svg" alt="전체메인" />
+        </a>
+      </nav>
+    </div>
+  </body>
+</html>
