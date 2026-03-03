@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 import { usePlayerStore } from '@/stores/player';
+import handleIcon from '@/assets/icons/handle.svg';
 
 const player = usePlayerStore();
 const miniPlayerRef = ref(null);
@@ -12,10 +13,6 @@ let isSwipingDownOnMini = false;
 
 function handleOpenMain() {
   player.openMain();
-}
-
-function handleCloseMini() {
-  player.closeAll();
 }
 
 function handleMiniTouchStart(event) {
@@ -59,28 +56,31 @@ function handleMiniTouchEnd(event) {
     @touchmove.passive="handleMiniTouchMove"
     @touchend="handleMiniTouchEnd"
   >
-    <button type="button" class="mini-thumb" @click="handleOpenMain">
-      <img :src="player.currentTrack.cover" alt="앨범 커버" />
-    </button>
-    <div class="mini-body">
-      <div class="mini-top">
-        <p class="mini-title">{{ player.currentTrack.title }}</p>
-        <div class="mini-actions">
-          <button type="button" class="mini-btn">
-            <img src="@/assets/icons/like.svg" alt="좋아요" />
-          </button>
-          <button type="button" class="mini-btn is-playing">
-            <img src="@/assets/icons/play.svg" alt="재생" class="icon-play" />
-            <img src="@/assets/icons/pause.svg" alt="재생일시정지" class="icon-pause" />
-          </button>
-          <button type="button" class="mini-btn mini-btn--close" @click="handleCloseMini">
-            <img src="@/assets/icons/close.svg" alt="닫기" class="icon-close" />
-          </button>
+    <div class="mini-handle-wrap" aria-hidden="true">
+      <img class="mini-handle-icon" :src="handleIcon" alt="" />
+    </div>
+
+    <div class="mini-content">
+      <button type="button" class="mini-thumb" @click="handleOpenMain">
+        <img :src="player.currentTrack.cover" alt="앨범 커버" />
+      </button>
+      <div class="mini-body">
+        <div class="mini-top">
+          <p class="mini-title">{{ player.currentTrack.title }}</p>
+          <div class="mini-actions">
+            <button type="button" class="mini-btn">
+              <img src="@/assets/icons/like.svg" alt="좋아요" />
+            </button>
+            <button type="button" class="mini-btn is-playing">
+              <img src="@/assets/icons/play.svg" alt="재생" class="icon-play" />
+              <img src="@/assets/icons/pause.svg" alt="재생일시정지" class="icon-pause" />
+            </button>
+          </div>
         </div>
-      </div>
-      <p class="mini-artist">{{ player.currentTrack.artist }}</p>
-      <div class="mini-progress">
-        <div class="mini-progress-cover" style="--progress: 65%"></div>
+        <p class="mini-artist">{{ player.currentTrack.artist }}</p>
+        <div class="mini-progress">
+          <div class="mini-progress-cover" style="--progress: 65%"></div>
+        </div>
       </div>
     </div>
   </section>
@@ -99,12 +99,31 @@ function handleMiniTouchEnd(event) {
   /* 하단바 높이에 맞춰 조절 */
   background: #ffffff;
   border-radius: 20px 20px 0 0;
-  padding: 25px var(--layout-x);
+  padding: 10px var(--layout-x) 0;
 
   display: flex;
-  gap: 15px;
+  flex-direction: column;
+  gap: 10px;
   box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.25);
   transition: transform 0.2s ease;
+}
+
+.mini-handle-wrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  line-height: 1;
+}
+
+.mini-handle-icon {
+  width: 28px;
+  height: 6px;
+  user-select: none;
+}
+
+.mini-content {
+  display: flex;
+  gap: 15px;
 }
 
 .mini-thumb {
@@ -149,15 +168,9 @@ function handleMiniTouchEnd(event) {
   height: 18px;
 }
 
-.icon-pause,
-.icon-close {
+.icon-pause {
   width: 20px;
   height: 20px;
-}
-
-.icon-close {
-  width: 12px;
-  height: 12px;
 }
 
 .icon-pause {
