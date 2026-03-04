@@ -109,3 +109,23 @@ export async function loginUser(payload) {
 
   return await response.json();
 }
+
+export async function logoutUser() {
+  if (USE_MOCK_AUTH_API) {
+    await wait(150);
+    return { success: true };
+  }
+
+  const response = await fetch(`${API_BASE_URL}/api/auth/logout.php`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error(await parseError(response, '로그아웃에 실패했습니다.'));
+  }
+
+  return await response.json();
+}

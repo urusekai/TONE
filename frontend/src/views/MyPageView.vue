@@ -2,6 +2,7 @@
 import { ref, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import WithdrawModal from '@/components/WithdrawModal.vue';
+import { logoutUser } from '@/services/authService';
 
 const router = useRouter();
 
@@ -58,17 +59,24 @@ const goTo = (route) => {
 /* -----------------------
    로그아웃 / 탈퇴 공통 처리
 ------------------------ */
-const clearAuthAndGoSplash = () => {
+const clearAuthAndGoLogin = () => {
   localStorage.removeItem('accessToken');
   localStorage.removeItem('refreshToken');
   localStorage.removeItem('user');
+  localStorage.removeItem('tone_current_user');
   sessionStorage.clear();
 
-  router.replace('/splash'); // 뒤로가기 방지
+  router.replace('/login'); // 뒤로가기 방지
 };
 
-const logout = () => {
-  clearAuthAndGoSplash();
+const logout = async () => {
+  try {
+    await logoutUser();
+  } catch {
+    // 서버 로그아웃 실패 시에도 프론트 상태는 정리
+  } finally {
+    clearAuthAndGoLogin();
+  }
 };
 
 /* -----------------------
@@ -97,7 +105,7 @@ const confirmWithdraw = async () => {
 
     isWithdrawOpen.value = false;
 
-    clearAuthAndGoSplash();
+    clearAuthAndGoLogin();
   } finally {
     isWithdrawing.value = false;
   }
