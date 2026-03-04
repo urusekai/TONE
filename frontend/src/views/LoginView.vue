@@ -4,11 +4,17 @@
     <form class="login-form" @submit.prevent="handleLogin">
       <div class="form-input-box">
         <span><img src="@/assets/icons/id.svg" alt="아이디" /></span>
-        <input type="text" name="id" placeholder="아이디를 입력하세요" required />
+        <input v-model="form.id" type="text" name="id" placeholder="아이디를 입력하세요" required />
       </div>
       <div class="form-input-box">
         <span><img src="@/assets/icons/password.svg" alt="비밀번호" /></span>
-        <input type="password" name="pw" placeholder="비밀번호를 입력하세요" required />
+        <input
+          v-model="form.pw"
+          type="password"
+          name="pw"
+          placeholder="비밀번호를 입력하세요"
+          required
+        />
       </div>
       <div class="actions">
         <span>
@@ -17,7 +23,9 @@
         </span>
         <router-link to="/register">회원가입</router-link>
       </div>
-      <button type="submit" class="form-submit-box">로그인</button>
+      <button type="submit" class="form-submit-box" :disabled="isLoggingIn">
+        {{ isLoggingIn ? '로그인중...' : '로그인' }}
+      </button>
     </form>
     <div class="oauth">
       <p>SNS 계정으로 로그인</p>
@@ -31,12 +39,46 @@
 </template>
 
 <script setup>
+import { reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { loginUser } from '@/services/authService';
 
 const router = useRouter();
 
-function handleLogin() {
-  router.push('/main');
+const form = reactive({
+  id: '',
+  pw: ''
+});
+
+const isLoggingIn = ref(false);
+
+async function handleLogin() {
+  if (isLoggingIn.value) return;
+
+  const id = form.id.trim();
+  const password = form.pw;
+
+  if (!id || !password) {
+    window.alert('아이디와 비밀번호를 입력해주세요.');
+    return;
+  }
+
+  isLoggingIn.value = true;
+
+  try {
+    const result = await loginUser({ id, password });
+
+    if (result?.user) {
+      localStorage.setItem('tone_current_user', JSON.stringify(result.user));
+    }
+
+    router.push('/main');
+  } catch (error) {
+    const message = error instanceof Error ? error.message : '로그인 중 오류가 발생했습니다.';
+    window.alert(message);
+  } finally {
+    isLoggingIn.value = false;
+  }
 }
 </script>
 

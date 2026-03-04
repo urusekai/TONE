@@ -1,9 +1,7 @@
 {
     "name": "akasaka/backend",
     "autoload": {
-        "psr-4": {
-            "Akasaka\\Backend\\": "src/"
-        }
+        "classmap": ["src/"]
     },
     "require": {
         "vlucas/phpdotenv": "^5.6",
