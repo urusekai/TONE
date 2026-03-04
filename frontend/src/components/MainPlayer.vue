@@ -1,11 +1,41 @@
 <script setup>
+import { onMounted, ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import { usePlayerStore } from '@/stores/player';
 
+const route = useRoute();
 const player = usePlayerStore();
+const profileColor = ref('');
 
 function handleCloseMain() {
   player.closeMain();
 }
+
+function loadProfileColor() {
+  try {
+    const raw = localStorage.getItem('tone_current_user');
+    if (!raw) {
+      profileColor.value = '';
+      return;
+    }
+
+    const user = JSON.parse(raw);
+    profileColor.value = typeof user?.profileColor === 'string' ? user.profileColor : '';
+  } catch {
+    profileColor.value = '';
+  }
+}
+
+onMounted(() => {
+  loadProfileColor();
+});
+
+watch(
+  () => route.fullPath,
+  () => {
+    loadProfileColor();
+  }
+);
 </script>
 
 <template>
@@ -19,7 +49,10 @@ function handleCloseMain() {
         <p class="main-player__header-name">Color Name</p>
       </div>
       <button type="button" class="main-player__profile-btn" aria-label="프로필">
-        <span class="main-player__profile-avatar"></span>
+        <span
+          class="main-player__profile-avatar"
+          :style="{ backgroundColor: profileColor || undefined }"
+        ></span>
       </button>
     </header>
     <img :src="player.currentTrack.cover" alt="앨범커버" class="main-player__cover" />

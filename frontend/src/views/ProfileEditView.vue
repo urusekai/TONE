@@ -1,11 +1,15 @@
 <script setup>
-import { ref, reactive } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
+import { useRouter } from 'vue-router';
 import ProfileModal from '@/components/ProfileModal.vue';
+import { fetchMyProfile, updateMyProfile } from '@/services/userService';
 
-/** 모달 열림 상태 */
+const router = useRouter();
+
 const isProfileModalOpen = ref(false);
+const isLoading = ref(false);
+const isSubmitting = ref(false);
 
-/** 최종적으로 확정되어 저장될 폼 데이터 */
 const form = reactive({
   email: '',
   password: '',
@@ -32,18 +36,97 @@ function handleProfileConfirm(color) {
   closeProfileModal();
 }
 
-function handleSubmit(e) {
-  e.preventDefault();
+function getSavedColor() {
+  try {
+    const raw = localStorage.getItem('tone_current_user');
+    if (!raw) return '';
+    const parsed = JSON.parse(raw);
+    return typeof parsed?.profileColor === 'string' ? parsed.profileColor : '';
+  } catch {
+    return '';
+  }
+}
 
-  // 필요한 유효성 검사 예시
-  if (form.password !== form.passwordConfirm) {
-    window.alert('비밀번호가 일치하지 않습니다.');
+function saveCurrentUser(user) {
+  if (!user) return;
+
+  const nextUser = {
+    ...user,
+    profileColor: form.profileColor || user.profileColor || ''
+  };
+
+  localStorage.setItem('tone_current_user', JSON.stringify(nextUser));
+}
+
+onMounted(async () => {
+  isLoading.value = true;
+
+  try {
+    form.profileColor = getSavedColor();
+
+    const result = await fetchMyProfile();
+    const user = result?.user;
+    if (!user) {
+      throw new Error('사용자 정보를 찾을 수 없습니다.');
+    }
+
+    form.email = user.email || '';
+    form.nickname = user.nickname || '';
+    saveCurrentUser(user);
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : '사용자 정보를 불러오는 중 오류가 발생했습니다.';
+    window.alert(message);
+    router.replace('/login');
+  } finally {
+    isLoading.value = false;
+  }
+});
+
+async function handleSubmit() {
+  if (isSubmitting.value) return;
+
+  const email = form.email.trim();
+  const nickname = form.nickname.trim();
+  const password = form.password;
+  const passwordConfirm = form.passwordConfirm;
+
+  if (!email || !nickname) {
+    window.alert('이메일과 닉네임을 입력해주세요.');
     return;
   }
 
-  // 여기서 API 호출로 프로필 수정 요청 보내면 됨
-  // await updateProfile(form)
-  console.log('submit payload:', { ...form });
+  if (password || passwordConfirm) {
+    if (password !== passwordConfirm) {
+      window.alert('비밀번호가 일치하지 않습니다.');
+      return;
+    }
+
+    if (password.length < 8) {
+      window.alert('비밀번호는 8자 이상이어야 합니다.');
+      return;
+    }
+  }
+
+  isSubmitting.value = true;
+
+  try {
+    const payload = { email, nickname };
+    if (password) {
+      payload.password = password;
+    }
+
+    const result = await updateMyProfile(payload);
+    saveCurrentUser(result?.user);
+
+    window.alert('프로필이 수정되었습니다.');
+    router.replace('/my-page');
+  } catch (error) {
+    const message = error instanceof Error ? error.message : '프로필 수정 중 오류가 발생했습니다.';
+    window.alert(message);
+  } finally {
+    isSubmitting.value = false;
+  }
 }
 </script>
 
@@ -62,7 +145,7 @@ function handleSubmit(e) {
     </div>
 
     <!-- v-model로 폼 상태 연결 -->
-    <form class="register-form profile-form" method="post" @submit="handleSubmit">
+    <form class="register-form profile-form" method="post" @submit.prevent="handleSubmit">
       <div class="form-input-box">
         <span><img src="@/assets/icons/id.svg" alt="이메일" /></span>
         <input
@@ -82,9 +165,8 @@ function handleSubmit(e) {
           id="profile-password"
           name="password"
           type="password"
-          placeholder="비밀번호를 입력하세요"
+          placeholder="비밀번호를 변경할 때만 입력하세요"
           autocomplete="new-password"
-          required
           v-model="form.password"
         />
       </div>
@@ -95,9 +177,8 @@ function handleSubmit(e) {
           id="profile-password-confirm"
           name="passwordConfirm"
           type="password"
-          placeholder="비밀번호를 다시 입력하세요"
+          placeholder="비밀번호 확인"
           autocomplete="new-password"
-          required
           v-model="form.passwordConfirm"
         />
       </div>
@@ -117,11 +198,14 @@ function handleSubmit(e) {
         />
       </div>
 
-      <button type="submit" class="form-submit-box">수정 완료</button>
+      <button type="submit" class="form-submit-box" :disabled="isLoading || isSubmitting">
+        {{ isLoading ? '불러오는 중...' : isSubmitting ? '수정중...' : '수정 완료' }}
+      </button>
     </form>
 
     <ProfileModal
       :open="isProfileModalOpen"
+      :initial-color="form.profileColor"
       @close="closeProfileModal"
       @confirm="handleProfileConfirm"
     />

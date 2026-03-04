@@ -1,3 +1,5 @@
+import { apiRequest, buildApiUrl } from '@/services/httpClient';
+
 function wait(ms) {
   return new Promise((resolve) => {
     window.setTimeout(resolve, ms);
@@ -5,17 +7,6 @@ function wait(ms) {
 }
 
 const USE_MOCK_AUTH_API = import.meta.env.VITE_USE_MOCK_AUTH === 'true';
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost/TONE/backend';
-
-async function parseError(response, fallbackMessage) {
-  try {
-    const data = await response.json();
-    if (data?.message) return data.message;
-  } catch {
-    // ignore JSON parse error
-  }
-  return fallbackMessage;
-}
 
 export async function checkDuplicateId(id) {
   if (USE_MOCK_AUTH_API) {
@@ -30,15 +21,11 @@ export async function checkDuplicateId(id) {
     };
   }
 
-  const response = await fetch(
-    `${API_BASE_URL}/api/auth/check-id.php?id=${encodeURIComponent(id.trim())}`
+  return await apiRequest(
+    `/api/auth/check-id.php?id=${encodeURIComponent(id.trim())}`,
+    {},
+    '중복확인에 실패했습니다.'
   );
-
-  if (!response.ok) {
-    throw new Error(await parseError(response, '중복확인에 실패했습니다.'));
-  }
-
-  return await response.json();
 }
 
 export async function registerUser(payload) {
@@ -60,19 +47,17 @@ export async function registerUser(payload) {
     };
   }
 
-  const response = await fetch(`${API_BASE_URL}/api/auth/register.php`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
+  return await apiRequest(
+    '/api/auth/register.php',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
     },
-    body: JSON.stringify(payload)
-  });
-
-  if (!response.ok) {
-    throw new Error(await parseError(response, '회원가입에 실패했습니다.'));
-  }
-
-  return await response.json();
+    '회원가입에 실패했습니다.'
+  );
 }
 
 export async function loginUser(payload) {
@@ -95,19 +80,17 @@ export async function loginUser(payload) {
     };
   }
 
-  const response = await fetch(`${API_BASE_URL}/api/auth/login.php`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
+  return await apiRequest(
+    '/api/auth/login.php',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
     },
-    body: JSON.stringify(payload)
-  });
-
-  if (!response.ok) {
-    throw new Error(await parseError(response, '로그인에 실패했습니다.'));
-  }
-
-  return await response.json();
+    '로그인에 실패했습니다.'
+  );
 }
 
 export async function logoutUser() {
@@ -116,18 +99,16 @@ export async function logoutUser() {
     return { success: true };
   }
 
-  const response = await fetch(`${API_BASE_URL}/api/auth/logout.php`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  });
-
-  if (!response.ok) {
-    throw new Error(await parseError(response, '로그아웃에 실패했습니다.'));
-  }
-
-  return await response.json();
+  return await apiRequest(
+    '/api/auth/logout.php',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    },
+    '로그아웃에 실패했습니다.'
+  );
 }
 
 export function startSocialLogin(provider) {
@@ -135,7 +116,7 @@ export function startSocialLogin(provider) {
     throw new Error('소셜 로그인 유형이 없습니다.');
   }
 
-  window.location.href = `${API_BASE_URL}/api/auth/${provider}/login.php`;
+  window.location.href = buildApiUrl(`/api/auth/${provider}/login.php`);
 }
 
 export async function completeSocialSignup(payload) {
@@ -158,17 +139,15 @@ export async function completeSocialSignup(payload) {
     };
   }
 
-  const response = await fetch(`${API_BASE_URL}/api/auth/social/complete.php`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
+  return await apiRequest(
+    '/api/auth/social/complete.php',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
     },
-    body: JSON.stringify(payload)
-  });
-
-  if (!response.ok) {
-    throw new Error(await parseError(response, '소셜 회원가입에 실패했습니다.'));
-  }
-
-  return await response.json();
+    '소셜 회원가입에 실패했습니다.'
+  );
 }

@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 defineOptions({
@@ -8,6 +8,7 @@ defineOptions({
 
 const route = useRoute();
 const router = useRouter();
+const avatarColor = ref('');
 
 const headerType = computed(() => route.meta.headerType || 'logo');
 const headerTitle = computed(() => route.meta.title || '');
@@ -34,6 +35,32 @@ function handleBackClick() {
 
   router.push(backTo.value);
 }
+
+function loadAvatarColor() {
+  try {
+    const raw = localStorage.getItem('tone_current_user');
+    if (!raw) {
+      avatarColor.value = '';
+      return;
+    }
+
+    const user = JSON.parse(raw);
+    avatarColor.value = typeof user?.profileColor === 'string' ? user.profileColor : '';
+  } catch {
+    avatarColor.value = '';
+  }
+}
+
+onMounted(() => {
+  loadAvatarColor();
+});
+
+watch(
+  () => route.fullPath,
+  () => {
+    loadAvatarColor();
+  }
+);
 </script>
 
 <template>
@@ -54,7 +81,7 @@ function handleBackClick() {
     <div v-else class="header__title-spacer"></div>
 
     <RouterLink class="header__right-btn" to="/profile-edit">
-      <div class="avatar"></div>
+      <div class="avatar" :style="{ backgroundColor: avatarColor || undefined }"></div>
     </RouterLink>
   </header>
 </template>
