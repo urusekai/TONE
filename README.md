@@ -54,6 +54,53 @@ TONE/
 
 <br>
 
+## 🧩 백엔드 실행 방법 (로컬에서 XAMPP 사용)
+
+### 1. 프로젝트 위치 확인
+
+프로젝트 폴더를 `htdocs` 아래로 이동.
+
+```bash
+C:\xampp\htdocs\TONE
+```
+
+### 2. XAMPP 실행
+
+XAMPP Control Panel에서 아래 2개를 시작.
+
+```bash
+Apache  # PHP 실행용
+MySQL   # DB 실행용
+```
+
+### 3. DB 생성 + 스키마 적용
+
+`phpMyAdmin` (http://localhost/phpmyadmin) 에 접속해서 아래 순서로 진행합니다.
+
+```bash
+1) tone 데이터베이스 생성
+2) backend/database/schema.sql 파일 내용 복사해서 콘솔에 붙여넣고 실행 (Ctrl + Enter)
+```
+
+### 4. backend 의존성 설치 (composer install)
+
+backend 폴더로 이동한 후 `composer install` 명령어 실행하여 의존성 설치
+(frontend에서 하는 `npm install`과 같은 역할)
+
+```bash
+cd backend
+composer install
+```
+
+### 5. backend 환경변수(.env) 설정
+
+- 전달받은 `.env` 파일을 `backend/.env` 위치에 넣기
+- (`backend` 폴더에 있는 `.env.example` 과 같은 경로에 넣으면 됨)
+- `DB_USER`와 `DB_PASS`의 값에는 자신의 mysql 아이디와 비밀번호를 넣으면 됨
+- `.env.example` 파일은 `.env` 의 양식을 나타낸 파일
+
+<br>
+
 ## 📜 컨벤션
 
 ### 1. 브랜치명
