@@ -4,52 +4,108 @@ function wait(ms) {
   });
 }
 
-const USE_MOCK_AUTH_API = true;
+const USE_MOCK_AUTH_API = import.meta.env.VITE_USE_MOCK_AUTH === 'true';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost/TONE/backend';
 
-// TODO: 백엔드 연결 시 이 함수를 fetch/axios API 호출로 교체하면 된다.
-export async function checkDuplicateId(id) {
-  if (!USE_MOCK_AUTH_API) {
-    // const response = await fetch('/api/auth/check-duplicate', { ... });
-    // return await response.json();
+async function parseError(response, fallbackMessage) {
+  try {
+    const data = await response.json();
+    if (data?.message) return data.message;
+  } catch {
+    // ignore JSON parse error
   }
-
-  await wait(350);
-
-  const takenIds = ['admin', 'test', 'tone'];
-  const normalizedId = id.trim().toLowerCase();
-
-  return {
-    id,
-    available: !takenIds.includes(normalizedId)
-  };
+  return fallbackMessage;
 }
 
-// TODO: 백엔드 연결 전까지 mock으로 회원가입 성공/실패를 흉내낸다.
-// 실제 연동 시에는 fetch/axios 요청으로 교체하면 된다.
+export async function checkDuplicateId(id) {
+  if (USE_MOCK_AUTH_API) {
+    await wait(350);
+
+    const takenIds = ['admin', 'test', 'tone'];
+    const normalizedId = id.trim().toLowerCase();
+
+    return {
+      id,
+      available: !takenIds.includes(normalizedId)
+    };
+  }
+
+  const response = await fetch(
+    `${API_BASE_URL}/api/auth/check-id.php?id=${encodeURIComponent(id.trim())}`
+  );
+
+  if (!response.ok) {
+    throw new Error(await parseError(response, '중복확인에 실패했습니다.'));
+  }
+
+  return await response.json();
+}
+
 export async function registerUser(payload) {
-  if (!USE_MOCK_AUTH_API) {
-    // const response = await fetch('/api/auth/register', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify(payload)
-    // });
-    // if (!response.ok) throw new Error('회원가입 실패');
-    // return await response.json();
-  }
+  if (USE_MOCK_AUTH_API) {
+    await wait(500);
 
-  await wait(500);
-
-  if (!payload.profileColor) {
-    throw new Error('프로필 색상을 선택해주세요.');
-  }
-
-  return {
-    success: true,
-    user: {
-      id: payload.id,
-      email: payload.email,
-      nickname: payload.nickname,
-      profileColor: payload.profileColor
+    if (!payload.profileColor) {
+      throw new Error('프로필 색상을 선택해주세요.');
     }
-  };
+
+    return {
+      success: true,
+      user: {
+        id: payload.id,
+        email: payload.email,
+        nickname: payload.nickname,
+        profileColor: payload.profileColor
+      }
+    };
+  }
+
+  const response = await fetch(`${API_BASE_URL}/api/auth/register.php`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  });
+
+  if (!response.ok) {
+    throw new Error(await parseError(response, '회원가입에 실패했습니다.'));
+  }
+
+  return await response.json();
+}
+
+export async function loginUser(payload) {
+  if (USE_MOCK_AUTH_API) {
+    await wait(350);
+
+    if (!payload.id?.trim() || !payload.password) {
+      throw new Error('아이디와 비밀번호를 입력해주세요.');
+    }
+
+    return {
+      success: true,
+      user: {
+        user_uuid: 'mock-user-uuid',
+        id: payload.id.trim(),
+        email: 'mock@tone.local',
+        nickname: 'Mock',
+        provider: 'local'
+      }
+    };
+  }
+
+  const response = await fetch(`${API_BASE_URL}/api/auth/login.php`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  });
+
+  if (!response.ok) {
+    throw new Error(await parseError(response, '로그인에 실패했습니다.'));
+  }
+
+  return await response.json();
 }
