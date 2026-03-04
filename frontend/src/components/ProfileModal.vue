@@ -33,6 +33,10 @@ const props = defineProps({
   open: {
     type: Boolean,
     default: false
+  },
+  initialColor: {
+    type: String,
+    default: ''
   }
 });
 
@@ -61,7 +65,7 @@ watch(
   () => props.open,
   (isOpen) => {
     if (isOpen) {
-      selectedColor.value = '';
+      selectedColor.value = props.initialColor || '';
     }
   }
 );

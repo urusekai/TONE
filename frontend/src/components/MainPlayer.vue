@@ -1,11 +1,27 @@
 <script setup>
+import { onMounted, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import { usePlayerStore } from '@/stores/player';
+import { useUiStore } from '@/stores/uiStore';
 
+const route = useRoute();
 const player = usePlayerStore();
+const uiStore = useUiStore();
 
 function handleCloseMain() {
   player.closeMain();
 }
+
+onMounted(() => {
+  uiStore.syncFromCurrentUser();
+});
+
+watch(
+  () => route.fullPath,
+  () => {
+    uiStore.syncFromCurrentUser();
+  }
+);
 </script>
 
 <template>
@@ -19,7 +35,10 @@ function handleCloseMain() {
         <p class="main-player__header-name">Color Name</p>
       </div>
       <button type="button" class="main-player__profile-btn" aria-label="프로필">
-        <span class="main-player__profile-avatar"></span>
+        <span
+          class="main-player__profile-avatar"
+          :style="{ backgroundColor: uiStore.avatarColor || undefined }"
+        ></span>
       </button>
     </header>
     <img :src="player.currentTrack.cover" alt="앨범커버" class="main-player__cover" />

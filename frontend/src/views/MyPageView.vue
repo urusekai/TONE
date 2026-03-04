@@ -1,8 +1,9 @@
 <script setup>
-import { ref, reactive } from 'vue';
+import { onMounted, ref, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import WithdrawModal from '@/components/WithdrawModal.vue';
 import { logoutUser } from '@/services/authService';
+import { fetchMyProfile, withdrawMyAccount } from '@/services/userService';
 
 const router = useRouter();
 
@@ -12,7 +13,8 @@ const router = useRouter();
 const user = reactive({
   name: 'Toner 님',
   email: 'toner1234_user@gmail.com',
-  plan: '프로'
+  plan: '프로',
+  profileColor: ''
 });
 
 const appVersion = '1.2.0';
@@ -56,6 +58,55 @@ const goTo = (route) => {
   if (route) router.push(route);
 };
 
+function applyUser(userData) {
+  if (!userData) return;
+
+  const nickname = typeof userData.nickname === 'string' ? userData.nickname.trim() : '';
+  user.name = nickname ? `${nickname} 님` : 'Toner 님';
+  user.email = typeof userData.email === 'string' ? userData.email : user.email;
+  user.profileColor =
+    typeof userData.profileColor === 'string' ? userData.profileColor : user.profileColor;
+}
+
+function loadUserFromLocalStorage() {
+  try {
+    const raw = localStorage.getItem('tone_current_user');
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === 'object' ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveUserToLocalStorage(userData) {
+  if (!userData) return;
+  localStorage.setItem('tone_current_user', JSON.stringify(userData));
+}
+
+onMounted(async () => {
+  const localUser = loadUserFromLocalStorage();
+  if (localUser) {
+    applyUser(localUser);
+  }
+
+  try {
+    const result = await fetchMyProfile();
+    const apiUser = result?.user;
+    if (!apiUser) return;
+
+    const mergedUser = {
+      ...apiUser,
+      profileColor: localUser?.profileColor || user.profileColor || ''
+    };
+
+    applyUser(mergedUser);
+    saveUserToLocalStorage(mergedUser);
+  } catch {
+    // 세션이 없거나 요청 실패 시 기존 화면 데이터 유지
+  }
+});
+
 /* -----------------------
    로그아웃 / 탈퇴 공통 처리
 ------------------------ */
@@ -86,9 +137,7 @@ const isWithdrawOpen = ref(false);
 const isWithdrawing = ref(false);
 
 const openWithdraw = () => {
-  console.log('[MyPageView] openWithdraw called, before:', isWithdrawOpen.value);
   isWithdrawOpen.value = true;
-  console.log('[MyPageView] openWithdraw after:', isWithdrawOpen.value);
 };
 
 const closeWithdraw = () => {
@@ -100,12 +149,14 @@ const confirmWithdraw = async () => {
   try {
     isWithdrawing.value = true;
 
-    // TODO: 나중에 탈퇴 API 연결
-    // await fetch('/api/users/me', { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } })
+    await withdrawMyAccount();
 
     isWithdrawOpen.value = false;
-
+    window.alert('회원 탈퇴가 완료되었습니다.');
     clearAuthAndGoLogin();
+  } catch (error) {
+    const message = error instanceof Error ? error.message : '회원 탈퇴 중 오류가 발생했습니다.';
+    window.alert(message);
   } finally {
     isWithdrawing.value = false;
   }
@@ -118,7 +169,7 @@ const confirmWithdraw = async () => {
       <!-- 프로필 카드 -->
       <section class="profile-card">
         <div class="profile-main">
-          <div class="avatar-circle"></div>
+          <div class="avatar-circle" :style="{ backgroundColor: user.profileColor || '' }"></div>
 
           <div>
             <div class="name-badge">

@@ -1,7 +1,6 @@
 <script setup>
-import { computed } from 'vue';
+import { computed, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-// 스토어
 import { useUiStore } from '@/stores/uiStore';
 
 const uiStore = useUiStore();
@@ -38,6 +37,17 @@ function handleBackClick() {
 
   router.push(backTo.value);
 }
+
+onMounted(() => {
+  uiStore.syncFromCurrentUser();
+});
+
+watch(
+  () => route.fullPath,
+  () => {
+    uiStore.syncFromCurrentUser();
+  }
+);
 </script>
 
 <template>
