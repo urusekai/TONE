@@ -31,7 +31,7 @@
       <p>SNS 계정으로 로그인</p>
       <div class="oauth-inner">
         <span><img src="@/assets/icons/kakao.svg" alt="카카오로그인" /></span>
-        <span><img src="@/assets/icons/facebook.svg" alt="페이스북로그인" /></span>
+        <span><img src="@/assets/icons/naver.svg" alt="네이버로그인" /></span>
         <span><img src="@/assets/icons/google.svg" alt="구글로그인" /></span>
       </div>
     </div>
