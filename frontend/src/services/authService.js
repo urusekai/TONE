@@ -129,3 +129,46 @@ export async function logoutUser() {
 
   return await response.json();
 }
+
+export function startSocialLogin(provider) {
+  if (!provider) {
+    throw new Error('소셜 로그인 유형이 없습니다.');
+  }
+
+  window.location.href = `${API_BASE_URL}/api/auth/${provider}/login.php`;
+}
+
+export async function completeSocialSignup(payload) {
+  if (USE_MOCK_AUTH_API) {
+    await wait(400);
+
+    if (!payload.email || !payload.nickname) {
+      throw new Error('이메일과 닉네임을 입력해주세요.');
+    }
+
+    return {
+      success: true,
+      user: {
+        user_uuid: 'mock-social-user',
+        id: null,
+        email: payload.email,
+        nickname: payload.nickname,
+        provider: payload.provider || 'kakao'
+      }
+    };
+  }
+
+  const response = await fetch(`${API_BASE_URL}/api/auth/social/complete.php`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  });
+
+  if (!response.ok) {
+    throw new Error(await parseError(response, '소셜 회원가입에 실패했습니다.'));
+  }
+
+  return await response.json();
+}

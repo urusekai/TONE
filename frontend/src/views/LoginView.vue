@@ -30,9 +30,15 @@
     <div class="oauth">
       <p>SNS 계정으로 로그인</p>
       <div class="oauth-inner">
-        <span><img src="@/assets/icons/kakao.svg" alt="카카오로그인" /></span>
-        <span><img src="@/assets/icons/naver.svg" alt="네이버로그인" /></span>
-        <span><img src="@/assets/icons/google.svg" alt="구글로그인" /></span>
+        <button type="button" class="oauth-btn" @click="handleSocialLogin('kakao')">
+          <img src="@/assets/icons/kakao.svg" alt="카카오로그인" />
+        </button>
+        <button type="button" class="oauth-btn" @click="handleSocialLogin('naver')">
+          <img src="@/assets/icons/naver.svg" alt="네이버로그인" />
+        </button>
+        <button type="button" class="oauth-btn" @click="handleSocialLogin('google')">
+          <img src="@/assets/icons/google.svg" alt="구글로그인" />
+        </button>
       </div>
     </div>
   </main>
@@ -41,7 +47,7 @@
 <script setup>
 import { reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { loginUser } from '@/services/authService';
+import { loginUser, startSocialLogin } from '@/services/authService';
 
 const router = useRouter();
 
@@ -79,6 +85,15 @@ async function handleLogin() {
   } finally {
     isLoggingIn.value = false;
   }
+}
+
+function handleSocialLogin(provider) {
+  if (provider === 'kakao') {
+    startSocialLogin('kakao');
+    return;
+  }
+
+  window.alert('해당 소셜 로그인은 준비 중입니다.');
 }
 </script>
 
@@ -162,5 +177,13 @@ async function handleLogin() {
   display: flex;
   justify-content: center;
   gap: 30px;
+}
+
+#login-page .oauth .oauth-btn {
+  border: none;
+  background: none;
+  padding: 0;
+  display: inline-flex;
+  cursor: pointer;
 }
 </style>
