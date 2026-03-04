@@ -81,7 +81,9 @@ const selectedPlan = ref('basic');
 
     <!-- 결제 버튼 -->
     <section class="payment-section">
-      <RouterLink class="btn-primary" to="/payment">결제하기</RouterLink>
+      <RouterLink class="btn-primary" :to="{ path: '/payment', query: { plan: selectedPlan } }"
+        >결제하기</RouterLink
+      >
     </section>
   </main>
 </template>
