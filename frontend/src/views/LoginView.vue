@@ -88,8 +88,8 @@ async function handleLogin() {
 }
 
 function handleSocialLogin(provider) {
-  if (provider === 'kakao') {
-    startSocialLogin('kakao');
+  if (provider === 'kakao' || provider === 'google' || provider === 'naver') {
+    startSocialLogin(provider);
     return;
   }
 
