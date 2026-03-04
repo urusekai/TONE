@@ -79,9 +79,14 @@ body {
   --app-tabs-height: 34px;
 }
 
-/* 미니플레이어가 있는 페이지 */
-.app.has-mini {
+/* 미니플레이어가 열린 페이지 */
+.app.has-mini-open {
   --app-bottom-fixed-height: 160px;
+}
+
+/* 미니플레이어가 닫힌(핸들만 노출) 페이지 */
+.app.has-mini-hidden {
+  --app-bottom-fixed-height: 97px; /* bottom-nav 75 + visible peek 22 */
 }
 
 /* ----------------------------------------
