@@ -40,6 +40,7 @@ if (!is_array($payload)) {
 $email = trim((string) ($payload['email'] ?? ''));
 $nickname = trim((string) ($payload['nickname'] ?? ''));
 $password = (string) ($payload['password'] ?? '');
+$profileColor = trim((string) ($payload['profileColor'] ?? ''));
 
 // 필수값 검증
 if ($email === '' || $nickname === '') {
@@ -63,6 +64,12 @@ if ($nicknameLength < 2 || $nicknameLength > 5) {
     exit;
 }
 
+if ($profileColor !== '' && !preg_match('/^#[0-9A-Fa-f]{6}$/', $profileColor)) {
+    http_response_code(422);
+    echo json_encode(['message' => '프로필 색상 형식이 올바르지 않습니다.'], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
 // 비밀번호가 들어온 경우만 검증
 if ($password !== '' && strlen($password) < 8) {
     http_response_code(422);
@@ -75,7 +82,7 @@ try {
 
     // 현재 로그인 사용자 확인
     $userStmt = $pdo->prepare(
-        'SELECT user_uuid, id, email, nickname, provider
+        'SELECT user_uuid, id, email, nickname, profile_color, provider
          FROM users
          WHERE user_uuid = :user_uuid
          LIMIT 1'
@@ -107,18 +114,22 @@ try {
     }
 
     // 비밀번호 포함/미포함 분기 업데이트
+    $nextProfileColor = $profileColor !== '' ? strtoupper($profileColor) : $currentUser['profile_color'];
+
     if ($password !== '') {
         $passwordHash = password_hash($password, PASSWORD_DEFAULT);
         $updateStmt = $pdo->prepare(
             'UPDATE users
              SET email = :email,
                  nickname = :nickname,
+                 profile_color = :profile_color,
                  password_hash = :password_hash
              WHERE user_uuid = :user_uuid'
         );
         $updateStmt->execute([
             'email' => $email,
             'nickname' => $nickname,
+            'profile_color' => $nextProfileColor,
             'password_hash' => $passwordHash,
             'user_uuid' => $userUuid
         ]);
@@ -126,12 +137,14 @@ try {
         $updateStmt = $pdo->prepare(
             'UPDATE users
              SET email = :email,
-                 nickname = :nickname
+                 nickname = :nickname,
+                 profile_color = :profile_color
              WHERE user_uuid = :user_uuid'
         );
         $updateStmt->execute([
             'email' => $email,
             'nickname' => $nickname,
+            'profile_color' => $nextProfileColor,
             'user_uuid' => $userUuid
         ]);
     }
@@ -143,11 +156,11 @@ try {
             'id' => $currentUser['id'],
             'email' => $email,
             'nickname' => $nickname,
-            'provider' => $currentUser['provider']
+            'provider' => $currentUser['provider'],
+            'profileColor' => $nextProfileColor
         ]
     ], JSON_UNESCAPED_UNICODE);
 } catch (Throwable $e) {
     http_response_code(500);
     echo json_encode(['message' => '프로필 수정 중 서버 오류가 발생했습니다.'], JSON_UNESCAPED_UNICODE);
 }
-

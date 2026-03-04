@@ -78,6 +78,12 @@ if ($profileColor === '') {
     exit;
 }
 
+if (!preg_match('/^#[0-9A-Fa-f]{6}$/', $profileColor)) {
+    http_response_code(422);
+    echo json_encode(['message' => '프로필 색상 형식이 올바르지 않습니다.'], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
 // UUID v4 생성 함수
 function generateUuidV4(): string
 {
@@ -123,8 +129,8 @@ try {
 
     // 회원가입 정보 저장
     $insertStmt = $pdo->prepare(
-        'INSERT INTO users (user_uuid, id, email, password_hash, nickname, provider, provider_id)
-         VALUES (:user_uuid, :id, :email, :password_hash, :nickname, :provider, :provider_id)'
+        'INSERT INTO users (user_uuid, id, email, password_hash, nickname, profile_color, provider, provider_id)
+         VALUES (:user_uuid, :id, :email, :password_hash, :nickname, :profile_color, :provider, :provider_id)'
     );
 
     $insertStmt->execute([
@@ -133,9 +139,12 @@ try {
         'email' => $email,
         'password_hash' => $passwordHash,
         'nickname' => $nickname,
+        'profile_color' => strtoupper($profileColor),
         'provider' => 'local',
         'provider_id' => null
     ]);
+
+    $_SESSION['user_uuid'] = $userUuid;
 
     http_response_code(201);
     echo json_encode([
@@ -146,7 +155,7 @@ try {
             'email' => $email,
             'nickname' => $nickname,
             'provider' => 'local',
-            'profileColor' => $profileColor
+            'profileColor' => strtoupper($profileColor)
         ]
     ], JSON_UNESCAPED_UNICODE);
 } catch (Throwable $e) {

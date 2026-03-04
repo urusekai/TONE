@@ -1,9 +1,9 @@
 <script setup>
-import { computed, onMounted, watch } from 'vue';
+import { computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { useUiStore } from '@/stores/uiStore';
+import { useAuthStore } from '@/stores/auth';
 
-const uiStore = useUiStore();
+const authStore = useAuthStore();
 
 defineOptions({
   name: 'AppHeader'
@@ -37,17 +37,6 @@ function handleBackClick() {
 
   router.push(backTo.value);
 }
-
-onMounted(() => {
-  uiStore.syncFromCurrentUser();
-});
-
-watch(
-  () => route.fullPath,
-  () => {
-    uiStore.syncFromCurrentUser();
-  }
-);
 </script>
 
 <template>
@@ -68,7 +57,7 @@ watch(
     <div v-else class="header__title-spacer"></div>
 
     <RouterLink class="header__right-btn" to="/profile-edit">
-      <div class="avatar" :style="{ backgroundColor: uiStore.avatarColor }"></div>
+      <div class="avatar" :style="{ backgroundColor: authStore.avatarColor }"></div>
     </RouterLink>
   </header>
 </template>

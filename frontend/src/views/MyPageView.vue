@@ -4,8 +4,10 @@ import { useRouter } from 'vue-router';
 import WithdrawModal from '@/components/WithdrawModal.vue';
 import { logoutUser } from '@/services/authService';
 import { fetchMyProfile, withdrawMyAccount } from '@/services/userService';
+import { useAuthStore } from '@/stores/auth';
 
 const router = useRouter();
+const authStore = useAuthStore();
 
 /* -----------------------
    사용자 데이터
@@ -68,40 +70,15 @@ function applyUser(userData) {
     typeof userData.profileColor === 'string' ? userData.profileColor : user.profileColor;
 }
 
-function loadUserFromLocalStorage() {
-  try {
-    const raw = localStorage.getItem('tone_current_user');
-    if (!raw) return null;
-    const parsed = JSON.parse(raw);
-    return parsed && typeof parsed === 'object' ? parsed : null;
-  } catch {
-    return null;
-  }
-}
-
-function saveUserToLocalStorage(userData) {
-  if (!userData) return;
-  localStorage.setItem('tone_current_user', JSON.stringify(userData));
-}
-
 onMounted(async () => {
-  const localUser = loadUserFromLocalStorage();
-  if (localUser) {
-    applyUser(localUser);
+  if (authStore.currentUser) {
+    applyUser(authStore.currentUser);
   }
 
   try {
-    const result = await fetchMyProfile();
-    const apiUser = result?.user;
-    if (!apiUser) return;
-
-    const mergedUser = {
-      ...apiUser,
-      profileColor: localUser?.profileColor || user.profileColor || ''
-    };
-
-    applyUser(mergedUser);
-    saveUserToLocalStorage(mergedUser);
+    await authStore.syncMyProfile(fetchMyProfile);
+    if (!authStore.currentUser) return;
+    applyUser(authStore.currentUser);
   } catch {
     // 세션이 없거나 요청 실패 시 기존 화면 데이터 유지
   }
@@ -111,10 +88,7 @@ onMounted(async () => {
    로그아웃 / 탈퇴 공통 처리
 ------------------------ */
 const clearAuthAndGoLogin = () => {
-  localStorage.removeItem('accessToken');
-  localStorage.removeItem('refreshToken');
-  localStorage.removeItem('user');
-  localStorage.removeItem('tone_current_user');
+  authStore.clearCurrentUser();
   sessionStorage.clear();
 
   router.replace('/login'); // 뒤로가기 방지

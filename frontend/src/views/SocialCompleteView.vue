@@ -20,10 +20,21 @@
         />
       </div>
 
+      <button type="button" class="color-select-btn" @click="openProfileModal">
+        {{ form.profileColor ? '프로필 색상 변경' : '프로필 색상 선택' }}
+      </button>
+
       <button type="submit" class="form-submit-box" :disabled="isSubmitting">
         {{ isSubmitting ? '처리중...' : '완료' }}
       </button>
     </form>
+
+    <ProfileModal
+      :open="isProfileModalOpen"
+      :initial-color="form.profileColor"
+      @close="closeProfileModal"
+      @confirm="handleProfileConfirm"
+    />
   </main>
 </template>
 
@@ -31,18 +42,23 @@
 import { onMounted, reactive, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { completeSocialSignup } from '@/services/authService';
+import { useAuthStore } from '@/stores/auth';
+import ProfileModal from '@/components/ProfileModal.vue';
 
 const route = useRoute();
 const router = useRouter();
+const authStore = useAuthStore();
 
 const form = reactive({
   provider: String(route.query.provider ?? ''),
   providerId: String(route.query.providerId ?? ''),
   email: '',
-  nickname: ''
+  nickname: '',
+  profileColor: ''
 });
 
 const isSubmitting = ref(false);
+const isProfileModalOpen = ref(false);
 
 onMounted(() => {
   if (!form.provider || !form.providerId) {
@@ -51,6 +67,25 @@ onMounted(() => {
   }
 });
 
+function openProfileModal() {
+  isProfileModalOpen.value = true;
+}
+
+function closeProfileModal() {
+  if (isSubmitting.value) return;
+  isProfileModalOpen.value = false;
+}
+
+function handleProfileConfirm(color) {
+  if (!color) {
+    window.alert('프로필 색상을 선택해주세요.');
+    return;
+  }
+
+  form.profileColor = color;
+  isProfileModalOpen.value = false;
+}
+
 async function handleSubmit() {
   if (isSubmitting.value) return;
 
@@ -58,11 +93,12 @@ async function handleSubmit() {
     provider: form.provider,
     providerId: form.providerId,
     email: form.email.trim(),
-    nickname: form.nickname.trim()
+    nickname: form.nickname.trim(),
+    profileColor: form.profileColor
   };
 
-  if (!payload.email || !payload.nickname) {
-    window.alert('이메일과 닉네임을 입력해주세요.');
+  if (!payload.email || !payload.nickname || !payload.profileColor) {
+    window.alert('이메일, 닉네임, 프로필 색상을 입력해주세요.');
     return;
   }
 
@@ -72,7 +108,7 @@ async function handleSubmit() {
     const result = await completeSocialSignup(payload);
 
     if (result?.user) {
-      localStorage.setItem('tone_current_user', JSON.stringify(result.user));
+      authStore.setCurrentUser(result.user);
     }
 
     router.replace('/main');
@@ -109,6 +145,16 @@ async function handleSubmit() {
 
 #social-complete-page .social-complete-form button[type='submit'] {
   margin-top: 40px;
+}
+
+#social-complete-page .social-complete-form .color-select-btn {
+  margin-top: 8px;
+  width: 100%;
+  min-height: 42px;
+  border-radius: 12px;
+  background: #ffffff;
+  color: var(--color-primary);
+  font-weight: 700;
 }
 
 #social-complete-page .social-complete-form button[type='submit']:disabled {
