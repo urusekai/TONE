@@ -1,6 +1,10 @@
 <script setup>
 import { ref, computed, watch } from 'vue';
 
+// 스토어
+import { useUiStore } from '@/stores/uiStore';
+const uiStore = useUiStore();
+
 // 아이콘/이미지
 import prevIcon from '@/assets/icons/prev.svg';
 import nextIcon from '@/assets/icons/arrow-right.svg';
@@ -128,119 +132,145 @@ function saveMemo() {
 function goPlaylist() {
   window.location.href = './playlist.html';
 }
+
+function setProfileColor() {
+  const color = selectedData.value?.color || '';
+  window.dispatchEvent(new CustomEvent('profileColorChange', { detail: { color } }));
+}
+
+//Toast UI
+const toastVisible = ref(false);
+
+function showToast() {
+  toastVisible.value = true;
+
+  setTimeout(() => {
+    toastVisible.value = false;
+  }, 2000);
+}
 </script>
 
 <template>
-  <main id="calendar">
-    <!-- 캘린더 카드 -->
-    <section class="calendar-card">
-      <div class="calendar-header">
-        <button type="button" id="prevMonth" @click="prevMonth">
-          <img :src="prevIcon" alt="이전달" />
-        </button>
+  <div>
+    <main id="calendar">
+      <!-- 캘린더 카드 -->
+      <section class="calendar-card">
+        <div class="calendar-header">
+          <button type="button" id="prevMonth" @click="prevMonth">
+            <img :src="prevIcon" alt="이전달" />
+          </button>
 
-        <!-- ✅ CSS가 #monthTitle에 걸려있어서 id 유지 -->
-        <h2 id="monthTitle">{{ monthLabel }}</h2>
+          <!-- ✅ CSS가 #monthTitle에 걸려있어서 id 유지 -->
+          <h2 id="monthTitle">{{ monthLabel }}</h2>
 
-        <button type="button" id="nextMonth" @click="nextMonth">
-          <img :src="nextIcon" alt="다음달" />
-        </button>
-      </div>
-
-      <div class="calendar-grid" id="calendarGrid">
-        <div
-          v-for="(day, idx) in calendarDays"
-          :key="idx"
-          class="calendar-day"
-          :class="{ selected: day && formatKey(currentMonth + 1, day) === selectedKey }"
-          @click="selectDate(day)"
-        >
-          <template v-if="day">
-            <span>{{ String(day).padStart(2, '0') }}</span>
-            <div
-              class="day-dot"
-              :style="{
-                backgroundColor: calendarData[formatKey(currentMonth + 1, day)]?.color || '#d9d9d9'
-              }"
-            />
-          </template>
+          <button type="button" id="nextMonth" @click="nextMonth">
+            <img :src="nextIcon" alt="다음달" />
+          </button>
         </div>
-      </div>
-    </section>
 
-    <!-- 데일리 팬톤 카드 -->
-    <section class="daily-tone-card">
-      <div class="tone-main-row">
-        <div class="tone-left">
-          <div class="date-badge">{{ selectedKey.replace('-', '.') }}</div>
+        <div class="calendar-grid" id="calendarGrid">
+          <div
+            v-for="(day, idx) in calendarDays"
+            :key="idx"
+            class="calendar-day"
+            :class="{ selected: day && formatKey(currentMonth + 1, day) === selectedKey }"
+            @click="selectDate(day)"
+          >
+            <template v-if="day">
+              <span>{{ String(day).padStart(2, '0') }}</span>
+              <div
+                class="day-dot"
+                :style="{
+                  backgroundColor:
+                    calendarData[formatKey(currentMonth + 1, day)]?.color || '#d9d9d9'
+                }"
+              />
+            </template>
+          </div>
+        </div>
+      </section>
 
-          <div class="tone-text">
-            <h3>{{ selectedData.name }}</h3>
-            <p class="pantone-num">
-              {{
-                selectedData.number.includes('팬톤')
-                  ? selectedData.number
-                  : `${selectedData.number}(팬톤 컬러넘버)`
-              }}
-            </p>
+      <!-- 데일리 팬톤 카드 -->
+      <section class="daily-tone-card">
+        <div class="tone-main-row">
+          <div class="tone-left">
+            <div class="date-badge">{{ selectedKey.replace('-', '.') }}</div>
+
+            <div class="tone-text">
+              <h3>{{ selectedData.name }}</h3>
+              <p class="pantone-num">
+                {{
+                  selectedData.number.includes('팬톤')
+                    ? selectedData.number
+                    : `${selectedData.number}(팬톤 컬러넘버)`
+                }}
+              </p>
+            </div>
+
+            <div class="tone-controls">
+              <button type="button" class="btn-play-pause" @click="goPlaylist">
+                <img :src="pauseIcon" alt="재생/일시정지" />
+              </button>
+              <button type="button" class="btn-add-list">
+                <img :src="addIcon" alt="추가" />
+              </button>
+            </div>
           </div>
 
-          <div class="tone-controls">
-            <button type="button" class="btn-play-pause" @click="goPlaylist">
-              <img :src="pauseIcon" alt="재생/일시정지" />
+          <div class="tone-right">
+            <div class="tone-color-preview" :style="{ background: selectedData.color }"></div>
+            <button
+              type="button"
+              class="btn-profile-set"
+              @click="uiStore.setAvatarColor(selectedData.color)"
+            >
+              프로필 설정
             </button>
-            <button type="button" class="btn-add-list">
-              <img :src="addIcon" alt="추가" />
-            </button>
           </div>
         </div>
 
-        <div class="tone-right">
-          <div class="tone-color-preview" :style="{ background: selectedData.color }"></div>
-          <button type="button" class="btn-profile-set">프로필 설정</button>
-        </div>
-      </div>
-
-      <div class="tone-music-info">
-        <div class="music-thumb">
-          <img :src="selectedData.music.cover" alt="앨범아트" />
-        </div>
-        <div class="music-text">
-          <span class="music-title">{{ selectedData.music.title }}</span>
-          <span class="music-artist">{{ selectedData.music.artist }}</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- 메모 영역 -->
-    <section class="memo-card">
-      <div class="memo-section">
-        <div class="memo-header">
-          <h4>기록 메모</h4>
-          <div class="memo-buttons">
-            <button type="button" class="btn-outline" @click="startEdit">
-              {{ isEditing ? '수정 중' : '수정' }}
-            </button>
-            <button type="button" class="btn-primary" @click="saveMemo">저장</button>
+        <div class="tone-music-info">
+          <div class="music-thumb">
+            <img :src="selectedData.music.cover" alt="앨범아트" />
+          </div>
+          <div class="music-text">
+            <span class="music-title">{{ selectedData.music.title }}</span>
+            <span class="music-artist">{{ selectedData.music.artist }}</span>
           </div>
         </div>
+      </section>
 
-        <div class="memo-box">
-          <textarea
-            id="memoInput"
-            placeholder="오늘의 톤을 한 줄로 남겨주세요!"
-            maxlength="50"
-            :readonly="!isEditing"
-            v-model="memoText"
-          ></textarea>
-          <div class="memo-count">
-            <span id="currentCount">{{ memoCount }}</span
-            >/50
+      <!-- 메모 영역 -->
+      <section class="memo-card">
+        <div class="memo-section">
+          <div class="memo-header">
+            <h4>기록 메모</h4>
+            <div class="memo-buttons">
+              <button type="button" class="btn-outline" @click="startEdit">
+                {{ isEditing ? '수정 중' : '수정' }}
+              </button>
+              <button type="button" class="btn-primary" @click="saveMemo">저장</button>
+            </div>
+          </div>
+
+          <div class="memo-box">
+            <textarea
+              id="memoInput"
+              placeholder="오늘의 톤을 한 줄로 남겨주세요!"
+              maxlength="50"
+              :readonly="!isEditing"
+              v-model="memoText"
+            ></textarea>
+            <div class="memo-count">
+              <span id="currentCount">{{ memoCount }}</span
+              >/50
+            </div>
           </div>
         </div>
-      </div>
-    </section>
-  </main>
+      </section>
+    </main>
+    <div v-if="toastVisible" class="toast">프로필 컬러가 변경되었습니다</div>
+  </div>
 </template>
 
 <style scoped>
@@ -574,5 +604,36 @@ function goPlaylist() {
   border-radius: 8px;
   box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.05);
   color: #3f5f73d2;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 90px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #3f5f73;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 20px;
+  font-size: 13px;
+  animation: toastFade 2s ease forwards;
+}
+
+@keyframes toastFade {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 20px);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 </style>
