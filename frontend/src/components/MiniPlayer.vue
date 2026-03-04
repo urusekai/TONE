@@ -69,7 +69,7 @@ function handleMiniTouchEnd(event) {
           <p class="mini-title">{{ player.currentTrack.title }}</p>
           <div class="mini-actions">
             <button type="button" class="mini-btn">
-              <img src="@/assets/icons/like.svg" alt="좋아요" />
+              <img src="@/assets/icons/like.svg" alt="좋아요" class="icon-like" />
             </button>
             <button type="button" class="mini-btn is-playing">
               <img src="@/assets/icons/play.svg" alt="재생" class="icon-play" />
@@ -161,6 +161,11 @@ function handleMiniTouchEnd(event) {
 .mini-actions {
   display: flex;
   gap: 15px;
+}
+
+.icon-like {
+  width: 20px;
+  height: 20px;
 }
 
 .icon-play {

@@ -3,8 +3,10 @@ import { onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import ProfileModal from '@/components/ProfileModal.vue';
 import { fetchMyProfile, updateMyProfile } from '@/services/userService';
+import { useAuthStore } from '@/stores/auth';
 
 const router = useRouter();
+const authStore = useAuthStore();
 
 const isProfileModalOpen = ref(false);
 const isLoading = ref(false);
@@ -36,43 +38,19 @@ function handleProfileConfirm(color) {
   closeProfileModal();
 }
 
-function getSavedColor() {
-  try {
-    const raw = localStorage.getItem('tone_current_user');
-    if (!raw) return '';
-    const parsed = JSON.parse(raw);
-    return typeof parsed?.profileColor === 'string' ? parsed.profileColor : '';
-  } catch {
-    return '';
-  }
-}
-
-function saveCurrentUser(user) {
-  if (!user) return;
-
-  const nextUser = {
-    ...user,
-    profileColor: form.profileColor || user.profileColor || ''
-  };
-
-  localStorage.setItem('tone_current_user', JSON.stringify(nextUser));
-}
-
 onMounted(async () => {
   isLoading.value = true;
 
   try {
-    form.profileColor = getSavedColor();
-
-    const result = await fetchMyProfile();
-    const user = result?.user;
+    await authStore.syncMyProfile(fetchMyProfile);
+    const user = authStore.currentUser;
     if (!user) {
       throw new Error('사용자 정보를 찾을 수 없습니다.');
     }
 
     form.email = user.email || '';
     form.nickname = user.nickname || '';
-    saveCurrentUser(user);
+    form.profileColor = user.profileColor || '';
   } catch (error) {
     const message =
       error instanceof Error ? error.message : '사용자 정보를 불러오는 중 오류가 발생했습니다.';
@@ -111,13 +89,15 @@ async function handleSubmit() {
   isSubmitting.value = true;
 
   try {
-    const payload = { email, nickname };
+    const payload = { email, nickname, profileColor: form.profileColor };
     if (password) {
       payload.password = password;
     }
 
     const result = await updateMyProfile(payload);
-    saveCurrentUser(result?.user);
+    if (result?.user) {
+      authStore.setCurrentUser(result.user);
+    }
 
     window.alert('프로필이 수정되었습니다.');
     router.replace('/my-page');

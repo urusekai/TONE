@@ -48,8 +48,10 @@
 import { reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { loginUser, startSocialLogin } from '@/services/authService';
+import { useAuthStore } from '@/stores/auth';
 
 const router = useRouter();
+const authStore = useAuthStore();
 
 const form = reactive({
   id: '',
@@ -75,7 +77,7 @@ async function handleLogin() {
     const result = await loginUser({ id, password });
 
     if (result?.user) {
-      localStorage.setItem('tone_current_user', JSON.stringify(result.user));
+      authStore.setCurrentUser(result.user);
     }
 
     router.push('/main');

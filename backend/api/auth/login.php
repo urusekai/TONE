@@ -44,7 +44,7 @@ try {
 
     // 일반(local) 계정만 조회
     $stmt = $pdo->prepare(
-        'SELECT user_uuid, id, email, password_hash, nickname, provider
+        'SELECT user_uuid, id, email, password_hash, nickname, profile_color, provider
          FROM users
          WHERE id = :id AND provider = :provider
          LIMIT 1'
@@ -74,7 +74,8 @@ try {
             'id' => $user['id'],
             'email' => $user['email'],
             'nickname' => $user['nickname'],
-            'provider' => $user['provider']
+            'provider' => $user['provider'],
+            'profileColor' => $user['profile_color']
         ]
     ], JSON_UNESCAPED_UNICODE);
 } catch (Throwable $e) {

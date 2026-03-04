@@ -1,9 +1,9 @@
 <script setup>
 import { ref, computed, watch } from 'vue';
+import { useAuthStore } from '@/stores/auth';
+import { updateMyProfileColor } from '@/services/userService';
 
-// 스토어
-import { useUiStore } from '@/stores/uiStore';
-const uiStore = useUiStore();
+const authStore = useAuthStore();
 
 // 아이콘/이미지
 import prevIcon from '@/assets/icons/prev.svg';
@@ -133,9 +133,31 @@ function goPlaylist() {
   window.location.href = './playlist.html';
 }
 
-function setProfileColor() {
+const isChangingProfileColor = ref(false);
+
+async function setProfileColor() {
+  if (isChangingProfileColor.value) return;
+
   const color = selectedData.value?.color || '';
-  window.dispatchEvent(new CustomEvent('profileColorChange', { detail: { color } }));
+  if (!color) {
+    window.alert('적용할 색상이 없습니다.');
+    return;
+  }
+
+  isChangingProfileColor.value = true;
+
+  try {
+    const result = await updateMyProfileColor(color);
+    const nextColor = result?.profileColor || color;
+    authStore.setProfileColor(nextColor);
+    showToast();
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : '프로필 색상 변경 중 오류가 발생했습니다.';
+    window.alert(message);
+  } finally {
+    isChangingProfileColor.value = false;
+  }
 }
 
 //Toast UI
@@ -222,9 +244,10 @@ function showToast() {
             <button
               type="button"
               class="btn-profile-set"
-              @click="uiStore.setAvatarColor(selectedData.color)"
+              :disabled="isChangingProfileColor"
+              @click="setProfileColor"
             >
-              프로필 설정
+              {{ isChangingProfileColor ? '변경중...' : '프로필 설정' }}
             </button>
           </div>
         </div>

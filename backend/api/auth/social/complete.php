@@ -33,6 +33,7 @@ $provider = trim((string) ($payload['provider'] ?? ''));
 $providerId = trim((string) ($payload['providerId'] ?? ''));
 $email = trim((string) ($payload['email'] ?? ''));
 $nickname = trim((string) ($payload['nickname'] ?? ''));
+$profileColor = trim((string) ($payload['profileColor'] ?? ''));
 
 // provider 검증
 if (!in_array($provider, ['kakao', 'google', 'naver'], true)) {
@@ -63,6 +64,12 @@ if ($nicknameLength < 2 || $nicknameLength > 5) {
     exit;
 }
 
+if (!preg_match('/^#[0-9A-Fa-f]{6}$/', $profileColor)) {
+    http_response_code(422);
+    echo json_encode(['message' => '프로필 색상을 선택해주세요.'], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
 // UUID v4 생성 함수
 function generateUuidV4(): string
 {
@@ -86,7 +93,7 @@ try {
 
     // provider + provider_id 중복 확인
     $providerStmt = $pdo->prepare(
-        'SELECT user_uuid, id, email, nickname, provider
+        'SELECT user_uuid, id, email, nickname, profile_color, provider
          FROM users
          WHERE provider = :provider AND provider_id = :provider_id
          LIMIT 1'
@@ -101,7 +108,14 @@ try {
         $_SESSION['user_uuid'] = $foundByProvider['user_uuid'];
         echo json_encode([
             'success' => true,
-            'user' => $foundByProvider
+            'user' => [
+                'user_uuid' => $foundByProvider['user_uuid'],
+                'id' => $foundByProvider['id'],
+                'email' => $foundByProvider['email'],
+                'nickname' => $foundByProvider['nickname'],
+                'provider' => $foundByProvider['provider'],
+                'profileColor' => $foundByProvider['profile_color']
+            ]
         ], JSON_UNESCAPED_UNICODE);
         exit;
     }
@@ -118,8 +132,8 @@ try {
     // 신규 소셜 계정 생성
     $userUuid = generateUuidV4();
     $insertStmt = $pdo->prepare(
-        'INSERT INTO users (user_uuid, id, email, password_hash, nickname, provider, provider_id)
-         VALUES (:user_uuid, :id, :email, :password_hash, :nickname, :provider, :provider_id)'
+        'INSERT INTO users (user_uuid, id, email, password_hash, nickname, profile_color, provider, provider_id)
+         VALUES (:user_uuid, :id, :email, :password_hash, :nickname, :profile_color, :provider, :provider_id)'
     );
     $insertStmt->execute([
         'user_uuid' => $userUuid,
@@ -127,6 +141,7 @@ try {
         'email' => $email,
         'password_hash' => null,
         'nickname' => $nickname,
+        'profile_color' => strtoupper($profileColor),
         'provider' => $provider,
         'provider_id' => $providerId
     ]);
@@ -140,7 +155,8 @@ try {
             'id' => null,
             'email' => $email,
             'nickname' => $nickname,
-            'provider' => $provider
+            'provider' => $provider,
+            'profileColor' => strtoupper($profileColor)
         ]
     ], JSON_UNESCAPED_UNICODE);
 } catch (Throwable $e) {

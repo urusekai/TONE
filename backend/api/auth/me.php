@@ -32,7 +32,7 @@ try {
     $pdo = Database::getConnection();
 
     $stmt = $pdo->prepare(
-        'SELECT user_uuid, id, email, nickname, provider
+        'SELECT user_uuid, id, email, nickname, profile_color, provider
          FROM users
          WHERE user_uuid = :user_uuid
          LIMIT 1'
@@ -48,10 +48,16 @@ try {
 
     echo json_encode([
         'success' => true,
-        'user' => $user
+        'user' => [
+            'user_uuid' => $user['user_uuid'],
+            'id' => $user['id'],
+            'email' => $user['email'],
+            'nickname' => $user['nickname'],
+            'provider' => $user['provider'],
+            'profileColor' => $user['profile_color']
+        ]
     ], JSON_UNESCAPED_UNICODE);
 } catch (Throwable $e) {
     http_response_code(500);
     echo json_encode(['message' => '사용자 정보를 불러오지 못했습니다.'], JSON_UNESCAPED_UNICODE);
 }
-
