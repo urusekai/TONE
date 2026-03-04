@@ -339,10 +339,10 @@ function togglePalette(item) {
   width: 100%;
   max-width: 363px;
   height: 80px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.78);
-  border: 1px solid rgba(10, 12, 18, 0.06);
-  box-shadow: 0 6px 18px rgba(11, 14, 25, 0.06);
+  background-color: #f6f6f3;
+  border-radius: 10px;
+  border: 1px solid rgba(183, 174, 166, 0.5);
+  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.08);
   overflow: hidden;
 }
 
