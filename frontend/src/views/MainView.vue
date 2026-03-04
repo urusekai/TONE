@@ -1,3 +1,254 @@
+<script setup>
+import { onMounted, onBeforeUnmount, nextTick, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { usePlayerStore } from '@/stores/player';
+import { useCalendarStore } from '@/stores/calendarStore';
+
+const router = useRouter();
+const player = usePlayerStore();
+const calendarStore = useCalendarStore();
+
+const rootEl = ref(null);
+const specRowEl = ref(null);
+
+let cleanupSpectrumDrag = null;
+
+/* =========================
+   날짜키 유틸 (YYYY-MM-DD)
+   ✅ 연도를 포함하여 연도 변경 시 데이터 분리
+   이전: 'MM-DD' → 현재: 'YYYY-MM-DD'
+========================= */
+function getTodayKey() {
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+/* =========================
+   ✅ 오늘의 Daily Tone (임시 더미)
+   ⚠️ NOTE: 추후 API/추천로직/사용자 선택 값으로 교체 예정
+========================= */
+const dailyTonePayload = {
+  name: 'Very Peri',
+  number: '17-3938',
+  color: '#6667AB',
+  music: {
+    title: 'Title',
+    artist: 'Artist',
+    cover: null // ✅ null: 실제 이미지 로드 없을 시 처리 가능
+  }
+};
+
+/* =========================
+   ✅ Spectrum Payloads (임시 더미)
+   ⚠️ NOTE: 추후 spectrum 데이터가 동적으로 바뀌면
+   - cards 배열로 만들고 v-for로 뽑는 구조 추천
+   ✅ music 필드를 명시적으로 작성 (예측 가능성 + 안정성)
+========================= */
+const spectrumPayloads = {
+  bordeaux: {
+    name: 'Bordeaux',
+    number: '17-1710',
+    color: '#97637c',
+    music: {
+      title: 'Title',
+      artist: 'Artist',
+      cover: null
+    }
+  },
+  scarletSmile: {
+    name: 'Scarlet Smile',
+    number: '19-1558',
+    color: '#9f2336',
+    music: {
+      title: 'Title',
+      artist: 'Artist',
+      cover: null
+    }
+  },
+  pinkLemonade: {
+    name: 'Pink Lemonade',
+    number: '16-1735',
+    color: '#ef6f8e',
+    music: {
+      title: 'Title',
+      artist: 'Artist',
+      cover: null
+    }
+  }
+};
+
+/* =========================
+   ✅ 캘린더 저장 + 이동
+   - MainView의 daily-btn / spectrum mini-add가 모두 이 함수 사용
+   - 저장 후 /calendar로 이동하면서 query로 날짜 전달
+========================= */
+function goCalendar(payload = dailyTonePayload) {
+  const dateKey = getTodayKey();
+
+  calendarStore.saveDailyTone(dateKey, payload);
+
+  // ✅ 캘린더에서 바로 해당 날짜 선택되게 넘김
+  // ⚠️ NOTE: CalendarView에서 route.query.date 받아서 selectedKey 세팅하면 UX 좋아짐
+  router.push({ path: '/calendar', query: { date: dateKey } });
+}
+
+/* ---------- 라우팅 헬퍼 ---------- */
+function playlistTo(pid) {
+  return { path: '/playlist', query: { pid } };
+}
+
+function openMainPlayerDaily() {
+  player.openMain({
+    title: 'Falling Behind',
+    artist: 'Laufey',
+    cover: new URL('@/assets/images/thumb.png', import.meta.url).href
+  });
+  player.openMain();
+}
+
+/* ---------- 이하 기존 유틸/드래그 코드는 그대로 ---------- */
+function parseToRGB(color) {
+  if (!color) return null;
+  const c = color.trim();
+
+  if (c.startsWith('#')) {
+    const hex = c.slice(1);
+    if (hex.length !== 6) return null;
+    const r = parseInt(hex.slice(0, 2), 16);
+    const g = parseInt(hex.slice(2, 4), 16);
+    const b = parseInt(hex.slice(4, 6), 16);
+    return { r, g, b };
+  }
+
+  const m = c.match(/rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)(?:\s*,\s*[\d.]+)?\s*\)/i);
+  if (m) return { r: Number(m[1]), g: Number(m[2]), b: Number(m[3]) };
+
+  return null;
+}
+
+function getBrightness(color) {
+  const rgb = parseToRGB(color);
+  if (!rgb) return 0;
+  const { r, g, b } = rgb;
+  return (r * 299 + g * 587 + b * 114) / 1000;
+}
+
+function applyLogItemTheme(root) {
+  if (!root) return;
+
+  const items = root.querySelectorAll('.log-item');
+  items.forEach((item) => {
+    let bg = item.style.getPropertyValue('--bg')?.trim();
+    if (!bg) bg = getComputedStyle(item).getPropertyValue('--bg').trim();
+    if (!bg) return;
+
+    const brightness = getBrightness(bg);
+
+    if (brightness > 170) {
+      item.style.color = '#6B6E6E';
+      item.classList.add('is-light');
+      item.classList.remove('is-dark');
+    } else {
+      item.style.color = '#F2F2EE';
+      item.classList.add('is-dark');
+      item.classList.remove('is-light');
+    }
+  });
+}
+
+function bindSpectrumDrag(row) {
+  if (!row) return () => {};
+
+  let isDown = false;
+  let startX = 0;
+  let startScrollLeft = 0;
+  let pointerId = null;
+
+  row.style.cursor = 'grab';
+  row.style.userSelect = 'none';
+
+  const onPointerDown = (e) => {
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+
+    isDown = true;
+    pointerId = e.pointerId;
+    row.setPointerCapture(pointerId);
+
+    startX = e.clientX;
+    startScrollLeft = row.scrollLeft;
+
+    row.style.cursor = 'grabbing';
+    row.classList.add('is-dragging');
+  };
+
+  const onPointerMove = (e) => {
+    if (!isDown) return;
+    const dx = e.clientX - startX;
+    row.scrollLeft = startScrollLeft - dx;
+  };
+
+  const endDrag = () => {
+    if (!isDown) return;
+    isDown = false;
+    pointerId = null;
+    row.style.cursor = 'grab';
+    row.classList.remove('is-dragging');
+  };
+
+  let moved = 0;
+  const resetMoved = () => (moved = 0);
+  const trackMoved = (e) => {
+    if (!isDown) return;
+    moved += Math.abs(e.movementX || 0);
+  };
+  const stopClickWhenDragged = (e) => {
+    if (moved > 6) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  };
+
+  row.addEventListener('pointerdown', onPointerDown);
+  row.addEventListener('pointermove', onPointerMove);
+  row.addEventListener('pointerup', endDrag);
+  row.addEventListener('pointercancel', endDrag);
+  row.addEventListener('pointerleave', endDrag);
+
+  row.addEventListener('pointerdown', resetMoved);
+  row.addEventListener('pointermove', trackMoved);
+  row.addEventListener('click', stopClickWhenDragged, true);
+
+  return () => {
+    row.removeEventListener('pointerdown', onPointerDown);
+    row.removeEventListener('pointermove', onPointerMove);
+    row.removeEventListener('pointerup', endDrag);
+    row.removeEventListener('pointercancel', endDrag);
+    row.removeEventListener('pointerleave', endDrag);
+
+    row.removeEventListener('pointerdown', resetMoved);
+    row.removeEventListener('pointermove', trackMoved);
+    row.removeEventListener('click', stopClickWhenDragged, true);
+  };
+}
+
+onMounted(async () => {
+  await nextTick();
+
+  cleanupSpectrumDrag = bindSpectrumDrag(specRowEl.value);
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => applyLogItemTheme(rootEl.value));
+  });
+});
+
+onBeforeUnmount(() => {
+  if (cleanupSpectrumDrag) cleanupSpectrumDrag();
+});
+</script>
+
 <template>
   <!-- 페이지 내용 -->
   <main ref="rootEl" id="main-page" class="home">
@@ -23,7 +274,12 @@
               <img src="@/assets/icons/play.svg" alt="play" />
             </button>
 
-            <button class="icon-btn daily-btn" type="button" aria-label="save" @click="goCalendar">
+            <button
+              class="icon-btn daily-btn"
+              type="button"
+              aria-label="save"
+              @click="goCalendar(dailyTonePayload)"
+            >
               <img src="@/assets/icons/calendarSave.svg" alt="calendar" />
             </button>
           </div>
@@ -51,7 +307,7 @@
                   class="mini-add"
                   type="button"
                   aria-label="add"
-                  @click.capture.stop.prevent="goCalendar"
+                  @click.capture.stop.prevent="goCalendar(spectrumPayloads.bordeaux)"
                 >
                   <img src="@/assets/icons/calendarSave.svg" alt="calendar" />
                 </button>
@@ -73,7 +329,7 @@
                   class="mini-add"
                   type="button"
                   aria-label="add"
-                  @click.capture.stop.prevent="goCalendar"
+                  @click.capture.stop.prevent="goCalendar(spectrumPayloads.scarletSmile)"
                 >
                   <img src="@/assets/icons/calendarSave.svg" alt="calendar" />
                 </button>
@@ -95,7 +351,7 @@
                   class="mini-add"
                   type="button"
                   aria-label="add"
-                  @click.capture.stop.prevent="goCalendar"
+                  @click.capture.stop.prevent="goCalendar(spectrumPayloads.pinkLemonade)"
                 >
                   <img src="@/assets/icons/calendarSave.svg" alt="calendar" />
                 </button>
@@ -178,192 +434,6 @@
     </section>
   </main>
 </template>
-
-<script setup>
-import { onMounted, onBeforeUnmount, nextTick, ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { usePlayerStore } from '@/stores/player';
-
-const router = useRouter();
-const player = usePlayerStore();
-
-const rootEl = ref(null);
-const specRowEl = ref(null);
-
-let cleanupSpectrumDrag = null;
-
-/* ---------- 라우팅 헬퍼 ---------- */
-// 지금은 임시로 /playlist?pid=... 형태
-// 라우터를 /playlist/:id 로 쓰면 return { name:'playlist', params:{ id } } 로 바꾸면 됨.
-function playlistTo(pid) {
-  return { path: '/playlist', query: { pid } };
-}
-
-function openMainPlayerDaily() {
-  // 1) 플레이어에 트랙/플레이리스트 세팅 (store에 맞춰서)
-  player.openMain({
-    title: 'Falling Behind',
-    artist: 'Laufey',
-    cover: new URL('@/assets/images/thumb.png', import.meta.url).href
-  });
-  // 2) 메인플레이어 열기
-  player.openMain();
-}
-
-/* ---------- (임시) 저장 버튼 동작 ---------- */
-function goCalendar() {
-  router.push('/calendar');
-}
-function onSaveSpectrum(pid) {
-  // TODO: 캘린더 저장 로직 연결
-  console.log('[save] spectrum:', pid);
-}
-
-/* ---------- color utils (hex/rgb/rgba 전부 처리) ---------- */
-function parseToRGB(color) {
-  if (!color) return null;
-  const c = color.trim();
-
-  if (c.startsWith('#')) {
-    const hex = c.slice(1);
-    if (hex.length !== 6) return null;
-    const r = parseInt(hex.slice(0, 2), 16);
-    const g = parseInt(hex.slice(2, 4), 16);
-    const b = parseInt(hex.slice(4, 6), 16);
-    return { r, g, b };
-  }
-
-  const m = c.match(/rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)(?:\s*,\s*[\d.]+)?\s*\)/i);
-  if (m) return { r: Number(m[1]), g: Number(m[2]), b: Number(m[3]) };
-
-  return null;
-}
-
-function getBrightness(color) {
-  const rgb = parseToRGB(color);
-  if (!rgb) return 0;
-  const { r, g, b } = rgb;
-  return (r * 299 + g * 587 + b * 114) / 1000;
-}
-
-/* ---------- Palette Log: 배경명도에 따라 글자색 자동 ---------- */
-function applyLogItemTheme(root) {
-  if (!root) return;
-
-  const items = root.querySelectorAll('.log-item');
-  items.forEach((item) => {
-    let bg = item.style.getPropertyValue('--bg')?.trim();
-    if (!bg) bg = getComputedStyle(item).getPropertyValue('--bg').trim();
-    if (!bg) return;
-
-    const brightness = getBrightness(bg);
-
-    // ✅ 덮어쓰기 충돌 줄이려면 "class만" 쓰는 게 더 깔끔하지만,
-    // 지금은 즉시 눈에 보이게 inline color도 같이 적용
-    if (brightness > 170) {
-      item.style.color = '#6B6E6E';
-      item.classList.add('is-light');
-      item.classList.remove('is-dark');
-    } else {
-      item.style.color = '#F2F2EE';
-      item.classList.add('is-dark');
-      item.classList.remove('is-light');
-    }
-  });
-}
-
-/* ---------- Spectrum: 드래그 스크롤 ---------- */
-function bindSpectrumDrag(row) {
-  if (!row) return () => {};
-
-  let isDown = false;
-  let startX = 0;
-  let startScrollLeft = 0;
-  let pointerId = null;
-
-  row.style.cursor = 'grab';
-  row.style.userSelect = 'none';
-
-  const onPointerDown = (e) => {
-    if (e.pointerType === 'mouse' && e.button !== 0) return;
-
-    isDown = true;
-    pointerId = e.pointerId;
-    row.setPointerCapture(pointerId);
-
-    startX = e.clientX;
-    startScrollLeft = row.scrollLeft;
-
-    row.style.cursor = 'grabbing';
-    row.classList.add('is-dragging');
-  };
-
-  const onPointerMove = (e) => {
-    if (!isDown) return;
-    const dx = e.clientX - startX;
-    row.scrollLeft = startScrollLeft - dx;
-  };
-
-  const endDrag = () => {
-    if (!isDown) return;
-    isDown = false;
-    pointerId = null;
-    row.style.cursor = 'grab';
-    row.classList.remove('is-dragging');
-  };
-
-  // 드래그 중 링크 클릭 방지
-  let moved = 0;
-  const resetMoved = () => (moved = 0);
-  const trackMoved = (e) => {
-    if (!isDown) return;
-    moved += Math.abs(e.movementX || 0);
-  };
-  const stopClickWhenDragged = (e) => {
-    if (moved > 6) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-  };
-
-  row.addEventListener('pointerdown', onPointerDown);
-  row.addEventListener('pointermove', onPointerMove);
-  row.addEventListener('pointerup', endDrag);
-  row.addEventListener('pointercancel', endDrag);
-  row.addEventListener('pointerleave', endDrag);
-
-  row.addEventListener('pointerdown', resetMoved);
-  row.addEventListener('pointermove', trackMoved);
-  row.addEventListener('click', stopClickWhenDragged, true);
-
-  return () => {
-    row.removeEventListener('pointerdown', onPointerDown);
-    row.removeEventListener('pointermove', onPointerMove);
-    row.removeEventListener('pointerup', endDrag);
-    row.removeEventListener('pointercancel', endDrag);
-    row.removeEventListener('pointerleave', endDrag);
-
-    row.removeEventListener('pointerdown', resetMoved);
-    row.removeEventListener('pointermove', trackMoved);
-    row.removeEventListener('click', stopClickWhenDragged, true);
-  };
-}
-
-onMounted(async () => {
-  await nextTick();
-
-  cleanupSpectrumDrag = bindSpectrumDrag(specRowEl.value);
-
-  // 스타일 적용 타이밍 보장(2프레임)
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => applyLogItemTheme(rootEl.value));
-  });
-});
-
-onBeforeUnmount(() => {
-  if (cleanupSpectrumDrag) cleanupSpectrumDrag();
-});
-</script>
 
 <style>
 /* ===== Home layout ===== */
