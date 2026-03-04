@@ -3,7 +3,7 @@ import { onMounted, ref, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import WithdrawModal from '@/components/WithdrawModal.vue';
 import { logoutUser } from '@/services/authService';
-import { fetchMyProfile } from '@/services/userService';
+import { fetchMyProfile, withdrawMyAccount } from '@/services/userService';
 
 const router = useRouter();
 
@@ -137,9 +137,7 @@ const isWithdrawOpen = ref(false);
 const isWithdrawing = ref(false);
 
 const openWithdraw = () => {
-  console.log('[MyPageView] openWithdraw called, before:', isWithdrawOpen.value);
   isWithdrawOpen.value = true;
-  console.log('[MyPageView] openWithdraw after:', isWithdrawOpen.value);
 };
 
 const closeWithdraw = () => {
@@ -151,12 +149,14 @@ const confirmWithdraw = async () => {
   try {
     isWithdrawing.value = true;
 
-    // TODO: 나중에 탈퇴 API 연결
-    // await fetch('/api/users/me', { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } })
+    await withdrawMyAccount();
 
     isWithdrawOpen.value = false;
-
+    window.alert('회원 탈퇴가 완료되었습니다.');
     clearAuthAndGoLogin();
+  } catch (error) {
+    const message = error instanceof Error ? error.message : '회원 탈퇴 중 오류가 발생했습니다.';
+    window.alert(message);
   } finally {
     isWithdrawing.value = false;
   }

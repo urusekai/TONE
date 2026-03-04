@@ -18,3 +18,15 @@ export async function updateMyProfile(payload) {
   );
 }
 
+export async function withdrawMyAccount() {
+  return await apiRequest(
+    '/api/auth/withdraw.php',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    },
+    '회원 탈퇴에 실패했습니다.'
+  );
+}
