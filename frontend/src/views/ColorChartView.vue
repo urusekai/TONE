@@ -105,12 +105,13 @@ const activePid = ref('');
  * 요구 모델: week, rank, prevRank, likes, playlistId(pid), colorName, pantoneCode, colorHex, hashtags, totalTracks ...
  * - 현재 UI는 pantoneCode / colorName / rank / likes / colorHex 사용
  */
+
 const chartItems = ref([
   {
     week: '2026-W10',
     rank: 1,
     prevRank: 2,
-    likes: 12300,
+    likes: 12347,
     playlistId: 'cc-01',
     pantoneCode: '17-3938',
     colorName: 'Very Peri',
@@ -123,11 +124,11 @@ const chartItems = ref([
     week: '2026-W10',
     rank: 2,
     prevRank: 1,
-    likes: 12200,
+    likes: 12218,
     playlistId: 'cc-02',
     pantoneCode: '16-1546',
     colorName: 'Living Coral',
-    colorHex: '#ff6f61',
+    colorHex: '#EC6C5E',
     hashtags: ['bright', 'warm'],
     totalTracks: 28,
     liked: false
@@ -136,11 +137,11 @@ const chartItems = ref([
     week: '2026-W10',
     rank: 3,
     prevRank: 4,
-    likes: 11700,
+    likes: 11763,
     playlistId: 'cc-03',
     pantoneCode: '18-1750',
     colorName: 'Viva Magenta',
-    colorHex: '#bb2649',
+    colorHex: '#BB2649',
     hashtags: ['bold', 'statement'],
     totalTracks: 26,
     liked: false
@@ -162,7 +163,7 @@ const chartItems = ref([
     week: '2026-W10',
     rank: 5,
     prevRank: 5,
-    likes: 10500,
+    likes: 10538,
     playlistId: 'cc-05',
     pantoneCode: '13-0647',
     colorName: 'Illuminating',
@@ -175,7 +176,7 @@ const chartItems = ref([
     week: '2026-W10',
     rank: 6,
     prevRank: 7,
-    likes: 10120,
+    likes: 10127,
     playlistId: 'cc-06',
     pantoneCode: '15-5519',
     colorName: 'Turquoise',
@@ -188,7 +189,7 @@ const chartItems = ref([
     week: '2026-W10',
     rank: 7,
     prevRank: 8,
-    likes: 9880,
+    likes: 9884,
     playlistId: 'cc-07',
     pantoneCode: '13-1023',
     colorName: 'Rose Quartz',
@@ -201,7 +202,7 @@ const chartItems = ref([
     week: '2026-W10',
     rank: 8,
     prevRank: 10,
-    likes: 9540,
+    likes: 9546,
     playlistId: 'cc-08',
     pantoneCode: '17-1463',
     colorName: 'Tiffany Blue',
@@ -214,7 +215,7 @@ const chartItems = ref([
     week: '2026-W10',
     rank: 9,
     prevRank: 9,
-    likes: 9120,
+    likes: 9137,
     playlistId: 'cc-09',
     pantoneCode: '19-4050',
     colorName: 'Blue Iris',
@@ -227,7 +228,7 @@ const chartItems = ref([
     week: '2026-W10',
     rank: 10,
     prevRank: 3,
-    likes: 8760,
+    likes: 8789,
     playlistId: 'cc-10',
     pantoneCode: '15-0343',
     colorName: 'Greenery',
@@ -240,7 +241,7 @@ const chartItems = ref([
 
 /** 기존 JS 기준 색(밝기 기준 넘으면 어두운 텍스트, 아니면 밝은 텍스트) */
 const colors = {
-  darkText: '#6B6E6E', // Hematite
+  darkText: '#3f5f73', // Hematite
   lightText: '#F2F2EE' // Cloud Dancer
 };
 

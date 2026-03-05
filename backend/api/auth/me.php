@@ -32,7 +32,7 @@ try {
     $pdo = Database::getConnection();
 
     $stmt = $pdo->prepare(
-        'SELECT user_uuid, id, email, nickname, profile_color, provider
+        'SELECT user_uuid, id, email, nickname, profile_color, provider, membership_plan
          FROM users
          WHERE user_uuid = :user_uuid
          LIMIT 1'
@@ -54,7 +54,8 @@ try {
             'email' => $user['email'],
             'nickname' => $user['nickname'],
             'provider' => $user['provider'],
-            'profileColor' => $user['profile_color']
+            'profileColor' => $user['profile_color'],
+            'membershipPlan' => $user['membership_plan']
         ]
     ], JSON_UNESCAPED_UNICODE);
 } catch (Throwable $e) {
