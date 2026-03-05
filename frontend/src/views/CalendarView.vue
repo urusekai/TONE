@@ -1,5 +1,7 @@
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+import { useCalendarStore, createDefaultEntry } from '@/stores/calendarStore';
 import { useAuthStore } from '@/stores/auth';
 import { updateMyProfileColor } from '@/services/userService';
 
@@ -12,40 +14,56 @@ import pauseIcon from '@/assets/icons/pause.svg';
 import addIcon from '@/assets/icons/add.svg';
 import thumbTrack from '@/assets/images/thumb-track.png';
 
-function formatKey(month, day) {
-  return `${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+const route = useRoute();
+
+function formatKey(year, month, day) {
+  // ✅ YYYY-MM-DD 형식
+  return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 }
 
 /* =========================
    상태
 ========================= */
 const viewDate = ref(new Date());
-const selectedKey = ref(formatKey(viewDate.value.getMonth() + 1, viewDate.value.getDate()));
+// ✅ YYYY-MM-DD 형식으로 초기화
+const selectedKey = ref(
+  formatKey(viewDate.value.getFullYear(), viewDate.value.getMonth() + 1, viewDate.value.getDate())
+);
 const isEditing = ref(false);
 const memoText = ref('');
+
+const calendarStore = useCalendarStore();
+
+/* =========================
+   route.query.date 처리
+   - MainView에서 goCalendar() 시 query로 dateKey 전달받음
+   - 전달받으면 해당 날짜로 selectedKey 업데이트
+========================= */
+onMounted(() => {
+  // ✅ localStorage 데이터 확실히 로드 (새로고침 시 대비)
+  calendarStore.loadFromLocalStorage();
+
+  if (route.query.date) {
+    const dateFromQuery = String(route.query.date);
+    // YYYY-MM-DD 형식 검증
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateFromQuery)) {
+      selectedKey.value = dateFromQuery;
+    }
+  }
+});
 
 /* =========================
    데이터
 ========================= */
-const calendarData = ref({
-  '02-01': {
-    name: 'Viva Magenta',
-    number: '18-1750',
-    color: '#BB2649',
-    memo: '멈추고 싶지 않은 열기로 가득 찬, 나 자신이 주인공인 날.',
-    music: {
-      title: 'Heavenly',
-      artist: 'Cigarettes After Sex',
-      cover: thumbTrack
-    }
-  },
-  '02-02': {
-    name: 'Classic Blue',
-    number: '19-4052',
-    color: '#0F4C81',
-    memo: '오늘은 마음이 아주 차분한 날이었다.',
-    music: { title: 'Blue Monday', artist: 'New Order', cover: thumbTrack }
-  }
+/*
+  선택된 날짜 데이터
+
+  ✅ createDefaultEntry 사용으로 defaultData 통일
+  - store의 기본값과 일치하여 예측 가능한 동작
+*/
+const selectedData = computed(() => {
+  // ✅ createDefaultEntry 사용으로 defaultData 통일
+  return calendarStore.calendarData[selectedKey.value] || createDefaultEntry();
 });
 
 /* =========================
@@ -53,7 +71,6 @@ const calendarData = ref({
 ========================= */
 const currentMonth = computed(() => viewDate.value.getMonth());
 const currentYear = computed(() => viewDate.value.getFullYear());
-
 const monthLabel = computed(() => `${String(currentMonth.value + 1).padStart(2, '0')}월`);
 
 const daysInMonth = computed(() =>
@@ -69,37 +86,55 @@ const calendarDays = computed(() => {
 });
 
 /* =========================
-   선택된 데이터
+   선택된 데이터 동기화
 ========================= */
-const selectedData = computed(() => {
-  return (
-    calendarData.value[selectedKey.value] || {
-      name: '기록 없음',
-      number: '00-0000(팬톤 컬러넘버)',
-      color: '#d9d9d9',
-      memo: '',
-      music: { title: 'Title', artist: 'Artist', cover: thumbTrack }
-    }
-  );
-});
-
 watch(
   selectedKey,
   () => {
-    memoText.value = selectedData.value.memo;
+    // ✅ memoText 안전 처리
+    memoText.value = selectedData.value.memo || '';
     isEditing.value = false;
   },
   { immediate: true }
 );
 
+/*
+  ✅ 월 변경 시 selectedKey 업데이트
+  - prevMonth() / nextMonth() 호출 후
+  - viewDate가 변경되면 자동으로 selectedKey 다시 계산
+*/
+watch(
+  () => `${currentYear.value}-${currentMonth.value}`,
+  () => {
+    // 현재 월의 1일로 selectedKey 업데이트
+    selectedKey.value = formatKey(currentYear.value, currentMonth.value + 1, 1);
+  }
+);
+
 const memoCount = computed(() => memoText.value.length);
+
+/* =========================
+   최적화: 날짜별 day-dot 데이터 캐싱
+   - formatKey() 반복 호출 제거
+   - 각 day에 대한 색상을 미리 계산
+========================= */
+const dayColorMap = computed(() => {
+  const map = {};
+  calendarDays.value.forEach((day) => {
+    if (day) {
+      const key = formatKey(currentYear.value, currentMonth.value + 1, day);
+      map[day] = calendarStore.calendarData[key]?.color || '#d9d9d9';
+    }
+  });
+  return map;
+});
 
 /* =========================
    이벤트
 ========================= */
 function selectDate(day) {
   if (!day) return;
-  selectedKey.value = formatKey(currentMonth.value + 1, day);
+  selectedKey.value = formatKey(currentYear.value, currentMonth.value + 1, day);
 }
 
 function prevMonth() {
@@ -113,18 +148,9 @@ function startEdit() {
   isEditing.value = true;
 }
 
+/* ✅ 메모 저장: store로만 */
 function saveMemo() {
-  // 기록 없으면 생성
-  if (!calendarData.value[selectedKey.value]) {
-    calendarData.value[selectedKey.value] = {
-      name: '새로운 기록',
-      number: '00-0000',
-      color: '#d9d9d9',
-      memo: '',
-      music: { title: 'Title', artist: 'Artist', cover: thumbTrack }
-    };
-  }
-  calendarData.value[selectedKey.value].memo = memoText.value;
+  calendarStore.saveMemo(selectedKey.value, memoText.value);
   isEditing.value = false;
   alert('저장되었습니다!');
 }
@@ -160,12 +186,11 @@ async function setProfileColor() {
   }
 }
 
-//Toast UI
+/* Toast UI */
 const toastVisible = ref(false);
 
 function showToast() {
   toastVisible.value = true;
-
   setTimeout(() => {
     toastVisible.value = false;
   }, 2000);
@@ -195,7 +220,9 @@ function showToast() {
             v-for="(day, idx) in calendarDays"
             :key="idx"
             class="calendar-day"
-            :class="{ selected: day && formatKey(currentMonth + 1, day) === selectedKey }"
+            :class="{
+              selected: day && formatKey(currentYear, currentMonth + 1, day) === selectedKey
+            }"
             @click="selectDate(day)"
           >
             <template v-if="day">
@@ -203,8 +230,7 @@ function showToast() {
               <div
                 class="day-dot"
                 :style="{
-                  backgroundColor:
-                    calendarData[formatKey(currentMonth + 1, day)]?.color || '#d9d9d9'
+                  backgroundColor: dayColorMap[day]
                 }"
               />
             </template>
@@ -216,15 +242,15 @@ function showToast() {
       <section class="daily-tone-card">
         <div class="tone-main-row">
           <div class="tone-left">
-            <div class="date-badge">{{ selectedKey.replace('-', '.') }}</div>
+            <div class="date-badge">{{ selectedKey.slice(5).replace('-', '.') }}</div>
 
             <div class="tone-text">
               <h3>{{ selectedData.name }}</h3>
               <p class="pantone-num">
                 {{
-                  selectedData.number.includes('팬톤')
+                  selectedData.number?.includes('팬톤')
                     ? selectedData.number
-                    : `${selectedData.number}(팬톤 컬러넘버)`
+                    : `${selectedData.number || '00-0000'}(팬톤 컬러넘버)`
                 }}
               </p>
             </div>
@@ -254,7 +280,7 @@ function showToast() {
 
         <div class="tone-music-info">
           <div class="music-thumb">
-            <img :src="selectedData.music.cover" alt="앨범아트" />
+            <img :src="selectedData.music.cover || thumbTrack" alt="앨범아트" />
           </div>
           <div class="music-text">
             <span class="music-title">{{ selectedData.music.title }}</span>

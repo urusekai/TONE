@@ -1,3 +1,187 @@
+<script setup>
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
+import { useRouter } from 'vue-router';
+import { useCalendarStore } from '@/stores/calendarStore';
+
+const router = useRouter();
+const calendarStore = useCalendarStore();
+
+/* =========================
+   ✅ 기존 dailyTonePayload / spectrumPayloads는 너 코드 그대로 둬도 됨
+   여기선 Echo Notes 동기화를 위해 activeTone만 새로 둠
+========================= */
+const dailyTonePayload = {
+  name: 'Very Peri',
+  number: '17-3938',
+  color: '#6667AB',
+  music: { title: 'Title', artist: 'Artist', cover: null }
+};
+
+const spectrumPayloads = {
+  bordeaux: {
+    name: 'Bordeaux',
+    number: '17-1710',
+    color: '#97637c',
+    music: { title: 'Title', artist: 'Artist', cover: null }
+  },
+  scarletSmile: {
+    name: 'Scarlet Smile',
+    number: '19-1558',
+    color: '#9f2336',
+    music: { title: 'Title', artist: 'Artist', cover: null }
+  },
+  pinkLemonade: {
+    name: 'Pink Lemonade',
+    number: '16-1735',
+    color: '#ef6f8e',
+    music: { title: 'Title', artist: 'Artist', cover: null }
+  }
+};
+
+/* =========================
+   ✅ Echo Notes: 현재 선택된 톤(=dot 색 기준)
+   - 처음엔 dailyTonePayload
+   - goCalendar(payload) 호출 시 activeTone도 갱신해서 동기화
+========================= */
+const activeTone = ref({ ...dailyTonePayload });
+
+/* =========================
+   ✅ 같은 컬러 유저 한마디 더미 데이터(색상별로 묶어둠)
+   - 실제 API 붙일 때: activeTone.color로 서버에서 필터된 5개 받아오면 됨
+========================= */
+const echoPoolByColor = {
+  '#6667AB': [
+    '오늘 톤이랑 플레이리스트가 진짜 잘 맞아.',
+    '이 색 보면 마음이 좀 안정되는 느낌!',
+    '오늘 하루는 이 톤으로 기록하고 싶다.',
+    '같은 컬러 선택한 사람들 많아서 신기해.',
+    '이 톤 덕분에 집중이 잘 됐어.'
+  ],
+  '#97637c': [
+    '보르도 톤 선택하니까 분위기 확 바뀜.',
+    '오늘은 무드 있게 가고 싶었어.',
+    '색이 깊어서 감정이 정리되는 느낌.',
+    '이 컬러랑 재즈 조합 너무 좋다.',
+    '노을 같은 색이라 계속 보게 돼.'
+  ],
+  '#9f2336': [
+    '스칼렛 계열은 들으면 힘이 나!',
+    '오늘은 좀 강하게 가고 싶어서 이걸로.',
+    '이 톤은 진짜 주인공 느낌이다.',
+    '플레이리스트 텐션이랑 딱 맞음.',
+    '기분 전환 제대로 됐다.'
+  ],
+  '#ef6f8e': [
+    '핑크 레몬에이드 톤 너무 귀엽다.',
+    '오늘은 가볍고 산뜻하게!',
+    '색이 밝아서 하루가 부드러워졌어.',
+    '이 톤 선택한 사람 많을 듯 ㅋㅋ',
+    '노래도 달달해서 좋아.'
+  ]
+};
+
+/* =========================
+   ✅ Echo Notes 로테이션 상태
+========================= */
+const echoNotes = ref([]); // 현재 톤 기준 5개
+const echoIndex = ref(0);
+const echoText = ref('');
+const echoVisible = ref(true);
+
+let echoTimer = null;
+
+const echoDotStyle = computed(() => ({
+  background: activeTone.value?.color || '#7b56d7'
+}));
+
+function buildEchoNotesByTone(color) {
+  const pool = echoPoolByColor[color] || echoPoolByColor['#6667AB'];
+  // 5개만 사용 (pool이 5개 이상이라고 가정)
+  echoNotes.value = pool.slice(0, 5).map((text, i) => ({
+    id: `${color}_${i}`,
+    text
+  }));
+
+  echoIndex.value = 0;
+  echoText.value = echoNotes.value[0]?.text ?? '';
+}
+
+function startEchoRotation() {
+  stopEchoRotation();
+  if (!echoNotes.value.length) return;
+
+  echoVisible.value = true;
+
+  echoTimer = setInterval(() => {
+    // 1) fade out
+    echoVisible.value = false;
+
+    // 2) 텍스트 교체 후 fade in
+    window.setTimeout(() => {
+      echoIndex.value = (echoIndex.value + 1) % echoNotes.value.length;
+      echoText.value = echoNotes.value[echoIndex.value]?.text ?? '';
+      echoVisible.value = true;
+    }, 260);
+  }, 2600);
+}
+
+function stopEchoRotation() {
+  if (echoTimer) {
+    clearInterval(echoTimer);
+    echoTimer = null;
+  }
+}
+
+/* =========================
+   플레이리스트 경로 생성 / 플레이어 열기
+========================= */
+const playlistTo = (id) => ({ path: `/playlist/${id}` });
+const openMainPlayerDaily = () => router.push({ path: '/player', query: { tone: 'daily' } });
+
+/* =========================
+   날짜키 유틸 (YYYY-MM-DD)
+========================= */
+function getTodayKey() {
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+/* =========================
+   ✅ goCalendar(payload) 교체 버전
+   - 캘린더 저장 + 이동
+   - ✅ activeTone도 함께 갱신해서 dot/echoNotes 즉시 동기화
+========================= */
+function goCalendar(payload = dailyTonePayload) {
+  const dateKey = getTodayKey();
+
+  // 1) 캘린더 저장
+  calendarStore.saveDailyTone(dateKey, payload);
+
+  // 2) ✅ 메인 Echo Notes 동기화(톤 변경)
+  activeTone.value = { ...payload };
+  buildEchoNotesByTone(activeTone.value.color);
+  startEchoRotation();
+
+  // 3) 캘린더로 이동
+  router.push({ path: '/calendar', query: { date: dateKey } });
+}
+
+/* =========================
+   마운트 시 초기 세팅
+========================= */
+onMounted(() => {
+  buildEchoNotesByTone(activeTone.value.color);
+  startEchoRotation();
+});
+
+onBeforeUnmount(() => {
+  stopEchoRotation();
+});
+</script>
+
 <template>
   <!-- 페이지 내용 -->
   <main ref="rootEl" id="main-page" class="home">
@@ -23,7 +207,12 @@
               <img src="@/assets/icons/play.svg" alt="play" />
             </button>
 
-            <button class="icon-btn daily-btn" type="button" aria-label="save" @click="goCalendar">
+            <button
+              class="icon-btn daily-btn"
+              type="button"
+              aria-label="save"
+              @click="goCalendar(dailyTonePayload)"
+            >
               <img src="@/assets/icons/calendarSave.svg" alt="calendar" />
             </button>
           </div>
@@ -51,7 +240,7 @@
                   class="mini-add"
                   type="button"
                   aria-label="add"
-                  @click.capture.stop.prevent="goCalendar"
+                  @click.capture.stop.prevent="goCalendar(spectrumPayloads.bordeaux)"
                 >
                   <img src="@/assets/icons/calendarSave.svg" alt="calendar" />
                 </button>
@@ -73,7 +262,7 @@
                   class="mini-add"
                   type="button"
                   aria-label="add"
-                  @click.capture.stop.prevent="goCalendar"
+                  @click.capture.stop.prevent="goCalendar(spectrumPayloads.scarletSmile)"
                 >
                   <img src="@/assets/icons/calendarSave.svg" alt="calendar" />
                 </button>
@@ -95,7 +284,7 @@
                   class="mini-add"
                   type="button"
                   aria-label="add"
-                  @click.capture.stop.prevent="goCalendar"
+                  @click.capture.stop.prevent="goCalendar(spectrumPayloads.pinkLemonade)"
                 >
                   <img src="@/assets/icons/calendarSave.svg" alt="calendar" />
                 </button>
@@ -166,204 +355,24 @@
     <!-- 4) Echo Notes -->
     <section class="panel echo">
       <div class="panel-head">
-        <h3><span class="dot"></span>Echo Notes</h3>
-        <span class="hint">다른 사용자들의 한마디</span>
+        <h3><span class="dot" :style="echoDotStyle"></span>Echo Notes</h3>
+        <span class="hint">같은 데일리 컬러 유저들의 한마디</span>
       </div>
 
       <div class="echo-card">
-        <p class="echo-text">오늘은 이 톤이 잘 맞는다</p>
+        <!-- ✅ 텍스트만 페이드 전환 -->
+        <p class="echo-text" :class="{ 'is-hidden': !echoVisible }">
+          {{ echoText }}
+        </p>
+
         <div class="echo-line"></div>
-        <p class="echo-date">02.26</p>
+
+        <!-- 날짜 표시: 매일 갱신 -->
+        <p class="echo-date">{{ echoDate }}</p>
       </div>
     </section>
   </main>
 </template>
-
-<script setup>
-import { onMounted, onBeforeUnmount, nextTick, ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { usePlayerStore } from '@/stores/player';
-
-const router = useRouter();
-const player = usePlayerStore();
-
-const rootEl = ref(null);
-const specRowEl = ref(null);
-
-let cleanupSpectrumDrag = null;
-
-/* ---------- 라우팅 헬퍼 ---------- */
-// 지금은 임시로 /playlist?pid=... 형태
-// 라우터를 /playlist/:id 로 쓰면 return { name:'playlist', params:{ id } } 로 바꾸면 됨.
-function playlistTo(pid) {
-  return { path: '/playlist', query: { pid } };
-}
-
-function openMainPlayerDaily() {
-  // 1) 플레이어에 트랙/플레이리스트 세팅 (store에 맞춰서)
-  player.openMain({
-    title: 'Falling Behind',
-    artist: 'Laufey',
-    cover: new URL('@/assets/images/thumb.png', import.meta.url).href
-  });
-  // 2) 메인플레이어 열기
-  player.openMain();
-}
-
-/* ---------- (임시) 저장 버튼 동작 ---------- */
-function goCalendar() {
-  router.push('/calendar');
-}
-function onSaveSpectrum(pid) {
-  // TODO: 캘린더 저장 로직 연결
-  console.log('[save] spectrum:', pid);
-}
-
-/* ---------- color utils (hex/rgb/rgba 전부 처리) ---------- */
-function parseToRGB(color) {
-  if (!color) return null;
-  const c = color.trim();
-
-  if (c.startsWith('#')) {
-    const hex = c.slice(1);
-    if (hex.length !== 6) return null;
-    const r = parseInt(hex.slice(0, 2), 16);
-    const g = parseInt(hex.slice(2, 4), 16);
-    const b = parseInt(hex.slice(4, 6), 16);
-    return { r, g, b };
-  }
-
-  const m = c.match(/rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)(?:\s*,\s*[\d.]+)?\s*\)/i);
-  if (m) return { r: Number(m[1]), g: Number(m[2]), b: Number(m[3]) };
-
-  return null;
-}
-
-function getBrightness(color) {
-  const rgb = parseToRGB(color);
-  if (!rgb) return 0;
-  const { r, g, b } = rgb;
-  return (r * 299 + g * 587 + b * 114) / 1000;
-}
-
-/* ---------- Palette Log: 배경명도에 따라 글자색 자동 ---------- */
-function applyLogItemTheme(root) {
-  if (!root) return;
-
-  const items = root.querySelectorAll('.log-item');
-  items.forEach((item) => {
-    let bg = item.style.getPropertyValue('--bg')?.trim();
-    if (!bg) bg = getComputedStyle(item).getPropertyValue('--bg').trim();
-    if (!bg) return;
-
-    const brightness = getBrightness(bg);
-
-    // ✅ 덮어쓰기 충돌 줄이려면 "class만" 쓰는 게 더 깔끔하지만,
-    // 지금은 즉시 눈에 보이게 inline color도 같이 적용
-    if (brightness > 170) {
-      item.style.color = '#6B6E6E';
-      item.classList.add('is-light');
-      item.classList.remove('is-dark');
-    } else {
-      item.style.color = '#F2F2EE';
-      item.classList.add('is-dark');
-      item.classList.remove('is-light');
-    }
-  });
-}
-
-/* ---------- Spectrum: 드래그 스크롤 ---------- */
-function bindSpectrumDrag(row) {
-  if (!row) return () => {};
-
-  let isDown = false;
-  let startX = 0;
-  let startScrollLeft = 0;
-  let pointerId = null;
-
-  row.style.cursor = 'grab';
-  row.style.userSelect = 'none';
-
-  const onPointerDown = (e) => {
-    if (e.pointerType === 'mouse' && e.button !== 0) return;
-
-    isDown = true;
-    pointerId = e.pointerId;
-    row.setPointerCapture(pointerId);
-
-    startX = e.clientX;
-    startScrollLeft = row.scrollLeft;
-
-    row.style.cursor = 'grabbing';
-    row.classList.add('is-dragging');
-  };
-
-  const onPointerMove = (e) => {
-    if (!isDown) return;
-    const dx = e.clientX - startX;
-    row.scrollLeft = startScrollLeft - dx;
-  };
-
-  const endDrag = () => {
-    if (!isDown) return;
-    isDown = false;
-    pointerId = null;
-    row.style.cursor = 'grab';
-    row.classList.remove('is-dragging');
-  };
-
-  // 드래그 중 링크 클릭 방지
-  let moved = 0;
-  const resetMoved = () => (moved = 0);
-  const trackMoved = (e) => {
-    if (!isDown) return;
-    moved += Math.abs(e.movementX || 0);
-  };
-  const stopClickWhenDragged = (e) => {
-    if (moved > 6) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-  };
-
-  row.addEventListener('pointerdown', onPointerDown);
-  row.addEventListener('pointermove', onPointerMove);
-  row.addEventListener('pointerup', endDrag);
-  row.addEventListener('pointercancel', endDrag);
-  row.addEventListener('pointerleave', endDrag);
-
-  row.addEventListener('pointerdown', resetMoved);
-  row.addEventListener('pointermove', trackMoved);
-  row.addEventListener('click', stopClickWhenDragged, true);
-
-  return () => {
-    row.removeEventListener('pointerdown', onPointerDown);
-    row.removeEventListener('pointermove', onPointerMove);
-    row.removeEventListener('pointerup', endDrag);
-    row.removeEventListener('pointercancel', endDrag);
-    row.removeEventListener('pointerleave', endDrag);
-
-    row.removeEventListener('pointerdown', resetMoved);
-    row.removeEventListener('pointermove', trackMoved);
-    row.removeEventListener('click', stopClickWhenDragged, true);
-  };
-}
-
-onMounted(async () => {
-  await nextTick();
-
-  cleanupSpectrumDrag = bindSpectrumDrag(specRowEl.value);
-
-  // 스타일 적용 타이밍 보장(2프레임)
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => applyLogItemTheme(rootEl.value));
-  });
-});
-
-onBeforeUnmount(() => {
-  if (cleanupSpectrumDrag) cleanupSpectrumDrag();
-});
-</script>
 
 <style>
 /* ===== Home layout ===== */
@@ -453,6 +462,7 @@ onBeforeUnmount(() => {
   padding-left: 3px;
   border-radius: 999px;
   background: rgba(95, 96, 170, 0.95);
+  box-shadow: inset 0px 0px 4px 0px rgba(0, 0, 0, 0.25);
 }
 
 .daily-btn {
@@ -576,8 +586,8 @@ onBeforeUnmount(() => {
 }
 
 .mini-add img {
-  width: 14px;
-  height: 14px;
+  width: 18px;
+  height: 18px;
 }
 
 .spec-name {
@@ -659,7 +669,7 @@ onBeforeUnmount(() => {
   width: 10px;
   height: 10px;
   border-radius: 999px;
-  background: #7b56d7;
+  background: #7b56d7; /* 기본값(실제는 :style로 덮임) */
   display: inline-block;
   margin-right: 8px;
 }
@@ -667,22 +677,43 @@ onBeforeUnmount(() => {
 .echo-card {
   padding: 26px 8px 10px;
   text-align: center;
+  min-height: 110px;
 }
 
 .echo-text {
   margin: 0 0 18px;
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 600;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  word-break: keep-all;
+  line-clamp: 2;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+
+  /* ✅ 텍스트만 fade */
+  opacity: 1;
+  transition: opacity 250ms ease;
+}
+
+.echo-text.is-hidden {
+  opacity: 0;
 }
 
 .echo-line {
   height: 1px;
   margin: 0 12px 12px;
+  background: rgba(0, 0, 0, 0.08);
 }
 
 .echo-date {
   margin: 0;
   font-size: 10px;
   font-weight: 600;
+  opacity: 0.8;
 }
 </style>
