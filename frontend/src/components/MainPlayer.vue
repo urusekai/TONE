@@ -171,7 +171,7 @@ function handleCloseMain() {
   aspect-ratio: 1 / 1;
   object-fit: cover;
   border: 6px solid #71acd8;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.16);
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.3);
 }
 
 .main-player__info {
