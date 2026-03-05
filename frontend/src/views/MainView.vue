@@ -276,53 +276,72 @@ function applyLogItemTheme(root) {
 function bindSpectrumDrag(row) {
   if (!row) return () => {};
 
-  let isDown = false;
+  let isPointerDown = false;
+  let isDragging = false;
   let startX = 0;
   let startScrollLeft = 0;
   let pointerId = null;
 
+  const DRAG_THRESHOLD = 8; // 이 거리 넘을 때만 드래그로 인정
+
   row.style.cursor = 'grab';
   row.style.userSelect = 'none';
+  row.style.touchAction = 'pan-y';
 
   const onPointerDown = (e) => {
     if (e.pointerType === 'mouse' && e.button !== 0) return;
 
-    isDown = true;
+    isPointerDown = true;
+    isDragging = false;
     pointerId = e.pointerId;
-    row.setPointerCapture(pointerId);
 
     startX = e.clientX;
     startScrollLeft = row.scrollLeft;
-
-    row.style.cursor = 'grabbing';
-    row.classList.add('is-dragging');
   };
 
   const onPointerMove = (e) => {
-    if (!isDown) return;
+    if (!isPointerDown) return;
+
     const dx = e.clientX - startX;
+
+    // threshold 넘기기 전엔 클릭으로 보고 아무것도 안 함
+    if (!isDragging) {
+      if (Math.abs(dx) < DRAG_THRESHOLD) return;
+
+      isDragging = true;
+      row.setPointerCapture(pointerId);
+      row.style.cursor = 'grabbing';
+      row.classList.add('is-dragging');
+    }
+
     row.scrollLeft = startScrollLeft - dx;
   };
 
   const endDrag = () => {
-    if (!isDown) return;
-    isDown = false;
+    if (!isPointerDown) return;
+
+    if (isDragging && pointerId !== null) {
+      try {
+        row.releasePointerCapture(pointerId);
+      } catch (_) {}
+    }
+
+    isPointerDown = false;
     pointerId = null;
+
     row.style.cursor = 'grab';
     row.classList.remove('is-dragging');
   };
 
-  // 드래그 중 링크 클릭 방지
-  let moved = 0;
-  const resetMoved = () => (moved = 0);
-  const trackMoved = (e) => {
-    if (!isDown) return;
-    moved += Math.abs(e.movementX || 0);
-  };
   const stopClickWhenDragged = (e) => {
-    if (moved > 6) {
+    if (isDragging) {
       e.preventDefault();
       e.stopPropagation();
+
+      // 이번 클릭만 막고 바로 초기화
+      requestAnimationFrame(() => {
+        isDragging = false;
+      });
     }
   };
 
@@ -330,10 +349,6 @@ function bindSpectrumDrag(row) {
   row.addEventListener('pointermove', onPointerMove);
   row.addEventListener('pointerup', endDrag);
   row.addEventListener('pointercancel', endDrag);
-  row.addEventListener('pointerleave', endDrag);
-
-  row.addEventListener('pointerdown', resetMoved);
-  row.addEventListener('pointermove', trackMoved);
   row.addEventListener('click', stopClickWhenDragged, true);
 
   return () => {
@@ -341,10 +356,6 @@ function bindSpectrumDrag(row) {
     row.removeEventListener('pointermove', onPointerMove);
     row.removeEventListener('pointerup', endDrag);
     row.removeEventListener('pointercancel', endDrag);
-    row.removeEventListener('pointerleave', endDrag);
-
-    row.removeEventListener('pointerdown', resetMoved);
-    row.removeEventListener('pointermove', trackMoved);
     row.removeEventListener('click', stopClickWhenDragged, true);
   };
 }
