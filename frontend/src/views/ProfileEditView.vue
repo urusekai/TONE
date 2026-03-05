@@ -127,6 +127,21 @@ async function handleSubmit() {
     <!-- v-model로 폼 상태 연결 -->
     <form class="register-form profile-form" method="post" @submit.prevent="handleSubmit">
       <div class="form-input-box">
+        <span><img src="@/assets/icons/id.svg" alt="닉네임" /></span>
+        <input
+          id="profile-nickname"
+          name="nickname"
+          type="text"
+          placeholder="닉네임을 2 ~ 5자 내에 입력하세요"
+          autocomplete="nickname"
+          minlength="2"
+          maxlength="5"
+          required
+          v-model="form.nickname"
+        />
+      </div>
+
+      <div class="form-input-box">
         <span><img src="@/assets/icons/id.svg" alt="이메일" /></span>
         <input
           id="profile-email"
@@ -145,7 +160,7 @@ async function handleSubmit() {
           id="profile-password"
           name="password"
           type="password"
-          placeholder="비밀번호를 변경할 때만 입력하세요"
+          placeholder="변경할 비밀번호"
           autocomplete="new-password"
           v-model="form.password"
         />
@@ -157,24 +172,9 @@ async function handleSubmit() {
           id="profile-password-confirm"
           name="passwordConfirm"
           type="password"
-          placeholder="비밀번호 확인"
+          placeholder="변경할 비밀번호 확인"
           autocomplete="new-password"
           v-model="form.passwordConfirm"
-        />
-      </div>
-
-      <div class="form-input-box">
-        <span><img src="@/assets/icons/id.svg" alt="닉네임" /></span>
-        <input
-          id="profile-nickname"
-          name="nickname"
-          type="text"
-          placeholder="닉네임을 2 ~ 5자 내에 입력하세요"
-          autocomplete="nickname"
-          minlength="2"
-          maxlength="5"
-          required
-          v-model="form.nickname"
         />
       </div>
 
@@ -248,6 +248,6 @@ async function handleSubmit() {
 }
 
 #profile-page .register-form button[type='submit'] {
-  margin-top: auto;
+  margin-top: 56px;
 }
 </style>
