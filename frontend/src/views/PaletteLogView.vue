@@ -19,20 +19,25 @@
             }"
           >
             <!-- ✅ 디자인은 a처럼, 동작은 우리가 제어 -->
-            <button type="button" class="pl-link" @click="onCardClick(item)">
-              <span class="pl-arrow">
+            <button
+              type="button"
+              class="pl-link"
+              @click="onCardClick(item)"
+              :style="{ color: getTextColor(item.color) }"
+            >
+              <span class="pl-arrow" :style="{ filter: getIconFilter(item.color) }">
                 <img :src="arrowIcon" alt=">" />
               </span>
 
               <h2 class="pl-name">{{ item.name }}</h2>
-              <div class="pl-line"></div>
+              <div class="pl-line" :style="{ background: getLineColor(item.color) }"></div>
 
               <div class="pl-meta">
-                <span>
+                <span :style="{ filter: getIconFilter(item.color) }">
                   <img :src="likeIcon" alt="like_full" />
                   {{ item.likes }}
                 </span>
-                <span>
+                <span :style="{ filter: getIconFilter(item.color) }">
                   <img :src="noteIcon" alt="note" />
                   {{ item.plays }}
                 </span>
@@ -66,71 +71,71 @@ const items = ref([
     id: '02.23|Baby Blue',
     name: 'Baby Blue',
     color: '#b6c6d3',
-    likes: '0,000',
-    plays: '100 Plays'
+    likes: '418',
+    plays: '287 Plays'
   },
   {
     id: '02.22|Lavender',
     name: 'Lavender',
     color: '#aaa4ca',
-    likes: '0,000',
-    plays: '100 Plays'
+    likes: '902',
+    plays: '254 Plays'
   },
   {
     id: '02.21|Prism Pink',
     name: 'Prism Pink',
     color: '#e8a4bb',
-    likes: '0,000',
-    plays: '100 Plays'
+    likes: '167',
+    plays: '228 Plays'
   },
   {
     id: '02.20|Living Coral',
     name: 'Living Coral',
-    color: '#fa7268',
-    likes: '0,000',
-    plays: '100 Plays'
+    color: '#EC6C5E',
+    likes: '12,218',
+    plays: '196 Plays'
   },
   {
     id: '02.19|Serenity',
     name: 'Serenity',
     color: '#91a8d0',
-    likes: '0,000',
-    plays: '100 Plays'
+    likes: '284',
+    plays: '168 Plays'
   },
   {
     id: '02.18|Viva Magenta',
     name: 'Viva Magenta',
-    color: '#bb2649',
-    likes: '0,000',
-    plays: '100 Plays'
+    color: '#BB2649',
+    likes: '11,763',
+    plays: '142 Plays'
   },
   {
     id: '02.17|Gray Lilac',
     name: 'Gray Lilac',
     color: '#d4cacd',
-    likes: '0,000',
-    plays: '100 Plays'
+    likes: '983',
+    plays: '117 Plays'
   },
   {
     id: '02.16|Mountain Trail',
     name: 'Mountain Trail',
     color: '#8a756a',
-    likes: '0,000',
-    plays: '100 Plays'
+    likes: '356',
+    plays: '89 Plays'
   },
   {
     id: '02.15|Arona',
     name: 'Arona',
     color: '#899aa2',
-    likes: '0,000',
-    plays: '100 Plays'
+    likes: '124',
+    plays: '53 Plays'
   },
   {
     id: '02.14|Regatta',
     name: 'Regatta',
     color: '#497ab7',
-    likes: '0,000',
-    plays: '100 Plays'
+    likes: '847',
+    plays: '21 Plays'
   }
 ]);
 
@@ -272,6 +277,59 @@ onBeforeUnmount(() => {
   const stack = document.querySelector('.pl-stack');
   if (stack && onClick) stack.removeEventListener('click', onClick);
 });
+
+const colors = {
+  darkText: '#3f5f73', // 밝은 배경일 때
+  lightText: '#F2F2EE' // 어두운 배경일 때
+};
+
+function parseToRGB(color) {
+  if (!color) return null;
+  const c = color.trim();
+
+  if (c.startsWith('#')) {
+    const hex = c.slice(1);
+    if (hex.length !== 6) return null;
+
+    const r = parseInt(hex.slice(0, 2), 16);
+    const g = parseInt(hex.slice(2, 4), 16);
+    const b = parseInt(hex.slice(4, 6), 16);
+    return { r, g, b };
+  }
+
+  const m = c.match(/rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)(?:\s*,\s*[\d.]+)?\s*\)/i);
+  if (m) {
+    return { r: Number(m[1]), g: Number(m[2]), b: Number(m[3]) };
+  }
+
+  return null;
+}
+
+function getBrightness(color) {
+  const rgb = parseToRGB(color);
+  if (!rgb) return 0;
+
+  const { r, g, b } = rgb;
+  return (r * 299 + g * 587 + b * 114) / 1000;
+}
+
+function isBrightColor(color) {
+  return getBrightness(color) > 170;
+}
+
+function getTextColor(color) {
+  return isBrightColor(color) ? colors.darkText : colors.lightText;
+}
+
+function getLineColor(color) {
+  return isBrightColor(color) ? 'rgba(63, 95, 115, 0.28)' : 'rgba(255, 255, 255, 0.32)';
+}
+
+function getIconFilter(color) {
+  return isBrightColor(color)
+    ? 'brightness(0) saturate(100%) invert(31%) sepia(18%) saturate(653%) hue-rotate(157deg) brightness(91%) contrast(88%)'
+    : 'brightness(0) invert(1)';
+}
 </script>
 <style scoped>
 /* =========================

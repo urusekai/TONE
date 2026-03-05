@@ -117,48 +117,48 @@
       </div>
 
       <div class="log-list">
-        <RouterLink class="log-item" :to="playlistTo('veiled-vista')" style="--bg: #cfe6d6">
-          <div class="log-top">13-6008</div>
+        <RouterLink class="log-item" :to="playlistTo('veiled-vista')" style="--bg: #b6c6d3">
+          <div class="log-top">14-4122</div>
           <div class="log-main">
-            <strong>Veiled Vista</strong>
+            <strong>Baby Blue</strong>
             <span class="chev icon-white">
               <img src="@/assets/icons/arrow-right.svg" alt=">" />
             </span>
           </div>
-          <div class="log-sub">♫ 12 Plays</div>
+          <div class="log-sub">♫ 287 Plays</div>
         </RouterLink>
 
-        <RouterLink class="log-item" :to="playlistTo('baltic-sea')" style="--bg: #6faed9">
-          <div class="log-top">16-4120</div>
+        <RouterLink class="log-item" :to="playlistTo('baltic-sea')" style="--bg: #aaa4ca">
+          <div class="log-top">15-3920</div>
           <div class="log-main">
-            <strong>Balric Sea</strong>
+            <strong>Lavender</strong>
             <span class="chev icon-white">
               <img src="@/assets/icons/arrow-right.svg" alt=">" />
             </span>
           </div>
-          <div class="log-sub">♫ 12 Plays</div>
+          <div class="log-sub">♫ 254 Plays</div>
         </RouterLink>
 
-        <RouterLink class="log-item" :to="playlistTo('golden-mist')" style="--bg: #e3d9a3">
-          <div class="log-top">13-0917</div>
+        <RouterLink class="log-item" :to="playlistTo('golden-mist')" style="--bg: #e8a4bb">
+          <div class="log-top">14-2311</div>
           <div class="log-main">
-            <strong>Golden Mist</strong>
+            <strong>Prism Pink</strong>
             <span class="chev icon-white">
               <img src="@/assets/icons/arrow-right.svg" alt=">" />
             </span>
           </div>
-          <div class="log-sub">♫ 12 Plays</div>
+          <div class="log-sub">♫ 228 Plays</div>
         </RouterLink>
 
-        <RouterLink class="log-item" :to="playlistTo('quiet-violet')" style="--bg: #9b8fb3">
-          <div class="log-top">17-3725</div>
+        <RouterLink class="log-item" :to="playlistTo('quiet-violet')" style="--bg: #fa7268">
+          <div class="log-top">16-1546</div>
           <div class="log-main">
-            <strong>Quiet Violet</strong>
+            <strong>Living Coral</strong>
             <span class="chev icon-white">
               <img src="@/assets/icons/arrow-right.svg" alt=">" />
             </span>
           </div>
-          <div class="log-sub">♫ 12 Plays</div>
+          <div class="log-sub">♫ 196 Plays</div>
         </RouterLink>
       </div>
     </section>
@@ -261,7 +261,7 @@ function applyLogItemTheme(root) {
     // ✅ 덮어쓰기 충돌 줄이려면 "class만" 쓰는 게 더 깔끔하지만,
     // 지금은 즉시 눈에 보이게 inline color도 같이 적용
     if (brightness > 170) {
-      item.style.color = '#6B6E6E';
+      item.style.color = '#3f5f73';
       item.classList.add('is-light');
       item.classList.remove('is-dark');
     } else {
@@ -408,7 +408,7 @@ onBeforeUnmount(() => {
   padding: 0 12px;
   border-radius: 999px;
   border: 1px solid #3f5f73;
-  background: rgba(255, 255, 255, 0.92);
+  background: #ffffff;
   font-size: 10px;
   font-weight: 600;
   margin-bottom: 12px;
@@ -441,7 +441,7 @@ onBeforeUnmount(() => {
 .daily-actions {
   width: 85px;
   height: 41px;
-  background-color: #f2f2ee;
+  background-color: #ffffff;
   box-shadow: inset 0px 0px 4px 0px rgba(0, 0, 0, 0.25);
   border-radius: 50px;
   display: flex;
