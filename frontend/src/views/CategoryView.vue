@@ -7,7 +7,6 @@
         <RouterLink
           class="cg-link"
           :to="{ path: '/category-detail', query: { mood: item.mood } }"
-          :style="{ '--arrow': `url(${arrowRight})` }"
           :aria-label="`${item.label} 카테고리 보기`"
         >
           <div class="cg-grad" :style="item.grad" aria-hidden="true"></div>
@@ -19,6 +18,10 @@
 
             <div class="cg-tags" aria-label="태그">
               <span v-for="t in item.tags" :key="t" class="cg-tag">#{{ t }}</span>
+            </div>
+
+            <div class="cg-arrow" aria-hidden="true">
+              <img :src="arrowRight" alt="" />
             </div>
           </div>
         </RouterLink>
@@ -139,22 +142,6 @@ const categories = [
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
 }
 
-.cg-link::after {
-  content: '';
-  position: absolute;
-  right: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-
-  width: 18px;
-  height: 18px;
-
-  background: url(v-bind(arrowRight)) no-repeat center;
-  background-size: contain;
-
-  opacity: 0.6;
-}
-
 /* 카드 전체 배경 그라디언트 레이어 */
 .cg-grad {
   position: absolute;
@@ -189,6 +176,20 @@ const categories = [
   gap: 10px;
 }
 
+.cg-arrow {
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.cg-arrow img {
+  display: block;
+  width: 18px;
+  height: 18px;
+}
 /* 상단: 무드 단어 */
 .cg-top {
   display: flex;
@@ -218,7 +219,6 @@ const categories = [
   display: inline-flex;
   align-items: center;
   height: 24px;
-  padding: 0 10px;
 
   border-radius: 999px;
   color: rgba(63, 95, 115, 0.9);
