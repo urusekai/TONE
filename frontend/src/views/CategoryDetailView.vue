@@ -123,26 +123,25 @@ function goPlaylist() {
 /* ===== 전체 ===== :contentReference[oaicite:8]{index=8} */
 #category-detail-page {
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: stretch;
+  min-height: 0;
+  overflow: hidden;
   padding-left: 0;
   padding-right: 0;
   padding-top: 0;
   padding-bottom: 0;
-  min-height: 0;
-  overflow: hidden;
 }
 
 /* ===== 무드 헤더 ===== :contentReference[oaicite:9]{index=9} */
 .mood-header {
   position: relative;
-  z-index: 50;
+  z-index: 1;
   width: 100%;
-  height: 180px;
   flex: 0 0 auto;
   margin: 0;
+
+  /* 여기서 헤더 높이 다시 더하지 말기 */
+  padding: 16px var(--layout-x) 20px;
+
   text-align: center;
   background: #ffffff;
   box-shadow: 0px 2px 6.5px rgba(0, 0, 0, 0.22);
@@ -180,16 +179,29 @@ function goPlaylist() {
 }
 
 /* ===== 컬러 리스트 ===== :contentReference[oaicite:10]{index=10} */
+/* ✅ 아래만 스크롤 */
 .color-list {
   flex: 1 1 auto;
-  height: 100%;
-  overscroll-behavior: contain;
+  height: 0;
+  min-height: 0;
+  overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding: 20px;
-  padding-bottom: 200px;
+  overscroll-behavior: contain;
+
+  padding: 22px var(--layout-x) calc(var(--app-main-bottom) + 12px);
   display: flex;
   flex-direction: column;
   gap: 18px;
+
+  /* Firefox */
+  scrollbar-width: none;
+
+  /* IE, Edge 레거시 */
+  -ms-overflow-style: none;
+}
+
+.color-list::-webkit-scrollbar {
+  display: none;
 }
 
 /* 카드 컨테이너 :contentReference[oaicite:11]{index=11} */

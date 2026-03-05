@@ -59,7 +59,8 @@ const router = createRouter({
             headerType: 'back-title',
             title: '카테고리 상세',
             backTo: '/category',
-            headerTransparent: true
+            headerTransparent: true,
+            showMoodHeader: true
           },
           component: () => import('../views/CategoryDetailView.vue')
         },
