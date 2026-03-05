@@ -1,62 +1,190 @@
 <script setup>
-import { ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { usePlayerStore } from '@/stores/player';
 import handleIcon from '@/assets/icons/handle.svg';
 
 const player = usePlayerStore();
-const miniPlayerRef = ref(null);
 
-const CLOSE_SWIPE_THRESHOLD = 70;
+const VISIBLE_PEEK = 22;
+const COMMIT_RATIO = 0.55;
+const IGNORE_CLICK_MS = 280;
+const DRAG_GUARD_PX = 3;
 
+const surfaceRef = ref(null);
+const travelOffset = ref(74);
+const dragOffset = ref(0);
+const isDragging = ref(false);
+
+let pointerId = null;
 let startY = 0;
-let isSwipingDownOnMini = false;
+let startOffset = 0;
+let ignoreClickUntil = 0;
+let resizeObserver = null;
 
 function handleOpenMain() {
   player.openMain();
 }
 
-function handleMiniTouchStart(event) {
-  startY = event.touches[0].clientY;
-  isSwipingDownOnMini = true;
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value));
 }
 
-function handleMiniTouchMove(event) {
-  if (!isSwipingDownOnMini) return;
-
-  const currentY = event.touches[0].clientY;
-  const deltaY = currentY - startY;
-
-  if (deltaY <= 0 || !miniPlayerRef.value) return;
-
-  miniPlayerRef.value.style.transform = `translate(-50%, ${Math.min(deltaY, 140)}px)`;
+function currentOffset() {
+  return isDragging.value ? dragOffset.value : player.isHidden ? travelOffset.value : 0;
 }
 
-function handleMiniTouchEnd(event) {
-  if (!isSwipingDownOnMini) return;
-  isSwipingDownOnMini = false;
+function measureTravelOffset() {
+  if (!surfaceRef.value) return;
 
-  const endY = event.changedTouches[0].clientY;
-  const deltaY = endY - startY;
+  const fullHeight = surfaceRef.value.offsetHeight;
+  travelOffset.value = Math.max(0, fullHeight - VISIBLE_PEEK);
 
-  if (miniPlayerRef.value) {
-    miniPlayerRef.value.style.transform = '';
-  }
-
-  if (deltaY > CLOSE_SWIPE_THRESHOLD) {
-    player.closeAll();
+  if (dragOffset.value > travelOffset.value) {
+    dragOffset.value = travelOffset.value;
   }
 }
+
+function canStartDrag(event) {
+  if (!player.isMini && !player.isHidden) return false;
+  if (event.pointerType === 'mouse' && event.button !== 0) return false;
+  return true;
+}
+
+function markIgnoreClick() {
+  ignoreClickUntil = Date.now() + IGNORE_CLICK_MS;
+}
+
+function isClickGuardActive() {
+  return Date.now() < ignoreClickUntil;
+}
+
+function handleGrabPointerDown(event) {
+  if (!canStartDrag(event)) return;
+
+  pointerId = event.pointerId;
+  startY = event.clientY;
+  startOffset = currentOffset();
+  dragOffset.value = startOffset;
+  isDragging.value = true;
+
+  event.currentTarget?.setPointerCapture?.(event.pointerId);
+
+  if (event.cancelable) {
+    event.preventDefault();
+  }
+}
+
+function handleGrabPointerMove(event) {
+  if (!isDragging.value || event.pointerId !== pointerId) return;
+
+  const deltaY = event.clientY - startY;
+  dragOffset.value = clamp(startOffset + deltaY, 0, travelOffset.value);
+
+  if (event.cancelable) {
+    event.preventDefault();
+  }
+}
+
+function finishDrag(isCanceled = false) {
+  if (!isDragging.value) return;
+
+  const movedDistance = Math.abs(dragOffset.value - startOffset);
+  if (movedDistance > DRAG_GUARD_PX) {
+    markIgnoreClick();
+  }
+
+  if (!isCanceled) {
+    if (dragOffset.value >= travelOffset.value * COMMIT_RATIO) {
+      player.closeAll();
+    } else {
+      player.openMini();
+    }
+  }
+
+  isDragging.value = false;
+  dragOffset.value = 0;
+  pointerId = null;
+}
+
+function handleGrabPointerUp(event) {
+  if (event.pointerId !== pointerId) return;
+  finishDrag(false);
+}
+
+function handleGrabPointerCancel(event) {
+  if (event.pointerId !== pointerId) return;
+  finishDrag(true);
+}
+
+function handleGrabLostCapture(event) {
+  if (event.pointerId !== pointerId) return;
+  finishDrag(false);
+}
+
+function handleSurfaceClick() {
+  if (!player.isHidden) return;
+  if (isClickGuardActive()) return;
+  player.openMini();
+}
+
+function handleSurfaceKeyOpen() {
+  if (!player.isHidden) return;
+  if (isClickGuardActive()) return;
+  player.openMini();
+}
+
+onMounted(() => {
+  measureTravelOffset();
+
+  resizeObserver = new ResizeObserver(() => {
+    measureTravelOffset();
+  });
+
+  if (surfaceRef.value) {
+    resizeObserver.observe(surfaceRef.value);
+  }
+});
+
+onBeforeUnmount(() => {
+  resizeObserver?.disconnect();
+  resizeObserver = null;
+});
+
+const surfaceOffset = computed(() => {
+  if (isDragging.value) {
+    return dragOffset.value;
+  }
+
+  return player.isHidden ? travelOffset.value : 0;
+});
+
+const surfaceStyle = computed(() => ({
+  transform: `translate(-50%, ${surfaceOffset.value}px)`
+}));
 </script>
 
 <template>
   <section
-    ref="miniPlayerRef"
+    ref="surfaceRef"
     class="mini-player"
-    @touchstart.passive="handleMiniTouchStart"
-    @touchmove.passive="handleMiniTouchMove"
-    @touchend="handleMiniTouchEnd"
+    :class="{ 'is-hidden': player.isHidden, 'is-dragging': isDragging }"
+    :style="surfaceStyle"
+    :role="player.isHidden ? 'button' : null"
+    :tabindex="player.isHidden ? 0 : null"
+    :aria-label="player.isHidden ? '미니플레이어 열기' : null"
+    @click="handleSurfaceClick"
+    @keydown.enter.prevent="handleSurfaceKeyOpen"
+    @keydown.space.prevent="handleSurfaceKeyOpen"
   >
-    <div class="mini-handle-wrap" aria-hidden="true">
+    <div
+      class="mini-handle-wrap"
+      aria-hidden="true"
+      @pointerdown="handleGrabPointerDown"
+      @pointermove="handleGrabPointerMove"
+      @pointerup="handleGrabPointerUp"
+      @pointercancel="handleGrabPointerCancel"
+      @lostpointercapture="handleGrabLostCapture"
+    >
       <img class="mini-handle-icon" :src="handleIcon" alt="" />
     </div>
 
@@ -69,7 +197,7 @@ function handleMiniTouchEnd(event) {
           <p class="mini-title">{{ player.currentTrack.title }}</p>
           <div class="mini-actions">
             <button type="button" class="mini-btn">
-              <img src="@/assets/icons/like.svg" alt="좋아요" />
+              <img src="@/assets/icons/like.svg" alt="좋아요" class="icon-like" />
             </button>
             <button type="button" class="mini-btn is-playing">
               <img src="@/assets/icons/play.svg" alt="재생" class="icon-play" />
@@ -90,7 +218,7 @@ function handleMiniTouchEnd(event) {
 .mini-player {
   position: fixed;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, 0);
   width: 100%;
   max-width: 402px;
   z-index: 1001;
@@ -99,25 +227,42 @@ function handleMiniTouchEnd(event) {
   /* 하단바 높이에 맞춰 조절 */
   background: #ffffff;
   border-radius: 20px 20px 0 0;
-  padding: 10px var(--layout-x) 0;
+  padding: 0 var(--layout-x) 0;
 
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 0;
   box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.25);
-  transition: transform 0.2s ease;
+  transition: transform 0.22s ease;
+}
+
+.mini-player.is-hidden {
+  cursor: pointer;
+}
+
+.mini-player.is-dragging {
+  transition: none;
 }
 
 .mini-handle-wrap {
   width: 100%;
   display: flex;
+  align-items: center;
   justify-content: center;
+  padding: 10px 0;
+  touch-action: none;
+  cursor: grab;
   line-height: 1;
+}
+
+.mini-player.is-dragging .mini-handle-wrap {
+  cursor: grabbing;
 }
 
 .mini-handle-icon {
   width: 28px;
   height: 6px;
+  opacity: 1;
   user-select: none;
 }
 
@@ -161,6 +306,11 @@ function handleMiniTouchEnd(event) {
 .mini-actions {
   display: flex;
   gap: 15px;
+}
+
+.icon-like {
+  width: 20px;
+  height: 20px;
 }
 
 .icon-play {

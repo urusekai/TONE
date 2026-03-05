@@ -74,8 +74,10 @@ import { useRouter } from 'vue-router';
 import DuplicateModal from '@/components/DuplicateModal.vue';
 import ProfileModal from '@/components/ProfileModal.vue';
 import { checkDuplicateId, registerUser } from '@/services/authService';
+import { useAuthStore } from '@/stores/auth';
 
 const router = useRouter();
+const authStore = useAuthStore();
 
 const form = reactive({
   id: '',
@@ -176,7 +178,10 @@ async function handleProfileConfirm(color) {
       profileColor: form.profileColor
     };
 
-    await registerUser(payload);
+    const result = await registerUser(payload);
+    if (result?.user) {
+      authStore.setCurrentUser(result.user);
+    }
     isProfileModalOpen.value = false;
     router.push('/main');
   } catch (error) {

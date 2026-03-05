@@ -75,7 +75,8 @@ export async function loginUser(payload) {
         id: payload.id.trim(),
         email: 'mock@tone.local',
         nickname: 'Mock',
-        provider: 'local'
+        provider: 'local',
+        profileColor: '#B7AEA6'
       }
     };
   }
@@ -123,8 +124,8 @@ export async function completeSocialSignup(payload) {
   if (USE_MOCK_AUTH_API) {
     await wait(400);
 
-    if (!payload.email || !payload.nickname) {
-      throw new Error('이메일과 닉네임을 입력해주세요.');
+    if (!payload.email || !payload.nickname || !payload.profileColor) {
+      throw new Error('이메일, 닉네임, 프로필 색상을 입력해주세요.');
     }
 
     return {
@@ -134,7 +135,8 @@ export async function completeSocialSignup(payload) {
         id: null,
         email: payload.email,
         nickname: payload.nickname,
-        provider: payload.provider || 'kakao'
+        provider: payload.provider || 'kakao',
+        profileColor: payload.profileColor
       }
     };
   }

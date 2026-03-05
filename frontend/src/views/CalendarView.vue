@@ -1,11 +1,11 @@
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-
-// 스토어
-// ✅ createDefaultEntry 동시 import
-import { useUiStore } from '@/stores/uiStore';
 import { useCalendarStore, createDefaultEntry } from '@/stores/calendarStore';
+import { useAuthStore } from '@/stores/auth';
+import { updateMyProfileColor } from '@/services/userService';
+
+const authStore = useAuthStore();
 
 // 아이콘/이미지
 import prevIcon from '@/assets/icons/prev.svg';
@@ -32,7 +32,6 @@ const selectedKey = ref(
 const isEditing = ref(false);
 const memoText = ref('');
 
-const uiStore = useUiStore();
 const calendarStore = useCalendarStore();
 
 /* =========================
@@ -160,13 +159,30 @@ function goPlaylist() {
   window.location.href = './playlist.html';
 }
 
-/* ✅ 프로필 컬러 설정 + toast 표시 */
-function setProfileColor() {
+const isChangingProfileColor = ref(false);
+
+async function setProfileColor() {
+  if (isChangingProfileColor.value) return;
+
   const color = selectedData.value?.color || '';
-  if (color && color !== '#d9d9d9') {
-    // 기본값 제외
-    uiStore.setAvatarColor(color);
-    showToast(); // ✅ toast 표시
+  if (!color) {
+    window.alert('적용할 색상이 없습니다.');
+    return;
+  }
+
+  isChangingProfileColor.value = true;
+
+  try {
+    const result = await updateMyProfileColor(color);
+    const nextColor = result?.profileColor || color;
+    authStore.setProfileColor(nextColor);
+    showToast();
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : '프로필 색상 변경 중 오류가 발생했습니다.';
+    window.alert(message);
+  } finally {
+    isChangingProfileColor.value = false;
   }
 }
 
@@ -251,8 +267,13 @@ function showToast() {
 
           <div class="tone-right">
             <div class="tone-color-preview" :style="{ background: selectedData.color }"></div>
-            <button type="button" class="btn-profile-set" @click="setProfileColor">
-              프로필 설정
+            <button
+              type="button"
+              class="btn-profile-set"
+              :disabled="isChangingProfileColor"
+              @click="setProfileColor"
+            >
+              {{ isChangingProfileColor ? '변경중...' : '프로필 설정' }}
             </button>
           </div>
         </div>

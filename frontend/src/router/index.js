@@ -55,7 +55,12 @@ const router = createRouter({
         },
         {
           path: 'category-detail',
-          meta: { headerType: 'back-title', title: '카테고리 상세', backTo: '/category' },
+          meta: {
+            headerType: 'back-title',
+            title: '카테고리 상세',
+            backTo: '/category',
+            headerTransparent: true
+          },
           component: () => import('../views/CategoryDetailView.vue')
         },
         {

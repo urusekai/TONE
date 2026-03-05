@@ -1,27 +1,13 @@
 <script setup>
-import { onMounted, watch } from 'vue';
-import { useRoute } from 'vue-router';
 import { usePlayerStore } from '@/stores/player';
-import { useUiStore } from '@/stores/uiStore';
+import { useAuthStore } from '@/stores/auth';
 
-const route = useRoute();
 const player = usePlayerStore();
-const uiStore = useUiStore();
+const authStore = useAuthStore();
 
 function handleCloseMain() {
   player.closeMain();
 }
-
-onMounted(() => {
-  uiStore.syncFromCurrentUser();
-});
-
-watch(
-  () => route.fullPath,
-  () => {
-    uiStore.syncFromCurrentUser();
-  }
-);
 </script>
 
 <template>
@@ -37,7 +23,7 @@ watch(
       <button type="button" class="main-player__profile-btn" aria-label="프로필">
         <span
           class="main-player__profile-avatar"
-          :style="{ backgroundColor: uiStore.avatarColor || undefined }"
+          :style="{ backgroundColor: authStore.avatarColor || undefined }"
         ></span>
       </button>
     </header>
