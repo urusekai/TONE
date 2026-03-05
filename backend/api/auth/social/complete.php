@@ -93,7 +93,7 @@ try {
 
     // provider + provider_id 중복 확인
     $providerStmt = $pdo->prepare(
-        'SELECT user_uuid, id, email, nickname, profile_color, provider
+        'SELECT user_uuid, id, email, nickname, profile_color, provider, membership_plan
          FROM users
          WHERE provider = :provider AND provider_id = :provider_id
          LIMIT 1'
@@ -114,7 +114,8 @@ try {
                 'email' => $foundByProvider['email'],
                 'nickname' => $foundByProvider['nickname'],
                 'provider' => $foundByProvider['provider'],
-                'profileColor' => $foundByProvider['profile_color']
+                'profileColor' => $foundByProvider['profile_color'],
+                'membershipPlan' => $foundByProvider['membership_plan']
             ]
         ], JSON_UNESCAPED_UNICODE);
         exit;
@@ -132,8 +133,8 @@ try {
     // 신규 소셜 계정 생성
     $userUuid = generateUuidV4();
     $insertStmt = $pdo->prepare(
-        'INSERT INTO users (user_uuid, id, email, password_hash, nickname, profile_color, provider, provider_id)
-         VALUES (:user_uuid, :id, :email, :password_hash, :nickname, :profile_color, :provider, :provider_id)'
+        'INSERT INTO users (user_uuid, id, email, password_hash, nickname, profile_color, provider, provider_id, membership_plan)
+         VALUES (:user_uuid, :id, :email, :password_hash, :nickname, :profile_color, :provider, :provider_id, :membership_plan)'
     );
     $insertStmt->execute([
         'user_uuid' => $userUuid,
@@ -143,7 +144,8 @@ try {
         'nickname' => $nickname,
         'profile_color' => strtoupper($profileColor),
         'provider' => $provider,
-        'provider_id' => $providerId
+        'provider_id' => $providerId,
+        'membership_plan' => 'free'
     ]);
 
     $_SESSION['user_uuid'] = $userUuid;
@@ -156,7 +158,8 @@ try {
             'email' => $email,
             'nickname' => $nickname,
             'provider' => $provider,
-            'profileColor' => strtoupper($profileColor)
+            'profileColor' => strtoupper($profileColor),
+            'membershipPlan' => 'free'
         ]
     ], JSON_UNESCAPED_UNICODE);
 } catch (Throwable $e) {

@@ -129,8 +129,8 @@ try {
 
     // 회원가입 정보 저장
     $insertStmt = $pdo->prepare(
-        'INSERT INTO users (user_uuid, id, email, password_hash, nickname, profile_color, provider, provider_id)
-         VALUES (:user_uuid, :id, :email, :password_hash, :nickname, :profile_color, :provider, :provider_id)'
+        'INSERT INTO users (user_uuid, id, email, password_hash, nickname, profile_color, provider, provider_id, membership_plan)
+         VALUES (:user_uuid, :id, :email, :password_hash, :nickname, :profile_color, :provider, :provider_id, :membership_plan)'
     );
 
     $insertStmt->execute([
@@ -141,7 +141,8 @@ try {
         'nickname' => $nickname,
         'profile_color' => strtoupper($profileColor),
         'provider' => 'local',
-        'provider_id' => null
+        'provider_id' => null,
+        'membership_plan' => 'free'
     ]);
 
     $_SESSION['user_uuid'] = $userUuid;
@@ -155,7 +156,8 @@ try {
             'email' => $email,
             'nickname' => $nickname,
             'provider' => 'local',
-            'profileColor' => strtoupper($profileColor)
+            'profileColor' => strtoupper($profileColor),
+            'membershipPlan' => 'free'
         ]
     ], JSON_UNESCAPED_UNICODE);
 } catch (Throwable $e) {

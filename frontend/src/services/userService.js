@@ -44,3 +44,17 @@ export async function withdrawMyAccount() {
     '회원 탈퇴에 실패했습니다.'
   );
 }
+
+export async function updateMyMembershipPlan(plan) {
+  return await apiRequest(
+    '/api/auth/membership.php',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ plan })
+    },
+    '이용권 변경에 실패했습니다.'
+  );
+}

@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS users (
   profile_color CHAR(7) NOT NULL DEFAULT '#B7AEA6',
   provider VARCHAR(20) NOT NULL DEFAULT 'local',
   provider_id VARCHAR(255) DEFAULT NULL,
+  membership_plan ENUM('free', 'basic', 'pro') NOT NULL DEFAULT 'free',
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (user_uuid),
   UNIQUE KEY uq_users_id (id),
