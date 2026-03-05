@@ -2,7 +2,10 @@
   <main id="category-page" aria-label="Categories">
     <h1 class="cg-title">Categories</h1>
 
-    <ul class="cg-list">
+    <p v-if="isLoading" class="cg-state">카테고리를 불러오는 중...</p>
+    <p v-else-if="errorMessage" class="cg-state cg-state-error">{{ errorMessage }}</p>
+
+    <ul v-else class="cg-list">
       <li v-for="item in categories" :key="item.mood" class="cg-item">
         <RouterLink
           class="cg-link"
@@ -31,46 +34,44 @@
 </template>
 
 <script setup>
+import { onMounted, ref } from 'vue';
 import arrowRight from '@/assets/icons/arrow-right.svg';
+import { apiRequest } from '@/services/httpClient';
 
-const categories = [
-  {
-    mood: 'chill',
-    label: 'Chill',
-    tags: ['Lo-fi', '재즈', '어쿠스틱'],
-    grad: { '--c1': '#eaf4f4', '--c2': '#f2f2ee', '--c3': '#dceae8' }
-  },
-  {
-    mood: 'bright',
-    label: 'Bright',
-    tags: ['청량 K-POP', '썸', '드라이브 팝'],
-    grad: { '--c3': '#fff3b0', '--c2': '#a8e6cf', '--c1': '#cde7f0' }
-  },
-  {
-    mood: 'energetic',
-    label: 'Energetic',
-    tags: ['댄스', 'EDM', '아이돌'],
-    grad: { '--c1': '#ff5e5b', '--c2': '#ff8e53', '--c3': '#fdc830' }
-  },
-  {
-    mood: 'emotional',
-    label: 'Emotional',
-    tags: ['발라드', '슬픈 힙합', 'OST'],
-    grad: { '--c1': '#c08497', '--c2': '#8e7dbe', '--c3': '#d6cadd' }
-  },
-  {
-    mood: 'groovy',
-    label: 'Groovy',
-    tags: ['R&B', '시티팝', '네오소울'],
-    grad: { '--c2': '#1f6f78', '--c1': '#3ba7a0', '--c3': '#274c77' }
-  },
-  {
-    mood: 'intense',
-    label: 'Intense',
-    tags: ['락', 'Drill', '다크 EDM'],
-    grad: { '--c3': '#2b2d42', '--c2': '#8d314a', '--c1': '#3a0ca3' }
+const categories = ref([]);
+const isLoading = ref(false);
+const errorMessage = ref('');
+
+async function loadCategories() {
+  isLoading.value = true;
+  errorMessage.value = '';
+
+  try {
+    const result = await apiRequest('/api/categories/list.php', {}, '카테고리 목록을 불러오지 못했습니다.');
+    const items = Array.isArray(result?.categories) ? result.categories : [];
+
+    categories.value = items.map((item) => ({
+      mood: String(item.mood || '').toLowerCase(),
+      label: String(item.label || ''),
+      tags: [item.tag1, item.tag2, item.tag3].map((tag) => String(tag || '')),
+      grad: {
+        '--c1': String(item.grad_c1 || '#f2f2ee'),
+        '--c2': String(item.grad_c2 || '#cfe6d6'),
+        '--c3': String(item.grad_c3 || '#b7aea6')
+      }
+    }));
+  } catch (error) {
+    categories.value = [];
+    errorMessage.value =
+      error instanceof Error ? error.message : '카테고리 목록을 불러오지 못했습니다.';
+  } finally {
+    isLoading.value = false;
   }
-];
+}
+
+onMounted(async () => {
+  await loadCategories();
+});
 </script>
 
 <style scoped>
@@ -95,6 +96,17 @@ const categories = [
   line-height: 1.1;
   margin-top: 4px;
   margin-bottom: 4px;
+}
+
+.cg-state {
+  width: 100%;
+  padding: 14px 4px;
+  font-size: 14px;
+  color: #3f5f73;
+}
+
+.cg-state-error {
+  color: #b42318;
 }
 
 /* 리스트 */
