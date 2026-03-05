@@ -127,7 +127,8 @@ const categories = [
   color: inherit;
   /* 카드 기본 바탕 */
   background: #ffffff;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 0px 15px rgba(0, 0, 0, 0.13);
+  border: 1px solid #b7aea671;
 
   overflow: hidden;
   /* 배경 레이어 깔끔하게 */

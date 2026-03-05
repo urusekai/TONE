@@ -216,7 +216,7 @@ function goPlaylist() {
   overflow: hidden;
   border-radius: 18px;
 
-  background: #f4f4f4;
+  background: #ffffff;
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
   cursor: pointer;
 }
@@ -310,7 +310,7 @@ function goPlaylist() {
 .total {
   flex: 0 0 auto;
   margin: 0;
-  font-size: 11px;
+  font-size: 10px;
   color: #b7aeac;
   white-space: nowrap;
 }
