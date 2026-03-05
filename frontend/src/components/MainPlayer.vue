@@ -1,7 +1,9 @@
 <script setup>
 import { usePlayerStore } from '@/stores/player';
+import { useAuthStore } from '@/stores/auth';
 
 const player = usePlayerStore();
+const authStore = useAuthStore();
 
 function handleCloseMain() {
   player.closeMain();
@@ -19,7 +21,10 @@ function handleCloseMain() {
         <p class="main-player__header-name">Color Name</p>
       </div>
       <button type="button" class="main-player__profile-btn" aria-label="프로필">
-        <span class="main-player__profile-avatar"></span>
+        <span
+          class="main-player__profile-avatar"
+          :style="{ backgroundColor: authStore.avatarColor || undefined }"
+        ></span>
       </button>
     </header>
     <img :src="player.currentTrack.cover" alt="앨범커버" class="main-player__cover" />

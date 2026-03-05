@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../../bootstrap.php';
+require_once __DIR__ . '/../../../bootstrap.php';
 
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
@@ -29,23 +29,23 @@ if (!is_array($payload)) {
 }
 
 // 입력값 정리
-$id = trim((string) ($payload['id'] ?? ''));
+$provider = trim((string) ($payload['provider'] ?? ''));
+$providerId = trim((string) ($payload['providerId'] ?? ''));
 $email = trim((string) ($payload['email'] ?? ''));
-$password = (string) ($payload['password'] ?? '');
 $nickname = trim((string) ($payload['nickname'] ?? ''));
 $profileColor = trim((string) ($payload['profileColor'] ?? ''));
 
-// 필수값 검증
-if ($id === '' || $email === '' || $password === '' || $nickname === '') {
+// provider 검증
+if (!in_array($provider, ['kakao', 'google', 'naver'], true)) {
     http_response_code(422);
-    echo json_encode(['message' => '필수 항목을 모두 입력해주세요.'], JSON_UNESCAPED_UNICODE);
+    echo json_encode(['message' => '지원하지 않는 소셜 로그인 유형입니다.'], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
-// 아이디 형식 검증
-if (!preg_match('/^[a-zA-Z0-9_]{4,20}$/', $id)) {
+// provider_id 검증
+if ($providerId === '') {
     http_response_code(422);
-    echo json_encode(['message' => '아이디는 4~20자의 영문, 숫자, 언더스코어(_)만 가능합니다.'], JSON_UNESCAPED_UNICODE);
+    echo json_encode(['message' => '소셜 사용자 정보가 올바르지 않습니다.'], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
@@ -53,13 +53,6 @@ if (!preg_match('/^[a-zA-Z0-9_]{4,20}$/', $id)) {
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     http_response_code(422);
     echo json_encode(['message' => '이메일 형식이 올바르지 않습니다.'], JSON_UNESCAPED_UNICODE);
-    exit;
-}
-
-// 비밀번호 길이 검증
-if (strlen($password) < 8) {
-    http_response_code(422);
-    echo json_encode(['message' => '비밀번호는 8자 이상이어야 합니다.'], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
@@ -71,16 +64,9 @@ if ($nicknameLength < 2 || $nicknameLength > 5) {
     exit;
 }
 
-// 프로필 색상 선택 여부 검증
-if ($profileColor === '') {
-    http_response_code(422);
-    echo json_encode(['message' => '프로필 색상을 선택해주세요.'], JSON_UNESCAPED_UNICODE);
-    exit;
-}
-
 if (!preg_match('/^#[0-9A-Fa-f]{6}$/', $profileColor)) {
     http_response_code(422);
-    echo json_encode(['message' => '프로필 색상 형식이 올바르지 않습니다.'], JSON_UNESCAPED_UNICODE);
+    echo json_encode(['message' => '프로필 색상을 선택해주세요.'], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
@@ -105,62 +91,75 @@ function generateUuidV4(): string
 try {
     $pdo = Database::getConnection();
 
-    // 아이디 중복 확인
-    $idCheckStmt = $pdo->prepare('SELECT user_uuid FROM users WHERE id = :id LIMIT 1');
-    $idCheckStmt->execute(['id' => $id]);
-    if ($idCheckStmt->fetch()) {
-        http_response_code(409);
-        echo json_encode(['message' => '이미 사용 중인 아이디입니다.'], JSON_UNESCAPED_UNICODE);
+    // provider + provider_id 중복 확인
+    $providerStmt = $pdo->prepare(
+        'SELECT user_uuid, id, email, nickname, profile_color, provider
+         FROM users
+         WHERE provider = :provider AND provider_id = :provider_id
+         LIMIT 1'
+    );
+    $providerStmt->execute([
+        'provider' => $provider,
+        'provider_id' => $providerId
+    ]);
+    $foundByProvider = $providerStmt->fetch();
+
+    if ($foundByProvider) {
+        $_SESSION['user_uuid'] = $foundByProvider['user_uuid'];
+        echo json_encode([
+            'success' => true,
+            'user' => [
+                'user_uuid' => $foundByProvider['user_uuid'],
+                'id' => $foundByProvider['id'],
+                'email' => $foundByProvider['email'],
+                'nickname' => $foundByProvider['nickname'],
+                'provider' => $foundByProvider['provider'],
+                'profileColor' => $foundByProvider['profile_color']
+            ]
+        ], JSON_UNESCAPED_UNICODE);
         exit;
     }
 
     // 이메일 중복 확인
-    $emailCheckStmt = $pdo->prepare('SELECT user_uuid FROM users WHERE email = :email LIMIT 1');
-    $emailCheckStmt->execute(['email' => $email]);
-    if ($emailCheckStmt->fetch()) {
+    $emailStmt = $pdo->prepare('SELECT user_uuid FROM users WHERE email = :email LIMIT 1');
+    $emailStmt->execute(['email' => $email]);
+    if ($emailStmt->fetch()) {
         http_response_code(409);
         echo json_encode(['message' => '이미 가입된 이메일입니다.'], JSON_UNESCAPED_UNICODE);
         exit;
     }
 
-    // 저장용 데이터 준비
+    // 신규 소셜 계정 생성
     $userUuid = generateUuidV4();
-    $passwordHash = password_hash($password, PASSWORD_DEFAULT);
-
-    // 회원가입 정보 저장
     $insertStmt = $pdo->prepare(
         'INSERT INTO users (user_uuid, id, email, password_hash, nickname, profile_color, provider, provider_id)
          VALUES (:user_uuid, :id, :email, :password_hash, :nickname, :profile_color, :provider, :provider_id)'
     );
-
     $insertStmt->execute([
         'user_uuid' => $userUuid,
-        'id' => $id,
+        'id' => null,
         'email' => $email,
-        'password_hash' => $passwordHash,
+        'password_hash' => null,
         'nickname' => $nickname,
         'profile_color' => strtoupper($profileColor),
-        'provider' => 'local',
-        'provider_id' => null
+        'provider' => $provider,
+        'provider_id' => $providerId
     ]);
 
     $_SESSION['user_uuid'] = $userUuid;
 
-    http_response_code(201);
     echo json_encode([
         'success' => true,
         'user' => [
             'user_uuid' => $userUuid,
-            'id' => $id,
+            'id' => null,
             'email' => $email,
             'nickname' => $nickname,
-            'provider' => 'local',
+            'provider' => $provider,
             'profileColor' => strtoupper($profileColor)
         ]
     ], JSON_UNESCAPED_UNICODE);
 } catch (Throwable $e) {
     http_response_code(500);
-    echo json_encode([
-        'message' => '회원가입 처리 중 서버 오류가 발생했습니다.'
-    ], JSON_UNESCAPED_UNICODE);
+    echo json_encode(['message' => '소셜 회원가입 처리 중 서버 오류가 발생했습니다.'], JSON_UNESCAPED_UNICODE);
 }

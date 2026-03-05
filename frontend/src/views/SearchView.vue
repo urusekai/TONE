@@ -256,18 +256,23 @@ function onSubmit(e) {
   display: flex;
   flex-wrap: nowrap;
   overflow-x: auto;
-  gap: 14px;
-  padding: 0 10px;
   -webkit-overflow-scrolling: touch;
-  scroll-snap-type: x mandatory;
+}
+
+#tag-list {
+  gap: 14px;
 }
 
 /* ✅ 최근 컬러 스크롤 줄(진짜 스크롤되는 요소) */
 #color-circle-list {
-  padding: 0 18px; /* ✅ 양쪽 여백 */
+  box-sizing: border-box;
+  padding: 0 14px;
   gap: 14px;
+  align-items: flex-start;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 18px;
 }
 
 .scroll-container::-webkit-scrollbar {
@@ -277,11 +282,6 @@ function onSubmit(e) {
 /* (선택) 스냅: 아이템이 딱딱 붙게 */
 .recent-colors-wrapper .color-item {
   scroll-snap-align: start;
-}
-
-/* 반쯤 잘린 채로 시작 */
-.recent-colors-wrapper .color-item:first-child {
-  margin-left: -10px; /* 원하는 만큼 조절 */
 }
 
 /* 최근 검색어 태그 */

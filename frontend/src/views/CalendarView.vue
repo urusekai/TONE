@@ -1,5 +1,11 @@
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+import { useCalendarStore, createDefaultEntry } from '@/stores/calendarStore';
+import { useAuthStore } from '@/stores/auth';
+import { updateMyProfileColor } from '@/services/userService';
+
+const authStore = useAuthStore();
 
 // 아이콘/이미지
 import prevIcon from '@/assets/icons/prev.svg';
@@ -8,40 +14,56 @@ import pauseIcon from '@/assets/icons/pause.svg';
 import addIcon from '@/assets/icons/add.svg';
 import thumbTrack from '@/assets/images/thumb-track.png';
 
-function formatKey(month, day) {
-  return `${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+const route = useRoute();
+
+function formatKey(year, month, day) {
+  // ✅ YYYY-MM-DD 형식
+  return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 }
 
 /* =========================
    상태
 ========================= */
 const viewDate = ref(new Date());
-const selectedKey = ref(formatKey(viewDate.value.getMonth() + 1, viewDate.value.getDate()));
+// ✅ YYYY-MM-DD 형식으로 초기화
+const selectedKey = ref(
+  formatKey(viewDate.value.getFullYear(), viewDate.value.getMonth() + 1, viewDate.value.getDate())
+);
 const isEditing = ref(false);
 const memoText = ref('');
+
+const calendarStore = useCalendarStore();
+
+/* =========================
+   route.query.date 처리
+   - MainView에서 goCalendar() 시 query로 dateKey 전달받음
+   - 전달받으면 해당 날짜로 selectedKey 업데이트
+========================= */
+onMounted(() => {
+  // ✅ localStorage 데이터 확실히 로드 (새로고침 시 대비)
+  calendarStore.loadFromLocalStorage();
+
+  if (route.query.date) {
+    const dateFromQuery = String(route.query.date);
+    // YYYY-MM-DD 형식 검증
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateFromQuery)) {
+      selectedKey.value = dateFromQuery;
+    }
+  }
+});
 
 /* =========================
    데이터
 ========================= */
-const calendarData = ref({
-  '02-01': {
-    name: 'Viva Magenta',
-    number: '18-1750',
-    color: '#BB2649',
-    memo: '멈추고 싶지 않은 열기로 가득 찬, 나 자신이 주인공인 날.',
-    music: {
-      title: 'Heavenly',
-      artist: 'Cigarettes After Sex',
-      cover: thumbTrack
-    }
-  },
-  '02-02': {
-    name: 'Classic Blue',
-    number: '19-4052',
-    color: '#0F4C81',
-    memo: '오늘은 마음이 아주 차분한 날이었다.',
-    music: { title: 'Blue Monday', artist: 'New Order', cover: thumbTrack }
-  }
+/*
+  선택된 날짜 데이터
+
+  ✅ createDefaultEntry 사용으로 defaultData 통일
+  - store의 기본값과 일치하여 예측 가능한 동작
+*/
+const selectedData = computed(() => {
+  // ✅ createDefaultEntry 사용으로 defaultData 통일
+  return calendarStore.calendarData[selectedKey.value] || createDefaultEntry();
 });
 
 /* =========================
@@ -49,7 +71,6 @@ const calendarData = ref({
 ========================= */
 const currentMonth = computed(() => viewDate.value.getMonth());
 const currentYear = computed(() => viewDate.value.getFullYear());
-
 const monthLabel = computed(() => `${String(currentMonth.value + 1).padStart(2, '0')}월`);
 
 const daysInMonth = computed(() =>
@@ -65,37 +86,55 @@ const calendarDays = computed(() => {
 });
 
 /* =========================
-   선택된 데이터
+   선택된 데이터 동기화
 ========================= */
-const selectedData = computed(() => {
-  return (
-    calendarData.value[selectedKey.value] || {
-      name: '기록 없음',
-      number: '00-0000(팬톤 컬러넘버)',
-      color: '#d9d9d9',
-      memo: '',
-      music: { title: 'Title', artist: 'Artist', cover: thumbTrack }
-    }
-  );
-});
-
 watch(
   selectedKey,
   () => {
-    memoText.value = selectedData.value.memo;
+    // ✅ memoText 안전 처리
+    memoText.value = selectedData.value.memo || '';
     isEditing.value = false;
   },
   { immediate: true }
 );
 
+/*
+  ✅ 월 변경 시 selectedKey 업데이트
+  - prevMonth() / nextMonth() 호출 후
+  - viewDate가 변경되면 자동으로 selectedKey 다시 계산
+*/
+watch(
+  () => `${currentYear.value}-${currentMonth.value}`,
+  () => {
+    // 현재 월의 1일로 selectedKey 업데이트
+    selectedKey.value = formatKey(currentYear.value, currentMonth.value + 1, 1);
+  }
+);
+
 const memoCount = computed(() => memoText.value.length);
+
+/* =========================
+   최적화: 날짜별 day-dot 데이터 캐싱
+   - formatKey() 반복 호출 제거
+   - 각 day에 대한 색상을 미리 계산
+========================= */
+const dayColorMap = computed(() => {
+  const map = {};
+  calendarDays.value.forEach((day) => {
+    if (day) {
+      const key = formatKey(currentYear.value, currentMonth.value + 1, day);
+      map[day] = calendarStore.calendarData[key]?.color || '#d9d9d9';
+    }
+  });
+  return map;
+});
 
 /* =========================
    이벤트
 ========================= */
 function selectDate(day) {
   if (!day) return;
-  selectedKey.value = formatKey(currentMonth.value + 1, day);
+  selectedKey.value = formatKey(currentYear.value, currentMonth.value + 1, day);
 }
 
 function prevMonth() {
@@ -109,18 +148,9 @@ function startEdit() {
   isEditing.value = true;
 }
 
+/* ✅ 메모 저장: store로만 */
 function saveMemo() {
-  // 기록 없으면 생성
-  if (!calendarData.value[selectedKey.value]) {
-    calendarData.value[selectedKey.value] = {
-      name: '새로운 기록',
-      number: '00-0000',
-      color: '#d9d9d9',
-      memo: '',
-      music: { title: 'Title', artist: 'Artist', cover: thumbTrack }
-    };
-  }
-  calendarData.value[selectedKey.value].memo = memoText.value;
+  calendarStore.saveMemo(selectedKey.value, memoText.value);
   isEditing.value = false;
   alert('저장되었습니다!');
 }
@@ -128,119 +158,168 @@ function saveMemo() {
 function goPlaylist() {
   window.location.href = './playlist.html';
 }
+
+const isChangingProfileColor = ref(false);
+
+async function setProfileColor() {
+  if (isChangingProfileColor.value) return;
+
+  const color = selectedData.value?.color || '';
+  if (!color) {
+    window.alert('적용할 색상이 없습니다.');
+    return;
+  }
+
+  isChangingProfileColor.value = true;
+
+  try {
+    const result = await updateMyProfileColor(color);
+    const nextColor = result?.profileColor || color;
+    authStore.setProfileColor(nextColor);
+    showToast();
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : '프로필 색상 변경 중 오류가 발생했습니다.';
+    window.alert(message);
+  } finally {
+    isChangingProfileColor.value = false;
+  }
+}
+
+/* Toast UI */
+const toastVisible = ref(false);
+
+function showToast() {
+  toastVisible.value = true;
+  setTimeout(() => {
+    toastVisible.value = false;
+  }, 2000);
+}
 </script>
 
 <template>
-  <main id="calendar">
-    <!-- 캘린더 카드 -->
-    <section class="calendar-card">
-      <div class="calendar-header">
-        <button type="button" id="prevMonth" @click="prevMonth">
-          <img :src="prevIcon" alt="이전달" />
-        </button>
+  <div>
+    <main id="calendar">
+      <!-- 캘린더 카드 -->
+      <section class="calendar-card">
+        <div class="calendar-header">
+          <button type="button" id="prevMonth" @click="prevMonth">
+            <img :src="prevIcon" alt="이전달" />
+          </button>
 
-        <!-- ✅ CSS가 #monthTitle에 걸려있어서 id 유지 -->
-        <h2 id="monthTitle">{{ monthLabel }}</h2>
+          <!-- ✅ CSS가 #monthTitle에 걸려있어서 id 유지 -->
+          <h2 id="monthTitle">{{ monthLabel }}</h2>
 
-        <button type="button" id="nextMonth" @click="nextMonth">
-          <img :src="nextIcon" alt="다음달" />
-        </button>
-      </div>
-
-      <div class="calendar-grid" id="calendarGrid">
-        <div
-          v-for="(day, idx) in calendarDays"
-          :key="idx"
-          class="calendar-day"
-          :class="{ selected: day && formatKey(currentMonth + 1, day) === selectedKey }"
-          @click="selectDate(day)"
-        >
-          <template v-if="day">
-            <span>{{ String(day).padStart(2, '0') }}</span>
-            <div
-              class="day-dot"
-              :style="{
-                backgroundColor: calendarData[formatKey(currentMonth + 1, day)]?.color || '#d9d9d9'
-              }"
-            />
-          </template>
+          <button type="button" id="nextMonth" @click="nextMonth">
+            <img :src="nextIcon" alt="다음달" />
+          </button>
         </div>
-      </div>
-    </section>
 
-    <!-- 데일리 팬톤 카드 -->
-    <section class="daily-tone-card">
-      <div class="tone-main-row">
-        <div class="tone-left">
-          <div class="date-badge">{{ selectedKey.replace('-', '.') }}</div>
+        <div class="calendar-grid" id="calendarGrid">
+          <div
+            v-for="(day, idx) in calendarDays"
+            :key="idx"
+            class="calendar-day"
+            :class="{
+              selected: day && formatKey(currentYear, currentMonth + 1, day) === selectedKey
+            }"
+            @click="selectDate(day)"
+          >
+            <template v-if="day">
+              <span>{{ String(day).padStart(2, '0') }}</span>
+              <div
+                class="day-dot"
+                :style="{
+                  backgroundColor: dayColorMap[day]
+                }"
+              />
+            </template>
+          </div>
+        </div>
+      </section>
 
-          <div class="tone-text">
-            <h3>{{ selectedData.name }}</h3>
-            <p class="pantone-num">
-              {{
-                selectedData.number.includes('팬톤')
-                  ? selectedData.number
-                  : `${selectedData.number}(팬톤 컬러넘버)`
-              }}
-            </p>
+      <!-- 데일리 팬톤 카드 -->
+      <section class="daily-tone-card">
+        <div class="tone-main-row">
+          <div class="tone-left">
+            <div class="date-badge">{{ selectedKey.slice(5).replace('-', '.') }}</div>
+
+            <div class="tone-text">
+              <h3>{{ selectedData.name }}</h3>
+              <p class="pantone-num">
+                {{
+                  selectedData.number?.includes('팬톤')
+                    ? selectedData.number
+                    : `${selectedData.number || '00-0000'}(팬톤 컬러넘버)`
+                }}
+              </p>
+            </div>
+
+            <div class="tone-controls">
+              <button type="button" class="btn-play-pause" @click="goPlaylist">
+                <img :src="pauseIcon" alt="재생/일시정지" />
+              </button>
+              <button type="button" class="btn-add-list">
+                <img :src="addIcon" alt="추가" />
+              </button>
+            </div>
           </div>
 
-          <div class="tone-controls">
-            <button type="button" class="btn-play-pause" @click="goPlaylist">
-              <img :src="pauseIcon" alt="재생/일시정지" />
+          <div class="tone-right">
+            <div class="tone-color-preview" :style="{ background: selectedData.color }"></div>
+            <button
+              type="button"
+              class="btn-profile-set"
+              :disabled="isChangingProfileColor"
+              @click="setProfileColor"
+            >
+              {{ isChangingProfileColor ? '변경중...' : '프로필 설정' }}
             </button>
-            <button type="button" class="btn-add-list">
-              <img :src="addIcon" alt="추가" />
-            </button>
           </div>
         </div>
 
-        <div class="tone-right">
-          <div class="tone-color-preview" :style="{ background: selectedData.color }"></div>
-          <button type="button" class="btn-profile-set">프로필 설정</button>
-        </div>
-      </div>
-
-      <div class="tone-music-info">
-        <div class="music-thumb">
-          <img :src="selectedData.music.cover" alt="앨범아트" />
-        </div>
-        <div class="music-text">
-          <span class="music-title">{{ selectedData.music.title }}</span>
-          <span class="music-artist">{{ selectedData.music.artist }}</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- 메모 영역 -->
-    <section class="memo-card">
-      <div class="memo-section">
-        <div class="memo-header">
-          <h4>기록 메모</h4>
-          <div class="memo-buttons">
-            <button type="button" class="btn-outline" @click="startEdit">
-              {{ isEditing ? '수정 중' : '수정' }}
-            </button>
-            <button type="button" class="btn-primary" @click="saveMemo">저장</button>
+        <div class="tone-music-info">
+          <div class="music-thumb">
+            <img :src="selectedData.music.cover || thumbTrack" alt="앨범아트" />
+          </div>
+          <div class="music-text">
+            <span class="music-title">{{ selectedData.music.title }}</span>
+            <span class="music-artist">{{ selectedData.music.artist }}</span>
           </div>
         </div>
+      </section>
 
-        <div class="memo-box">
-          <textarea
-            id="memoInput"
-            placeholder="오늘의 톤을 한 줄로 남겨주세요!"
-            maxlength="50"
-            :readonly="!isEditing"
-            v-model="memoText"
-          ></textarea>
-          <div class="memo-count">
-            <span id="currentCount">{{ memoCount }}</span
-            >/50
+      <!-- 메모 영역 -->
+      <section class="memo-card">
+        <div class="memo-section">
+          <div class="memo-header">
+            <h4>기록 메모</h4>
+            <div class="memo-buttons">
+              <button type="button" class="btn-outline" @click="startEdit">
+                {{ isEditing ? '수정 중' : '수정' }}
+              </button>
+              <button type="button" class="btn-primary" @click="saveMemo">저장</button>
+            </div>
+          </div>
+
+          <div class="memo-box">
+            <textarea
+              id="memoInput"
+              placeholder="오늘의 톤을 한 줄로 남겨주세요!"
+              maxlength="50"
+              :readonly="!isEditing"
+              v-model="memoText"
+            ></textarea>
+            <div class="memo-count">
+              <span id="currentCount">{{ memoCount }}</span
+              >/50
+            </div>
           </div>
         </div>
-      </div>
-    </section>
-  </main>
+      </section>
+    </main>
+    <div v-if="toastVisible" class="toast">프로필 컬러가 변경되었습니다</div>
+  </div>
 </template>
 
 <style scoped>
@@ -574,5 +653,36 @@ function goPlaylist() {
   border-radius: 8px;
   box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.05);
   color: #3f5f73d2;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 90px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #3f5f73;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 20px;
+  font-size: 13px;
+  animation: toastFade 2s ease forwards;
+}
+
+@keyframes toastFade {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 20px);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 </style>

@@ -1,6 +1,9 @@
 <script setup>
 import { computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
+
+const authStore = useAuthStore();
 
 defineOptions({
   name: 'AppHeader'
@@ -62,7 +65,7 @@ function handleBackClick() {
     <div v-else class="header__title-spacer"></div>
 
     <RouterLink class="header__right-btn" to="/profile-edit">
-      <div class="avatar"></div>
+      <div class="avatar" :style="{ backgroundColor: authStore.avatarColor }"></div>
     </RouterLink>
   </header>
 </template>
