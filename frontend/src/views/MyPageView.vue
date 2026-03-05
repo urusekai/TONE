@@ -15,7 +15,7 @@ const authStore = useAuthStore();
 const user = reactive({
   name: 'Toner 님',
   email: 'toner1234_user@gmail.com',
-  plan: '프로',
+  plan: '무료',
   profileColor: ''
 });
 
@@ -60,12 +60,19 @@ const goTo = (route) => {
   if (route) router.push(route);
 };
 
+function formatMembershipPlan(plan) {
+  if (plan === 'pro') return '프로';
+  if (plan === 'basic') return '베이직';
+  return '무료';
+}
+
 function applyUser(userData) {
   if (!userData) return;
 
   const nickname = typeof userData.nickname === 'string' ? userData.nickname.trim() : '';
   user.name = nickname ? `${nickname} 님` : 'Toner 님';
   user.email = typeof userData.email === 'string' ? userData.email : user.email;
+  user.plan = formatMembershipPlan(userData.membershipPlan);
   user.profileColor =
     typeof userData.profileColor === 'string' ? userData.profileColor : user.profileColor;
 }

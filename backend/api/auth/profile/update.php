@@ -82,7 +82,7 @@ try {
 
     // 현재 로그인 사용자 확인
     $userStmt = $pdo->prepare(
-        'SELECT user_uuid, id, email, nickname, profile_color, provider
+        'SELECT user_uuid, id, email, nickname, profile_color, provider, membership_plan
          FROM users
          WHERE user_uuid = :user_uuid
          LIMIT 1'
@@ -157,7 +157,8 @@ try {
             'email' => $email,
             'nickname' => $nickname,
             'provider' => $currentUser['provider'],
-            'profileColor' => $nextProfileColor
+            'profileColor' => $nextProfileColor,
+            'membershipPlan' => $currentUser['membership_plan']
         ]
     ], JSON_UNESCAPED_UNICODE);
 } catch (Throwable $e) {
