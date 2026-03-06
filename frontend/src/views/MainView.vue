@@ -193,10 +193,10 @@ const specRowEl = ref(null);
 let cleanupSpectrumDrag = null;
 
 /* ---------- 라우팅 헬퍼 ---------- */
-// 지금은 임시로 /playlist?pid=... 형태
+// 지금은 임시로 /playlist?id=... 형태
 // 라우터를 /playlist/:id 로 쓰면 return { name:'playlist', params:{ id } } 로 바꾸면 됨.
-function playlistTo(pid) {
-  return { path: '/playlist', query: { pid } };
+function playlistTo(id) {
+  return { path: '/playlist', query: { id } };
 }
 
 function openMainPlayerDaily() {
@@ -214,9 +214,9 @@ function openMainPlayerDaily() {
 function goCalendar() {
   router.push('/calendar');
 }
-function onSaveSpectrum(pid) {
+function onSaveSpectrum(id) {
   // TODO: 캘린더 저장 로직 연결
-  console.log('[save] spectrum:', pid);
+  console.log('[save] spectrum:', id);
 }
 
 /* ---------- color utils (hex/rgb/rgba 전부 처리) ---------- */

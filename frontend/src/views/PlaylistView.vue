@@ -1,43 +1,93 @@
 <script setup>
+import { computed, ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import { usePlayerStore } from '@/stores/player';
-import heroThumbImage from '@/assets/images/thumb-color.png';
 import trackThumbImage from '@/assets/images/thumb.png';
 import likeIcon from '@/assets/icons/like.svg';
 import playCircleIcon from '@/assets/icons/play-circle.svg';
 import addIcon from '@/assets/icons/add.svg';
+import { apiRequest } from '@/services/httpClient';
 
+const route = useRoute();
 const player = usePlayerStore();
+const playlistId = computed(() => String(route.query.id || '').trim());
+const isLoading = ref(false);
+const errorMessage = ref('');
+const playlist = ref(null);
+const trackList = ref([]);
 
-const trackList = Array.from({ length: 11 }, (_, index) => ({
-  id: index + 1,
-  title: 'Falling Behind',
-  artist: 'Laufey',
-  cover: trackThumbImage
-}));
+function formatLikes(value) {
+  return Number(value || 0).toLocaleString('en-US');
+}
+
+async function loadPlaylistDetail() {
+  if (!playlistId.value) {
+    playlist.value = null;
+    trackList.value = [];
+    errorMessage.value = '플레이리스트 정보가 없습니다.';
+    return;
+  }
+
+  isLoading.value = true;
+  errorMessage.value = '';
+  playlist.value = null;
+  trackList.value = [];
+
+  try {
+    const result = await apiRequest(
+      `/api/playlists/detail.php?id=${encodeURIComponent(playlistId.value)}`,
+      {},
+      '플레이리스트 정보를 불러오지 못했습니다.'
+    );
+
+    playlist.value = result?.playlist ?? null;
+    trackList.value = Array.isArray(result?.tracks) ? result.tracks : [];
+  } catch (error) {
+    errorMessage.value =
+      error instanceof Error ? error.message : '플레이리스트 정보를 불러오지 못했습니다.';
+  } finally {
+    isLoading.value = false;
+  }
+}
 
 function handleOpenMainPlayer(track) {
-  player.openMain(track);
+  player.openMain({
+    title: track?.title || '',
+    artist: track?.artist || '',
+    cover: trackThumbImage
+  });
 }
 
 function handleOpenFirstTrack() {
-  if (!trackList.length) return;
-  player.openMain(trackList[0]);
+  if (!trackList.value.length) return;
+  handleOpenMainPlayer(trackList.value[0]);
 }
+
+watch(
+  playlistId,
+  async () => {
+    await loadPlaylistDetail();
+  },
+  { immediate: true }
+);
 </script>
 
 <template>
   <main id="playlist">
-    <section class="playlist-hero">
-      <img class="playlist-hero__thumb" :src="heroThumbImage" alt="썸네일" />
+    <p v-if="isLoading" class="playlist-state">플레이리스트를 불러오는 중...</p>
+    <p v-else-if="errorMessage" class="playlist-state playlist-state-error">{{ errorMessage }}</p>
+
+    <section v-else-if="playlist" class="playlist-hero">
+      <div class="playlist-hero__thumb" :style="{ backgroundColor: playlist.color_hex || '#b7aea6' }"></div>
       <div class="playlist-hero__content">
         <div class="playlist-hero__text">
-          <p class="playlist-hero__title">Pale Dogwood</p>
-          <p class="playlist-hero__code">12-3456</p>
+          <p class="playlist-hero__title">{{ playlist.color_name || '' }}</p>
+          <p class="playlist-hero__code">{{ playlist.pantone_code || '' }}</p>
         </div>
         <div class="playlist-hero__actions">
           <div class="playlist-hero__likes">
             <img :src="likeIcon" alt="좋아요" />
-            <span>12,300</span>
+            <span>{{ formatLikes(playlist.like_count) }}</span>
           </div>
           <button type="button" class="playlist-hero__play-button" @click="handleOpenFirstTrack">
             <img class="playlist-hero__add-icon" :src="addIcon" alt="추가" />
@@ -61,7 +111,7 @@ function handleOpenFirstTrack() {
           @keydown.enter.prevent="handleOpenMainPlayer(track)"
           @keydown.space.prevent="handleOpenMainPlayer(track)"
         >
-          <img class="playlist-track-item__thumb" :src="track.cover" alt="썸네일" />
+          <img class="playlist-track-item__thumb" :src="trackThumbImage" alt="썸네일" />
           <div class="playlist-track-item__meta">
             <p class="playlist-track-item__title">{{ track.title }}</p>
             <p class="playlist-track-item__artist">{{ track.artist }}</p>
@@ -82,6 +132,17 @@ function handleOpenFirstTrack() {
   align-items: stretch;
   overflow: hidden;
   padding-bottom: 0;
+}
+
+.playlist-state {
+  padding: 12px 0;
+  font-size: 14px;
+  color: #3f5f73;
+  text-align: center;
+}
+
+.playlist-state-error {
+  color: #b42318;
 }
 
 #playlist .playlist-hero {

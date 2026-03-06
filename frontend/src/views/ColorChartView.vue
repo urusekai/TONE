@@ -10,7 +10,7 @@
         :class="{ 'is-active': activePid === item.playlistId }"
         :style="{ '--color': item.colorHex }"
       >
-        <!-- ✅ 카드 전체 클릭: /playlist?pid=... -->
+        <!-- ✅ 카드 전체 클릭: /playlist?id=... -->
         <!-- (기존 html의 a.cc-link 역할) -->
         <a
           class="cc-link"
@@ -102,7 +102,7 @@ const activePid = ref('');
 
 /**
  * ✅ 더미 데이터(확장 가능)
- * 요구 모델: week, rank, prevRank, likes, playlistId(pid), colorName, pantoneCode, colorHex, hashtags, totalTracks ...
+ * 요구 모델: week, rank, prevRank, likes, playlistId, colorName, pantoneCode, colorHex, hashtags, totalTracks ...
  * - 현재 UI는 pantoneCode / colorName / rank / likes / colorHex 사용
  */
 
@@ -245,14 +245,14 @@ const colors = {
   lightText: '#F2F2EE' // Cloud Dancer
 };
 
-/** 카드 클릭: active 토글 + /playlist?pid */
-function onCardClick(pid) {
+/** 카드 클릭: active 토글 + /playlist?id */
+function onCardClick(id) {
   // 1) 먼저 active 켜서 LP 회전 트리거
-  activePid.value = pid;
+  activePid.value = id;
 
   // 2) 짧게 보여주고 이동
   window.setTimeout(() => {
-    router.push({ path: '/playlist', query: { pid } });
+    router.push({ path: '/playlist', query: { id } });
   }, 350); // 여기서 넘어가는 시간 조절
 }
 
