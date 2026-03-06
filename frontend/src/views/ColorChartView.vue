@@ -47,7 +47,8 @@
                 type="button"
                 class="cc-like-btn"
                 aria-label="좋아요"
-                @click.stop.prevent="toggleLike(item)"
+                :disabled="isLikePending(item.id)"
+                @click.stop.prevent="handleToggleLike(item)"
                 title="좋아요"
               >
                 <img
@@ -100,6 +101,7 @@ const paletteLog = usePaletteLogStore();
 const activePid = ref('');
 const isLoading = ref(false);
 const errorMessage = ref('');
+const pendingLikeMap = ref({});
 const chartItems = ref([]);
 
 const colors = {
@@ -115,9 +117,46 @@ function onCardClick(id) {
   }, 350);
 }
 
-function toggleLike(item) {
-  item.liked = !item.liked;
-  item.like_count += item.liked ? 1 : -1;
+function isLikePending(id) {
+  return Boolean(pendingLikeMap.value[String(id)]);
+}
+
+function setLikePending(id, value) {
+  pendingLikeMap.value = {
+    ...pendingLikeMap.value,
+    [String(id)]: value
+  };
+}
+
+async function handleToggleLike(item) {
+  const itemId = String(item?.id || '');
+  if (!itemId || isLikePending(itemId)) return;
+
+  setLikePending(itemId, true);
+
+  try {
+    const result = await apiRequest(
+      '/api/playlist/like.php',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          playlist_id: Number(item.id)
+        })
+      },
+      '좋아요 처리에 실패했습니다.'
+    );
+
+    item.liked = Boolean(result?.liked);
+    item.like_count = Number(result?.like_count || 0);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : '좋아요 처리에 실패했습니다.';
+    window.alert(message);
+  } finally {
+    setLikePending(itemId, false);
+  }
 }
 
 async function loadChartItems() {
@@ -347,6 +386,11 @@ onMounted(async () => {
   border: 0;
   background: transparent;
   padding: 0;
+}
+
+.cc-like-btn:disabled {
+  cursor: default;
+  opacity: 0.7;
 }
 
 .cc-like-btn img {
