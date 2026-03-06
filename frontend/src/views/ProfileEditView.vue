@@ -221,6 +221,7 @@ async function handleSubmit() {
   height: 96px;
   border-radius: 999px;
   background-color: var(--color-pantone-primary);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.25);
 }
 
 .profile-color-btn {
