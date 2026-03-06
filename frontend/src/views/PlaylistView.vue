@@ -32,6 +32,7 @@ function toPlayerPlaylist(value) {
     color_name: String(value?.color_name || ''),
     color_hex: String(value?.color_hex || '#B7AEA6'),
     liked: Boolean(value?.liked),
+    saved: Boolean(value?.saved),
     like_count: Number(value?.like_count || 0)
   };
 }

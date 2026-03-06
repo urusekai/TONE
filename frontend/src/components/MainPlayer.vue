@@ -1,13 +1,24 @@
 <script setup>
 import { computed, nextTick, ref, watch } from 'vue';
 import { usePlayerStore } from '@/stores/player';
+import { usePaletteLogStore } from '@/stores/paletteLog';
+import { apiRequest } from '@/services/httpClient';
 
 import arrowDown from '@/assets/icons/arrow-down.svg';
 import arrowDownLight from '@/assets/icons/arrow-down_light.svg';
+import likeIcon from '@/assets/icons/like.svg';
+import likeFullIcon from '@/assets/icons/like_full.svg';
+import addIcon from '@/assets/icons/add.svg';
+import addCompleteIcon from '@/assets/icons/addComplete.svg';
+import shuffleIcon from '@/assets/icons/shuffle.svg';
+import repeatIcon from '@/assets/icons/repeat.svg';
+import repeatOneIcon from '@/assets/icons/repeat-one.svg';
 
 const player = usePlayerStore();
+const paletteLog = usePaletteLogStore();
 const isMV = ref(false);
 const videoRef = ref(null);
+const isLikeSubmitting = ref(false);
 
 const track = computed(() => {
   const t = player.current_track ?? {};
@@ -152,6 +163,11 @@ const isPlaying = computed(() => player.is_playing);
 const displayColorName = computed(() => track.value.color_name || 'Now Playing');
 const displayTitle = computed(() => track.value.title || '곡을 선택해 재생하세요');
 const displayArtist = computed(() => track.value.artist || '플레이리스트에서 트랙을 선택하면 재생됩니다');
+const playlistId = computed(() => String(player.current_playlist.id || '').trim());
+const isLiked = computed(() => Boolean(player.current_playlist.liked));
+const isSaved = computed(() => Boolean(player.current_playlist.saved));
+const isSavePending = computed(() => (playlistId.value ? paletteLog.isPending(playlistId.value) : false));
+const repeatButtonIcon = computed(() => (player.is_repeat_one ? repeatOneIcon : repeatIcon));
 
 function formatTime(seconds) {
   const safe = Number.isFinite(seconds) ? Math.max(0, Math.floor(seconds)) : 0;
@@ -171,6 +187,54 @@ function handleSeek(event) {
 
 function handleVideoLoadedMetadata() {
   syncVideoTime();
+}
+
+async function handleToggleLike() {
+  if (!playlistId.value || isLikeSubmitting.value) return;
+
+  isLikeSubmitting.value = true;
+
+  try {
+    const result = await apiRequest(
+      '/api/playlist/like.php',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          playlist_id: Number(playlistId.value)
+        })
+      },
+      '좋아요 처리에 실패했습니다.'
+    );
+
+    player.patchCurrentPlaylist({
+      liked: Boolean(result?.liked),
+      like_count: Number(result?.like_count || 0)
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : '좋아요 처리에 실패했습니다.';
+    window.alert(message);
+  } finally {
+    isLikeSubmitting.value = false;
+  }
+}
+
+async function handleToggleSave() {
+  if (!playlistId.value || isSavePending.value) return;
+
+  try {
+    const result = await paletteLog.toggle(playlistId.value);
+    if (!result) return;
+
+    player.patchCurrentPlaylist({
+      saved: Boolean(result?.saved)
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : '팔레트 로그 저장 처리에 실패했습니다.';
+    window.alert(message);
+  }
 }
 </script>
 
@@ -287,7 +351,7 @@ function handleVideoLoadedMetadata() {
       <button
         type="button"
         class="main-player__next-btn"
-        :disabled="!player.has_track || !player.has_next"
+        :disabled="!player.has_track || (!player.has_next && !player.is_repeat && !player.is_shuffle)"
         @click="player.playNext"
       >
         <img src="@/assets/icons/next-song.svg" alt="다음곡" />
@@ -295,18 +359,41 @@ function handleVideoLoadedMetadata() {
     </div>
 
     <div class="main-player__actions-bottom">
-      <button type="button" class="main-player__like-btn">
-        <img src="@/assets/icons/like.svg" alt="좋아요" />
-        <img src="@/assets/icons/like_full.svg" alt="좋아요" />
+      <button
+        type="button"
+        class="main-player__like-btn"
+        :class="{ 'is-liked': isLiked }"
+        :disabled="!playlistId || isLikeSubmitting"
+        @click="handleToggleLike"
+      >
+        <img :src="likeIcon" alt="좋아요" />
+        <img :src="likeFullIcon" alt="좋아요" />
       </button>
-      <button type="button" class="main-player__shuffle-btn">
-        <img src="@/assets/icons/shuffle.svg" alt="셔플" />
+      <button
+        type="button"
+        class="main-player__shuffle-btn"
+        :class="{ 'is-active': player.is_shuffle }"
+        :disabled="!player.has_track"
+        @click="player.toggleShuffle"
+      >
+        <img :src="shuffleIcon" alt="셔플" />
       </button>
-      <button type="button" class="main-player__repeat-btn">
-        <img src="@/assets/icons/repeat.svg" alt="반복" />
+      <button
+        type="button"
+        class="main-player__repeat-btn"
+        :class="{ 'is-active': player.is_repeat }"
+        :disabled="!player.has_track"
+        @click="player.toggleRepeat"
+      >
+        <img :src="repeatButtonIcon" alt="반복" />
       </button>
-      <button type="button" class="main-player__add-btn">
-        <img src="@/assets/icons/add.svg" alt="추가" />
+      <button
+        type="button"
+        class="main-player__add-btn"
+        :disabled="!playlistId || isSavePending"
+        @click="handleToggleSave"
+      >
+        <img :src="isSaved ? addCompleteIcon : addIcon" alt="추가" />
       </button>
     </div>
   </section>
@@ -752,6 +839,31 @@ function handleVideoLoadedMetadata() {
 .main-player__actions-bottom button img {
   width: 25px;
   height: 25px;
+}
+
+.main-player__actions-bottom button:disabled {
+  opacity: 0.45;
+}
+
+.main-player__shuffle-btn,
+.main-player__repeat-btn {
+  transition: opacity 0.2s ease;
+}
+
+.main-player__shuffle-btn img,
+.main-player__repeat-btn img {
+  opacity: 0.4;
+  transition: opacity 0.2s ease;
+}
+
+.main-player__shuffle-btn.is-active,
+.main-player__repeat-btn.is-active {
+  opacity: 1;
+}
+
+.main-player__shuffle-btn.is-active img,
+.main-player__repeat-btn.is-active img {
+  opacity: 1;
 }
 
 .main-player__like-btn img:last-child {
