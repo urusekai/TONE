@@ -5,7 +5,12 @@
     <section class="panel daily">
       <div class="daily-pill">Daily tone</div>
 
-      <div class="daily-inner">
+      <p v-if="isDailyLoading" class="daily-state">오늘의 톤을 불러오는 중...</p>
+      <p v-else-if="dailyErrorMessage" class="daily-state daily-state-error">
+        {{ dailyErrorMessage }}
+      </p>
+
+      <div v-else-if="dailyPlaylist" class="daily-inner">
         <div class="daily-text">
           <h2>{{ dailyPlaylist.color_name }}</h2>
           <p>
@@ -53,7 +58,15 @@
         <span class="hint">오늘 톤과 비슷한 색상 추천</span>
       </div>
 
-      <p v-if="spectrumErrorMessage" class="spectrum-state">{{ spectrumErrorMessage }}</p>
+      <p v-if="isDailyLoading" class="spectrum-state">오늘의 톤을 먼저 불러오는 중...</p>
+      <p v-else-if="dailyErrorMessage" class="spectrum-state">
+        오늘의 톤을 불러오지 못해 추천을 표시할 수 없습니다.
+      </p>
+      <p v-else-if="isSpectrumLoading" class="spectrum-state">비슷한 색상을 불러오는 중...</p>
+      <p v-else-if="spectrumErrorMessage" class="spectrum-state">{{ spectrumErrorMessage }}</p>
+      <p v-else-if="!spectrumPlaylists.length" class="spectrum-state">
+        비슷한 색상 추천이 없습니다.
+      </p>
 
       <div v-else class="spec-track">
         <div ref="specRowEl" class="spec-row">
@@ -147,13 +160,10 @@ const paletteLog = usePaletteLogStore();
 
 const rootEl = ref(null);
 const specRowEl = ref(null);
-const dailyPlaylist = {
-  id: 8,
-  pantone_code: '18-3834',
-  color_name: 'Deep Wisteria',
-  color_hex: '#615694',
-  total_tracks: 10
-};
+const dailyPlaylist = ref(null);
+const isDailyLoading = ref(false);
+const isSpectrumLoading = ref(false);
+const dailyErrorMessage = ref('');
 const spectrumPlaylists = ref([]);
 const spectrumErrorMessage = ref('');
 const paletteLogPreview = computed(() => paletteLog.paletteLogs.slice(0, 4));
@@ -168,7 +178,8 @@ function playlistTo(id) {
 }
 
 function goDailyPlaylist() {
-  router.push(playlistTo(dailyPlaylist.id));
+  if (!dailyPlaylist.value?.id) return;
+  router.push(playlistTo(dailyPlaylist.value.id));
 }
 
 async function handleTogglePalette(item) {
@@ -182,11 +193,18 @@ async function handleTogglePalette(item) {
 }
 
 async function loadSpectrumPlaylists() {
+  if (!dailyPlaylist.value?.id) {
+    spectrumPlaylists.value = [];
+    spectrumErrorMessage.value = '';
+    return;
+  }
+
+  isSpectrumLoading.value = true;
   spectrumErrorMessage.value = '';
 
   try {
     const result = await apiRequest(
-      `/api/playlist/spectrum.php?id=${encodeURIComponent(dailyPlaylist.id)}`,
+      `/api/playlist/spectrum.php?id=${encodeURIComponent(dailyPlaylist.value.id)}`,
       {},
       '데일리 스펙트럼을 불러오지 못했습니다.'
     );
@@ -198,6 +216,30 @@ async function loadSpectrumPlaylists() {
     spectrumPlaylists.value = [];
     spectrumErrorMessage.value =
       error instanceof Error ? error.message : '데일리 스펙트럼을 불러오지 못했습니다.';
+  } finally {
+    isSpectrumLoading.value = false;
+  }
+}
+
+async function loadDailyPlaylist() {
+  isDailyLoading.value = true;
+  dailyErrorMessage.value = '';
+  dailyPlaylist.value = null;
+
+  try {
+    const result = await apiRequest(
+      '/api/playlist/daily.php',
+      {},
+      '오늘의 톤을 불러오지 못했습니다.'
+    );
+
+    dailyPlaylist.value = result?.playlist ?? null;
+  } catch (error) {
+    dailyPlaylist.value = null;
+    dailyErrorMessage.value =
+      error instanceof Error ? error.message : '오늘의 톤을 불러오지 못했습니다.';
+  } finally {
+    isDailyLoading.value = false;
   }
 }
 
@@ -344,6 +386,7 @@ function bindSpectrumDrag(row) {
 
 onMounted(async () => {
   await paletteLog.load({ silent: true });
+  await loadDailyPlaylist();
   await loadSpectrumPlaylists();
   await nextTick();
 
@@ -410,6 +453,17 @@ watch(
 .daily-inner {
   display: grid;
   grid-template-columns: 1fr 92px;
+}
+
+.daily-state {
+  padding: 24px 0;
+  font-size: 13px;
+  color: #3f5f73;
+  text-align: center;
+}
+
+.daily-state-error {
+  color: #b42318;
 }
 
 .daily-text h2 {
