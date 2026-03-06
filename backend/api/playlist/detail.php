@@ -18,6 +18,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     exit;
 }
 
+$userUuid = trim((string) ($_SESSION['user_uuid'] ?? ''));
+
 $playlistId = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 if (!$playlistId) {
     http_response_code(422);
@@ -28,24 +30,53 @@ if (!$playlistId) {
 try {
     $pdo = Database::getConnection();
 
-    $playlistStmt = $pdo->prepare(
-        'SELECT
-            p.id,
-            p.pantone_code,
-            p.color_name,
-            p.color_hex,
-            p.like_count,
-            p.play_count,
-            c.id AS category_id,
-            c.mood AS category_mood,
-            c.label AS category_label
-         FROM playlists p
-         INNER JOIN categories c
-           ON c.id = p.category_id
-         WHERE p.id = :playlist_id
-         LIMIT 1'
-    );
-    $playlistStmt->execute(['playlist_id' => $playlistId]);
+    if ($userUuid !== '') {
+        $playlistStmt = $pdo->prepare(
+            'SELECT
+                p.id,
+                p.pantone_code,
+                p.color_name,
+                p.color_hex,
+                p.like_count,
+                p.play_count,
+                c.id AS category_id,
+                c.mood AS category_mood,
+                c.label AS category_label,
+                CASE WHEN pl.user_uuid IS NULL THEN 0 ELSE 1 END AS liked
+             FROM playlists p
+             INNER JOIN categories c
+               ON c.id = p.category_id
+             LEFT JOIN playlist_likes pl
+               ON pl.playlist_id = p.id
+              AND pl.user_uuid = :user_uuid
+             WHERE p.id = :playlist_id
+             LIMIT 1'
+        );
+        $playlistStmt->execute([
+            'playlist_id' => $playlistId,
+            'user_uuid' => $userUuid
+        ]);
+    } else {
+        $playlistStmt = $pdo->prepare(
+            'SELECT
+                p.id,
+                p.pantone_code,
+                p.color_name,
+                p.color_hex,
+                p.like_count,
+                p.play_count,
+                c.id AS category_id,
+                c.mood AS category_mood,
+                c.label AS category_label,
+                0 AS liked
+             FROM playlists p
+             INNER JOIN categories c
+               ON c.id = p.category_id
+             WHERE p.id = :playlist_id
+             LIMIT 1'
+        );
+        $playlistStmt->execute(['playlist_id' => $playlistId]);
+    }
     $playlist = $playlistStmt->fetch();
 
     if (!$playlist) {
@@ -95,6 +126,7 @@ try {
             'color_name' => (string) $playlist['color_name'],
             'color_hex' => (string) $playlist['color_hex'],
             'like_count' => (int) $playlist['like_count'],
+            'liked' => (bool) $playlist['liked'],
             'play_count' => (int) $playlist['play_count'],
             'category' => [
                 'id' => (int) $playlist['category_id'],

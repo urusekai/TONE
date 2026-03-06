@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router';
 import { usePlayerStore } from '@/stores/player';
 import trackThumbImage from '@/assets/images/thumb.png';
 import likeIcon from '@/assets/icons/like.svg';
+import likeFullIcon from '@/assets/icons/like_full.svg';
 import playCircleIcon from '@/assets/icons/play-circle.svg';
 import addIcon from '@/assets/icons/add.svg';
 import { apiRequest } from '@/services/httpClient';
@@ -12,6 +13,7 @@ const route = useRoute();
 const player = usePlayerStore();
 const playlistId = computed(() => String(route.query.id || '').trim());
 const isLoading = ref(false);
+const isLikeSubmitting = ref(false);
 const errorMessage = ref('');
 const playlist = ref(null);
 const tracks = ref([]);
@@ -20,10 +22,22 @@ function formatLikes(value) {
   return Number(value || 0).toLocaleString('en-US');
 }
 
+function toPlayerPlaylist(value) {
+  return {
+    id: String(value?.id || ''),
+    pantoneCode: String(value?.pantone_code || ''),
+    colorName: String(value?.color_name || ''),
+    colorHex: String(value?.color_hex || '#B7AEA6'),
+    liked: Boolean(value?.liked),
+    likeCount: Number(value?.like_count || 0)
+  };
+}
+
 async function loadPlaylistDetail() {
   if (!playlistId.value) {
     playlist.value = null;
     tracks.value = [];
+    player.clearCurrentPlaylist();
     errorMessage.value = '플레이리스트 정보가 없습니다.';
     return;
   }
@@ -42,11 +56,57 @@ async function loadPlaylistDetail() {
 
     playlist.value = result?.playlist ?? null;
     tracks.value = Array.isArray(result?.tracks) ? result.tracks : [];
+
+    if (playlist.value) {
+      player.setCurrentPlaylist(toPlayerPlaylist(playlist.value));
+    }
   } catch (error) {
+    player.clearCurrentPlaylist();
     errorMessage.value =
       error instanceof Error ? error.message : '플레이리스트 정보를 불러오지 못했습니다.';
   } finally {
     isLoading.value = false;
+  }
+}
+
+async function handleToggleLike() {
+  if (!playlist.value?.id || isLikeSubmitting.value) return;
+
+  isLikeSubmitting.value = true;
+
+  try {
+    const result = await apiRequest(
+      '/api/playlist/like.php',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          playlist_id: playlist.value.id
+        })
+      },
+      '좋아요 처리에 실패했습니다.'
+    );
+
+    const nextLiked = Boolean(result?.liked);
+    const nextLikeCount = Number(result?.like_count || 0);
+
+    playlist.value = {
+      ...playlist.value,
+      liked: nextLiked,
+      like_count: nextLikeCount
+    };
+
+    player.patchCurrentPlaylist({
+      liked: nextLiked,
+      likeCount: nextLikeCount
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : '좋아요 처리에 실패했습니다.';
+    window.alert(message);
+  } finally {
+    isLikeSubmitting.value = false;
   }
 }
 
@@ -86,10 +146,15 @@ watch(
           <p class="playlist-hero__code">{{ playlist.pantone_code || '' }}</p>
         </div>
         <div class="playlist-hero__actions">
-          <div class="playlist-hero__likes">
-            <img :src="likeIcon" alt="좋아요" />
+          <button
+            type="button"
+            class="playlist-hero__likes"
+            :disabled="isLikeSubmitting"
+            @click="handleToggleLike"
+          >
+            <img :src="playlist.liked ? likeFullIcon : likeIcon" alt="좋아요" />
             <span>{{ formatLikes(playlist.like_count) }}</span>
-          </div>
+          </button>
           <button type="button" class="playlist-hero__play-button" @click="handleOpenFirstTrack">
             <img class="playlist-hero__add-icon" :src="addIcon" alt="추가" />
             <span class="playlist-hero__play-circle">
@@ -196,6 +261,14 @@ watch(
   padding-bottom: 3px;
   display: flex;
   gap: 3px;
+  align-items: center;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+#playlist button.playlist-hero__likes:disabled {
+  opacity: 0.7;
 }
 
 /* 재생버튼 */
