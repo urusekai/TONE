@@ -77,6 +77,17 @@ CREATE TABLE IF NOT EXISTS playlist_likes (
   CONSTRAINT fk_playlist_likes_playlist FOREIGN KEY (playlist_id) REFERENCES playlists (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='사용자별 플레이리스트 좋아요 상태';
 
+-- 사용자별 팔레트 로그 저장 목록
+CREATE TABLE IF NOT EXISTS palette_logs (
+  user_uuid CHAR(36) NOT NULL COMMENT '사용자 UUID',
+  playlist_id INT UNSIGNED NOT NULL COMMENT '플레이리스트 ID',
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '저장 시각',
+  PRIMARY KEY (user_uuid, playlist_id),
+  KEY idx_palette_logs_playlist_id (playlist_id),
+  CONSTRAINT fk_palette_logs_user FOREIGN KEY (user_uuid) REFERENCES users (user_uuid) ON DELETE CASCADE,
+  CONSTRAINT fk_palette_logs_playlist FOREIGN KEY (playlist_id) REFERENCES playlists (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='유저가 저장한 팔레트 로그 목록';
+
 -- 플레이리스트-트랙 매핑
 CREATE TABLE IF NOT EXISTS playlist_tracks (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '플레이리스트 트랙 매핑 ID',
