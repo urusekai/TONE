@@ -53,7 +53,9 @@
         <span class="hint">오늘 톤과 비슷한 색상 추천</span>
       </div>
 
-      <div class="spec-track">
+      <p v-if="spectrumErrorMessage" class="spectrum-state">{{ spectrumErrorMessage }}</p>
+
+      <div v-else class="spec-track">
         <div ref="specRowEl" class="spec-row">
           <RouterLink
             v-for="(playlist, index) in spectrumPlaylists"
@@ -136,6 +138,7 @@
 import { computed, onMounted, onBeforeUnmount, nextTick, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { usePaletteLogStore } from '@/stores/paletteLog';
+import { apiRequest } from '@/services/httpClient';
 import addIcon from '@/assets/icons/add.svg';
 import addCompleteIcon from '@/assets/icons/addComplete.svg';
 
@@ -151,29 +154,8 @@ const dailyPlaylist = {
   color_hex: '#615694',
   total_tracks: 10
 };
-const spectrumPlaylists = [
-  {
-    id: 11,
-    pantone_code: '18-3838',
-    color_name: 'Ultra Violet',
-    color_hex: '#5F4B8B',
-    total_tracks: 10
-  },
-  {
-    id: 5,
-    pantone_code: '19-4052',
-    color_name: 'Classic Blue',
-    color_hex: '#0F4C81',
-    total_tracks: 10
-  },
-  {
-    id: 19,
-    pantone_code: '16-3801',
-    color_name: 'Quiet Shade',
-    color_hex: '#929497',
-    total_tracks: 10
-  }
-];
+const spectrumPlaylists = ref([]);
+const spectrumErrorMessage = ref('');
 const paletteLogPreview = computed(() => paletteLog.paletteLogs.slice(0, 4));
 
 let cleanupSpectrumDrag = null;
@@ -196,6 +178,26 @@ async function handleTogglePalette(item) {
     const message =
       error instanceof Error ? error.message : '팔레트 로그 저장 처리에 실패했습니다.';
     window.alert(message);
+  }
+}
+
+async function loadSpectrumPlaylists() {
+  spectrumErrorMessage.value = '';
+
+  try {
+    const result = await apiRequest(
+      `/api/playlist/spectrum.php?id=${encodeURIComponent(dailyPlaylist.id)}`,
+      {},
+      '데일리 스펙트럼을 불러오지 못했습니다.'
+    );
+
+    spectrumPlaylists.value = Array.isArray(result?.spectrumPlaylists)
+      ? result.spectrumPlaylists
+      : [];
+  } catch (error) {
+    spectrumPlaylists.value = [];
+    spectrumErrorMessage.value =
+      error instanceof Error ? error.message : '데일리 스펙트럼을 불러오지 못했습니다.';
   }
 }
 
@@ -342,6 +344,7 @@ function bindSpectrumDrag(row) {
 
 onMounted(async () => {
   await paletteLog.load({ silent: true });
+  await loadSpectrumPlaylists();
   await nextTick();
 
   cleanupSpectrumDrag = bindSpectrumDrag(specRowEl.value);
@@ -491,6 +494,13 @@ watch(
   border-radius: 18px;
   background: transparent;
   overflow: visible;
+}
+
+.spectrum-state {
+  padding: 12px 0;
+  font-size: 13px;
+  color: #6b7280;
+  text-align: center;
 }
 
 .spec-row {
