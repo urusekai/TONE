@@ -88,6 +88,22 @@ CREATE TABLE IF NOT EXISTS palette_logs (
   CONSTRAINT fk_palette_logs_playlist FOREIGN KEY (playlist_id) REFERENCES playlists (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='유저가 저장한 팔레트 로그 목록';
 
+-- 사용자별 날짜 기록
+CREATE TABLE IF NOT EXISTS calendar_entries (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '캘린더 기록 ID',
+  user_uuid CHAR(36) NOT NULL COMMENT '사용자 UUID',
+  entry_date DATE NOT NULL COMMENT '기록 날짜',
+  playlist_id INT UNSIGNED NOT NULL COMMENT '연결된 플레이리스트 ID',
+  memo TEXT DEFAULT NULL COMMENT '기록 메모',
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성 시각',
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정 시각',
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_calendar_entries_user_date (user_uuid, entry_date),
+  KEY idx_calendar_entries_playlist_id (playlist_id),
+  CONSTRAINT fk_calendar_entries_user FOREIGN KEY (user_uuid) REFERENCES users (user_uuid) ON DELETE CASCADE,
+  CONSTRAINT fk_calendar_entries_playlist FOREIGN KEY (playlist_id) REFERENCES playlists (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='사용자별 날짜 기록';
+
 -- 플레이리스트-트랙 매핑
 CREATE TABLE IF NOT EXISTS playlist_tracks (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '플레이리스트 트랙 매핑 ID',
