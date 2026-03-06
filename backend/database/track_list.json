@@ -1,0 +1,1848 @@
+﻿{
+  "Energetic": {
+    "VivaMagenta": {
+      "colorName": "Viva Magenta",
+      "pantoneCode": "18-1750",
+      "hex": "#BB2649",
+      "tracks": [
+        {
+          "artist": "Måneskin",
+          "title": "Beggin\u0027",
+          "durationMs": 213101,
+          "cover": "M_neskin_Beggin.jpg",
+          "track": "M_neskin_Beggin.mp3"
+        },
+        {
+          "artist": "화사",
+          "title": "I\u0027m a B",
+          "durationMs": 168275,
+          "cover": "화사_I_m_a_B.jpg",
+          "track": "화사_I_m_a_B.mp3"
+        },
+        {
+          "artist": "Sam Smith",
+          "title": "Unholy",
+          "durationMs": 157013,
+          "cover": "Sam_Smith_Unholy.jpg",
+          "track": "Sam_Smith_Unholy.mp3"
+        },
+        {
+          "artist": "Doja Cat",
+          "title": "Paint The Town Red",
+          "durationMs": 231735,
+          "cover": "Doja_Cat_Paint_The_Town_Red.jpg",
+          "track": "Doja_Cat_Paint_The_Town_Red.mp3"
+        },
+        {
+          "artist": "The Weeknd",
+          "title": "Blinding Lights",
+          "durationMs": 203209,
+          "cover": "The_Weeknd_Blinding_Lights.jpg",
+          "track": "The_Weeknd_Blinding_Lights.mp3"
+        },
+        {
+          "artist": "Billie Eilish",
+          "title": "bad guy",
+          "durationMs": 194119,
+          "cover": "Billie_Eilish_bad_guy.jpg",
+          "track": "Billie_Eilish_bad_guy.mp3"
+        },
+        {
+          "artist": "정국",
+          "title": "Standing Next to You",
+          "durationMs": 206089,
+          "cover": "정국_Standing_Next_to_You.jpg",
+          "track": "정국_Standing_Next_to_You.mp3"
+        },
+        {
+          "artist": "Tame Impala",
+          "title": "The Less I Know The Better",
+          "durationMs": 217350,
+          "cover": "Tame_Impala_The_Less_I_Know_The_Better.jpg",
+          "track": "Tame_Impala_The_Less_I_Know_The_Better.mp3"
+        },
+        {
+          "artist": "자우림",
+          "title": "매직 카펫 라이드",
+          "durationMs": 215063,
+          "cover": "자우림_매직_카펫_라이드.jpg",
+          "track": "자우림_매직_카펫_라이드.mp3"
+        },
+        {
+          "artist": "Olivia Rodrigo",
+          "title": "good 4 u",
+          "durationMs": 178147,
+          "cover": "Olivia_Rodrigo_good_4_u.jpg",
+          "track": "Olivia_Rodrigo_good_4_u.mp3"
+        }
+      ]
+    },
+    "ElectricBlue": {
+      "colorName": "Electric Blue",
+      "pantoneCode": "18-4245",
+      "hex": "#003399",
+      "tracks": [
+        {
+          "artist": "Dua Lipa",
+          "title": "Levitating",
+          "durationMs": 220843,
+          "cover": "Dua_Lipa_Levitating.jpg",
+          "track": "Dua_Lipa_Levitating.mp3"
+        },
+        {
+          "artist": "블랙핑크",
+          "title": "How You Like That",
+          "durationMs": 181371,
+          "cover": "블랙핑크_How_You_Like_That.jpg",
+          "track": "블랙핑크_How_You_Like_That.mp3"
+        },
+        {
+          "artist": "David Guetta",
+          "title": "Titanium",
+          "durationMs": 245226,
+          "cover": "David_Guetta_Titanium.jpg",
+          "track": "David_Guetta_Titanium.mp3"
+        },
+        {
+          "artist": "Avicii",
+          "title": "Levels",
+          "durationMs": 338867,
+          "cover": "Avicii_Levels.jpg",
+          "track": "Avicii_Levels.mp3"
+        },
+        {
+          "artist": "Calvin Harris",
+          "title": "Summer",
+          "durationMs": 222059,
+          "cover": "Calvin_Harris_Summer.jpg",
+          "track": "Calvin_Harris_Summer.mp3"
+        },
+        {
+          "artist": "르세라핌",
+          "title": "이브, 프시케 그리고 푸른 수염의 아내",
+          "durationMs": 185562,
+          "cover": "르세라핌_이브_프시케_그리고_푸른_수염의_아내.jpg",
+          "track": "르세라핌_이브_프시케_그리고_푸른_수염의_아내.mp3"
+        },
+        {
+          "artist": "NewJeans",
+          "title": "Super Shy",
+          "durationMs": 154645,
+          "cover": "NewJeans_Super_Shy.jpg",
+          "track": "NewJeans_Super_Shy.mp3"
+        },
+        {
+          "artist": "Zedd",
+          "title": "Clarity",
+          "durationMs": 271639,
+          "cover": "Zedd_Clarity.jpg",
+          "track": "Zedd_Clarity.mp3"
+        },
+        {
+          "artist": "셔누X형원",
+          "title": "Love Me A Little",
+          "durationMs": 199645,
+          "cover": "셔누X형원_Love_Me_A_Little.jpg",
+          "track": "셔누X형원_Love_Me_A_Little.mp3"
+        },
+        {
+          "artist": "Clean Bandit",
+          "title": "Rather Be",
+          "durationMs": 241023,
+          "cover": "Clean_Bandit_Rather_Be.jpg",
+          "track": "Clean_Bandit_Rather_Be.mp3"
+        }
+      ]
+    },
+    "FieryRed": {
+      "colorName": "Fiery Red",
+      "pantoneCode": "18-1664",
+      "hex": "#FF0000",
+      "tracks": [
+        {
+          "artist": "ITZY",
+          "title": "WANNABE",
+          "durationMs": 191424,
+          "cover": "ITZY_WANNABE.jpg",
+          "track": "ITZY_WANNABE.mp3"
+        },
+        {
+          "artist": "(여자)아이들",
+          "title": "퀸카",
+          "durationMs": 161263,
+          "cover": "여자_아이들_퀸카.jpg",
+          "track": "여자_아이들_퀸카.mp3"
+        },
+        {
+          "artist": "에스파",
+          "title": "Next Level",
+          "durationMs": 220241,
+          "cover": "에스파_Next_Level.jpg",
+          "track": "에스파_Next_Level.mp3"
+        },
+        {
+          "artist": "세븐틴",
+          "title": "손오공",
+          "durationMs": 212764,
+          "cover": "세븐틴_손오공.jpg",
+          "track": "세븐틴_손오공.mp3"
+        },
+        {
+          "artist": "Stray Kids",
+          "title": "특",
+          "durationMs": 195686,
+          "cover": "Stray_Kids_특.jpg",
+          "track": "Stray_Kids_특.mp3"
+        },
+        {
+          "artist": "몬스타엑스",
+          "title": "GAMBLER",
+          "durationMs": 205706,
+          "cover": "몬스타엑스_GAMBLER.jpg",
+          "track": "몬스타엑스_GAMBLER.mp3"
+        },
+        {
+          "artist": "Skrillex",
+          "title": "Bangarang",
+          "durationMs": 216282,
+          "cover": "Skrillex_Bangarang.jpg",
+          "track": "Skrillex_Bangarang.mp3"
+        },
+        {
+          "artist": "Major Lazer",
+          "title": "Lean On",
+          "durationMs": 176597,
+          "cover": "Major_Lazer_Lean_On.jpg",
+          "track": "Major_Lazer_Lean_On.mp3"
+        },
+        {
+          "artist": "Tiësto",
+          "title": "The Business",
+          "durationMs": 170005,
+          "cover": "Ti_sto_The_Business.jpg",
+          "track": "Ti_sto_The_Business.mp3"
+        },
+        {
+          "artist": "Martin Garrix",
+          "title": "Animals",
+          "durationMs": 304890,
+          "cover": "Martin_Garrix_Animals.jpg",
+          "track": "Martin_Garrix_Animals.mp3"
+        }
+      ]
+    },
+    "CyberYellow": {
+      "colorName": "Cyber Yellow",
+      "pantoneCode": "14-0760",
+      "hex": "#FFD300",
+      "tracks": [
+        {
+          "artist": "Travis Scott",
+          "title": "SICKO MODE",
+          "durationMs": 314340,
+          "cover": "Travis_Scott_SICKO_MODE.jpg",
+          "track": "Travis_Scott_SICKO_MODE.mp3"
+        },
+        {
+          "artist": "21 Savage",
+          "title": "Redrum",
+          "durationMs": 272219,
+          "cover": "21_Savage_Redrum.jpg",
+          "track": "21_Savage_Redrum.mp3"
+        },
+        {
+          "artist": "Kendrick Lamar",
+          "title": "HUMBLE.",
+          "durationMs": 183623,
+          "cover": "Kendrick_Lamar_HUMBLE.jpg",
+          "track": "Kendrick_Lamar_HUMBLE.mp3"
+        },
+        {
+          "artist": "A$AP Rocky",
+          "title": "Praise The Lord",
+          "durationMs": 206553,
+          "cover": "A_AP_Rocky_Praise_The_Lord.jpg",
+          "track": "A_AP_Rocky_Praise_The_Lord.mp3"
+        },
+        {
+          "artist": "Drake",
+          "title": "God\u0027s Plan",
+          "durationMs": 198995,
+          "cover": "Drake_God_s_Plan.jpg",
+          "track": "Drake_God_s_Plan.mp3"
+        },
+        {
+          "artist": "창모",
+          "title": "METEOR",
+          "durationMs": 196847,
+          "cover": "창모_METEOR.jpg",
+          "track": "창모_METEOR.mp3"
+        },
+        {
+          "artist": "지코",
+          "title": "Artist",
+          "durationMs": 202347,
+          "cover": "지코_Artist.jpg",
+          "track": "지코_Artist.mp3"
+        },
+        {
+          "artist": "박재범",
+          "title": "몸매",
+          "durationMs": 207215,
+          "cover": "박재범_몸매.jpg",
+          "track": "박재범_몸매.mp3"
+        },
+        {
+          "artist": "Post Malone",
+          "title": "Congratulations",
+          "durationMs": 220293,
+          "cover": "Post_Malone_Congratulations.jpg",
+          "track": "Post_Malone_Congratulations.mp3"
+        },
+        {
+          "artist": "Jack Harlow",
+          "title": "First Class",
+          "durationMs": 173948,
+          "cover": "Jack_Harlow_First_Class.jpg",
+          "track": "Jack_Harlow_First_Class.mp3"
+        }
+      ]
+    }
+  },
+  "Emotional": {
+    "ClassicBlue": {
+      "colorName": "Classic Blue",
+      "pantoneCode": "19-4052",
+      "hex": "#0F4C81",
+      "tracks": [
+        {
+          "artist": "Billie Eilish",
+          "title": "ocean eyes",
+          "durationMs": 202693,
+          "cover": "Billie_Eilish_ocean_eyes.jpg",
+          "track": "Billie_Eilish_ocean_eyes.mp3"
+        },
+        {
+          "artist": "검정치마",
+          "title": "EVERYTHING",
+          "durationMs": 293071,
+          "cover": "검정치마_EVERYTHING.jpg",
+          "track": "검정치마_EVERYTHING.mp3"
+        },
+        {
+          "artist": "성시경",
+          "title": "희재",
+          "durationMs": 283771,
+          "cover": "성시경_희재.jpg",
+          "track": "성시경_희재.mp3"
+        },
+        {
+          "artist": "아이유",
+          "title": "이름에게",
+          "durationMs": 289580,
+          "cover": "아이유_이름에게.jpg",
+          "track": "아이유_이름에게.mp3"
+        },
+        {
+          "artist": "박효신",
+          "title": "야생화",
+          "durationMs": 312092,
+          "cover": "박효신_야생화.jpg",
+          "track": "박효신_야생화.mp3"
+        },
+        {
+          "artist": "Sam Smith",
+          "title": "I\u0027m Not The Only One",
+          "durationMs": 239607,
+          "cover": "Sam_Smith_I_m_Not_The_Only_One.jpg",
+          "track": "Sam_Smith_I_m_Not_The_Only_One.mp3"
+        },
+        {
+          "artist": "정승환",
+          "title": "너였다면",
+          "durationMs": 272901,
+          "cover": "정승환_너였다면.jpg",
+          "track": "정승환_너였다면.mp3"
+        },
+        {
+          "artist": "에일리",
+          "title": "첫눈처럼 너에게 가겠다",
+          "durationMs": 230052,
+          "cover": "에일리_첫눈처럼_너에게_가겠다.jpg",
+          "track": "에일리_첫눈처럼_너에게_가겠다.mp3"
+        },
+        {
+          "artist": "폴킴",
+          "title": "안녕",
+          "durationMs": 231073,
+          "cover": "폴킴_안녕.jpg",
+          "track": "폴킴_안녕.mp3"
+        },
+        {
+          "artist": "김나영",
+          "title": "어땠을까",
+          "durationMs": 223211,
+          "cover": "김나영_어땠을까.jpg",
+          "track": "김나영_어땠을까.mp3"
+        }
+      ]
+    },
+    "DuskBlue": {
+      "colorName": "Dusk Blue",
+      "pantoneCode": "16-4120",
+      "hex": "#779ECB",
+      "tracks": [
+        {
+          "artist": "헤이즈",
+          "title": "비도 오고 그래서",
+          "durationMs": 205706,
+          "cover": "헤이즈_비도_오고_그래서.jpg",
+          "track": "헤이즈_비도_오고_그래서.mp3"
+        },
+        {
+          "artist": "박원",
+          "title": "노력",
+          "durationMs": 265056,
+          "cover": "박원_노력.jpg",
+          "track": "박원_노력.mp3"
+        },
+        {
+          "artist": "정키",
+          "title": "홀로",
+          "durationMs": 269003,
+          "cover": "정키_홀로.jpg",
+          "track": "정키_홀로.mp3"
+        },
+        {
+          "artist": "비비",
+          "title": "밤양갱",
+          "durationMs": 153241,
+          "cover": "비비_밤양갱.jpg",
+          "track": "비비_밤양갱.mp3"
+        },
+        {
+          "artist": "백예린",
+          "title": "Bye bye my blue",
+          "durationMs": 206298,
+          "cover": "백예린_Bye_bye_my_blue.jpg",
+          "track": "백예린_Bye_bye_my_blue.mp3"
+        },
+        {
+          "artist": "태연",
+          "title": "11:11",
+          "durationMs": 230446,
+          "cover": "태연_11_11.jpg",
+          "track": "태연_11_11.mp3"
+        },
+        {
+          "artist": "윤하",
+          "title": "기다리다",
+          "durationMs": 277708,
+          "cover": "윤하_기다리다.jpg",
+          "track": "윤하_기다리다.mp3"
+        },
+        {
+          "artist": "정준일",
+          "title": "안아줘",
+          "durationMs": 274882,
+          "cover": "정준일_안아줘.jpg",
+          "track": "정준일_안아줘.mp3"
+        },
+        {
+          "artist": "어반자카파",
+          "title": "널 사랑하지 않아",
+          "durationMs": 255106,
+          "cover": "어반자카파_널_사랑하지_않아.jpg",
+          "track": "어반자카파_널_사랑하지_않아.mp3"
+        },
+        {
+          "artist": "로이킴",
+          "title": "그때 헤어지면 돼",
+          "durationMs": 250056,
+          "cover": "로이킴_그때_헤어지면_돼.jpg",
+          "track": "로이킴_그때_헤어지면_돼.mp3"
+        }
+      ]
+    },
+    "Anthracite": {
+      "colorName": "Anthracite",
+      "pantoneCode": "19-4007",
+      "hex": "#28282D",
+      "tracks": [
+        {
+          "artist": "Lewis Capaldi",
+          "title": "Someone You Loved",
+          "durationMs": 182805,
+          "cover": "Lewis_Capaldi_Someone_You_Loved.jpg",
+          "track": "Lewis_Capaldi_Someone_You_Loved.mp3"
+        },
+        {
+          "artist": "Adele",
+          "title": "Someone Like You",
+          "durationMs": 290099,
+          "cover": "Adele_Someone_Like_You.jpg",
+          "track": "Adele_Someone_Like_You.mp3"
+        },
+        {
+          "artist": "우원재",
+          "title": "시차",
+          "durationMs": 196000,
+          "cover": "우원재_시차.jpg",
+          "track": "우원재_시차.mp3"
+        },
+        {
+          "artist": "에픽하이",
+          "title": "내 마음 들리나요",
+          "durationMs": 244854,
+          "cover": "에픽하이_내_마음_들리나요.jpg",
+          "track": "에픽하이_내_마음_들리나요.mp3"
+        },
+        {
+          "artist": "리쌍",
+          "title": "발레리노",
+          "durationMs": 267520,
+          "cover": "리쌍_발레리노.jpg",
+          "track": "리쌍_발레리노.mp3"
+        },
+        {
+          "artist": "기리보이",
+          "title": "아퍼",
+          "durationMs": 315477,
+          "cover": "기리보이_아퍼.jpg",
+          "track": "기리보이_아퍼.mp3"
+        },
+        {
+          "artist": "양다일",
+          "title": "미안해",
+          "durationMs": 230063,
+          "cover": "양다일_미안해.jpg",
+          "track": "양다일_미안해.mp3"
+        },
+        {
+          "artist": "임한별",
+          "title": "이별하러 가는 길",
+          "durationMs": 310057,
+          "cover": "임한별_이별하러_가는_길.jpg",
+          "track": "임한별_이별하러_가는_길.mp3"
+        },
+        {
+          "artist": "허각",
+          "title": "Hello",
+          "durationMs": 253562,
+          "cover": "허각_Hello.jpg",
+          "track": "허각_Hello.mp3"
+        },
+        {
+          "artist": "멜로망스",
+          "title": "인사",
+          "durationMs": 221031,
+          "cover": "멜로망스_인사.jpg",
+          "track": "멜로망스_인사.mp3"
+        }
+      ]
+    },
+    "DeepWisteria": {
+      "colorName": "Deep Wisteria",
+      "pantoneCode": "18-3834",
+      "hex": "#615694",
+      "tracks": [
+        {
+          "artist": "태연",
+          "title": "사계",
+          "durationMs": 189010,
+          "cover": "태연_사계.jpg",
+          "track": "태연_사계.mp3"
+        },
+        {
+          "artist": "유라",
+          "title": "하얗게",
+          "durationMs": 189568,
+          "cover": "유라_하얗게.jpg",
+          "track": "유라_하얗게.mp3"
+        },
+        {
+          "artist": "박봄",
+          "title": "YOU AND I",
+          "durationMs": 268725,
+          "cover": "박봄_YOU_AND_I.jpg",
+          "track": "박봄_YOU_AND_I.mp3"
+        },
+        {
+          "artist": "넬",
+          "title": "멀어지다",
+          "durationMs": 235008,
+          "cover": "넬_멀어지다.jpg",
+          "track": "넬_멀어지다.mp3"
+        },
+        {
+          "artist": "이하이",
+          "title": "한숨",
+          "durationMs": 278756,
+          "cover": "이하이_한숨.jpg",
+          "track": "이하이_한숨.mp3"
+        },
+        {
+          "artist": "짙은",
+          "title": "잘 지내자, 우리",
+          "durationMs": 278257,
+          "cover": "짙은_잘_지내자_우리.jpg",
+          "track": "짙은_잘_지내자_우리.mp3"
+        },
+        {
+          "artist": "쏜애플",
+          "title": "남극",
+          "durationMs": 238341,
+          "cover": "쏜애플_남극.jpg",
+          "track": "쏜애플_남극.mp3"
+        },
+        {
+          "artist": "혁오",
+          "title": "와리가리",
+          "durationMs": 228601,
+          "cover": "혁오_와리가리.jpg",
+          "track": "혁오_와리가리.mp3"
+        },
+        {
+          "artist": "잔나비",
+          "title": "주저하는 연인들을 위해",
+          "durationMs": 266008,
+          "cover": "잔나비_주저하는_연인들을_위해.jpg",
+          "track": "잔나비_주저하는_연인들을_위해.mp3"
+        },
+        {
+          "artist": "십센치",
+          "title": "스토커",
+          "durationMs": 252830,
+          "cover": "십센치_스토커.jpg",
+          "track": "십센치_스토커.mp3"
+        }
+      ]
+    }
+  },
+  "Groovy": {
+    "LivingCoral": {
+      "colorName": "Living Coral",
+      "pantoneCode": "16-1546",
+      "hex": "#FF6F61",
+      "tracks": [
+        {
+          "artist": "Surfaces",
+          "title": "Sunday Best",
+          "durationMs": 159266,
+          "cover": "Surfaces_Sunday_Best.jpg",
+          "track": "Surfaces_Sunday_Best.mp3"
+        },
+        {
+          "artist": "스텔라장",
+          "title": "Colors",
+          "durationMs": 117284,
+          "cover": "스텔라장_Colors.jpg",
+          "track": "스텔라장_Colors.mp3"
+        },
+        {
+          "artist": "죠지",
+          "title": "Boat",
+          "durationMs": 197962,
+          "cover": "죠지_Boat.jpg",
+          "track": "죠지_Boat.mp3"
+        },
+        {
+          "artist": "Crush",
+          "title": "가끔",
+          "durationMs": 263655,
+          "cover": "Crush_가끔.jpg",
+          "track": "Crush_가끔.mp3"
+        },
+        {
+          "artist": "SZA",
+          "title": "Snooze",
+          "durationMs": 203337,
+          "cover": "SZA_Snooze.jpg",
+          "track": "SZA_Snooze.mp3"
+        },
+        {
+          "artist": "H.E.R.",
+          "title": "Best Part",
+          "durationMs": 211008,
+          "cover": "H_E_R_Best_Part.jpg",
+          "track": "H_E_R_Best_Part.mp3"
+        },
+        {
+          "artist": "Daniel Caesar",
+          "title": "Get You",
+          "durationMs": 278180,
+          "cover": "Daniel_Caesar_Get_You.jpg",
+          "track": "Daniel_Caesar_Get_You.mp3"
+        },
+        {
+          "artist": "Frank Ocean",
+          "title": "Pink + White",
+          "durationMs": 184529,
+          "cover": "Frank_Ocean_Pink_White.jpg",
+          "track": "Frank_Ocean_Pink_White.mp3"
+        },
+        {
+          "artist": "백예린",
+          "title": "그건 아마 우리의 잘못은 아닐 거야",
+          "durationMs": 243101,
+          "cover": "백예린_그건_아마_우리의_잘못은_아닐_거야.jpg",
+          "track": "백예린_그건_아마_우리의_잘못은_아닐_거야.mp3"
+        },
+        {
+          "artist": "적재",
+          "title": "별 보러 가자",
+          "durationMs": 319321,
+          "cover": "적재_별_보러_가자.jpg",
+          "track": "적재_별_보러_가자.mp3"
+        }
+      ]
+    },
+    "PeachEcho": {
+      "colorName": "Peach Echo",
+      "pantoneCode": "16-1544",
+      "hex": "#F47362",
+      "tracks": [
+        {
+          "artist": "백예린",
+          "title": "Popo",
+          "durationMs": 271197,
+          "cover": "백예린_Popo.jpg",
+          "track": "백예린_Popo.mp3"
+        },
+        {
+          "artist": "치즈",
+          "title": "이렇게 좋아해 본 적이 없어요",
+          "durationMs": 259437,
+          "cover": "치즈_이렇게_좋아해_본_적이_없어요.jpg",
+          "track": "치즈_이렇게_좋아해_본_적이_없어요.mp3"
+        },
+        {
+          "artist": "권진아",
+          "title": "끝",
+          "durationMs": 238039,
+          "cover": "권진아_끝.jpg",
+          "track": "권진아_끝.mp3"
+        },
+        {
+          "artist": "샘김",
+          "title": "Make Up",
+          "durationMs": 207467,
+          "cover": "샘김_Make_Up.jpg",
+          "track": "샘김_Make_Up.mp3"
+        },
+        {
+          "artist": "프라이머리",
+          "title": "자니",
+          "durationMs": 231840,
+          "cover": "프라이머리_자니.jpg",
+          "track": "프라이머리_자니.mp3"
+        },
+        {
+          "artist": "Zion.T",
+          "title": "양화대교",
+          "durationMs": 230783,
+          "cover": "Zion_T_양화대교.jpg",
+          "track": "Zion_T_양화대교.mp3"
+        },
+        {
+          "artist": "태양",
+          "title": "눈, 코, 입",
+          "durationMs": 230087,
+          "cover": "태양_눈_코_입.jpg",
+          "track": "태양_눈_코_입.mp3"
+        },
+        {
+          "artist": "박재범",
+          "title": "좋아",
+          "durationMs": 245238,
+          "cover": "박재범_좋아.jpg",
+          "track": "박재범_좋아.mp3"
+        },
+        {
+          "artist": "딘",
+          "title": "D (Half Moon)",
+          "durationMs": 231178,
+          "cover": "딘_D_Half_Moon.jpg",
+          "track": "딘_D_Half_Moon.mp3"
+        },
+        {
+          "artist": "콜드",
+          "title": "와르르",
+          "durationMs": 270656,
+          "cover": "콜드_와르르.jpg",
+          "track": "콜드_와르르.mp3"
+        }
+      ]
+    },
+    "UltraViolet": {
+      "colorName": "Ultra Violet",
+      "pantoneCode": "18-3838",
+      "hex": "#5F4B8B",
+      "tracks": [
+        {
+          "artist": "유키카",
+          "title": "네온",
+          "durationMs": 221909,
+          "cover": "유키카_네온.jpg",
+          "track": "유키카_네온.mp3"
+        },
+        {
+          "artist": "김아름",
+          "title": "선셋",
+          "durationMs": 214367,
+          "cover": "김아름_선셋.jpg",
+          "track": "김아름_선셋.mp3"
+        },
+        {
+          "artist": "선미",
+          "title": "사이렌",
+          "durationMs": 200063,
+          "cover": "선미_사이렌.jpg",
+          "track": "선미_사이렌.mp3"
+        },
+        {
+          "artist": "스텔라장",
+          "title": "월급은 통장을 스칠 뿐",
+          "durationMs": 203453,
+          "cover": "스텔라장_월급은_통장을_스칠_뿐.jpg",
+          "track": "스텔라장_월급은_통장을_스칠_뿐.mp3"
+        },
+        {
+          "artist": "도시",
+          "title": "춤",
+          "durationMs": 225160,
+          "cover": "도시_춤.jpg",
+          "track": "도시_춤.mp3"
+        },
+        {
+          "artist": "사이먼 도미닉",
+          "title": "사이먼 도미닉",
+          "durationMs": 223112,
+          "cover": "사이먼_도미닉_사이먼_도미닉.jpg",
+          "track": "사이먼_도미닉_사이먼_도미닉.mp3"
+        },
+        {
+          "artist": "빈지노",
+          "title": "Boogie On \u0026 On",
+          "durationMs": 212857,
+          "cover": "빈지노_Boogie_On_On.jpg",
+          "track": "빈지노_Boogie_On_On.mp3"
+        },
+        {
+          "artist": "다이나믹 듀오",
+          "title": "고백",
+          "durationMs": 226403,
+          "cover": "다이나믹_듀오_고백.jpg",
+          "track": "다이나믹_듀오_고백.mp3"
+        },
+        {
+          "artist": "개코",
+          "title": "화장 지웠어",
+          "durationMs": 259379,
+          "cover": "개코_화장_지웠어.jpg",
+          "track": "개코_화장_지웠어.mp3"
+        },
+        {
+          "artist": "DPR LIVE",
+          "title": "Jasmine (prod. CODE KUNST)",
+          "durationMs": 204835,
+          "cover": "DPR_LIVE_Jasmine_prod_CODE_KUNST.jpg",
+          "track": "DPR_LIVE_Jasmine_prod_CODE_KUNST.mp3"
+        }
+      ]
+    },
+    "NuggetGold": {
+      "colorName": "Nugget Gold",
+      "pantoneCode": "16-0952",
+      "hex": "#C89720",
+      "tracks": [
+        {
+          "artist": "Honne",
+          "title": "Day 1 ◑",
+          "durationMs": 233511,
+          "cover": "Honne_Day_1.jpg",
+          "track": "Honne_Day_1.mp3"
+        },
+        {
+          "artist": "Lucky Daye",
+          "title": "Over",
+          "durationMs": 205276,
+          "cover": "Lucky_Daye_Over.jpg",
+          "track": "Lucky_Daye_Over.mp3"
+        },
+        {
+          "artist": "Khruangbin",
+          "title": "Texas Sun",
+          "durationMs": 252821,
+          "cover": "Khruangbin_Texas_Sun.jpg",
+          "track": "Khruangbin_Texas_Sun.mp3"
+        },
+        {
+          "artist": "Anderson .Paak",
+          "title": "Leave The Door Open",
+          "durationMs": 248291,
+          "cover": "Anderson_Paak_Leave_The_Door_Open.jpg",
+          "track": "Anderson_Paak_Leave_The_Door_Open.mp3"
+        },
+        {
+          "artist": "Bruno Mars",
+          "title": "Treasure",
+          "durationMs": 176093,
+          "cover": "Bruno_Mars_Treasure.jpg",
+          "track": "Bruno_Mars_Treasure.mp3"
+        },
+        {
+          "artist": "Silk Sonic",
+          "title": "Fly As Me",
+          "durationMs": 219661,
+          "cover": "Silk_Sonic_Fly_As_Me.jpg",
+          "track": "Silk_Sonic_Fly_As_Me.mp3"
+        },
+        {
+          "artist": "잭슨",
+          "title": "LMLY",
+          "durationMs": 210083,
+          "cover": "잭슨_LMLY.jpg",
+          "track": "잭슨_LMLY.mp3"
+        },
+        {
+          "artist": "이하이",
+          "title": "머리어깨무릎발",
+          "durationMs": 213891,
+          "cover": "이하이_머리어깨무릎발.jpg",
+          "track": "이하이_머리어깨무릎발.mp3"
+        },
+        {
+          "artist": "원슈타인",
+          "title": "적외선 카메라",
+          "durationMs": 206042,
+          "cover": "원슈타인_적외선_카메라.jpg",
+          "track": "원슈타인_적외선_카메라.mp3"
+        },
+        {
+          "artist": "비비",
+          "title": "나비",
+          "durationMs": 193028,
+          "cover": "비비_나비.jpg",
+          "track": "비비_나비.mp3"
+        }
+      ]
+    }
+  },
+  "Bright": {
+    "Illuminating": {
+      "colorName": "Illuminating",
+      "pantoneCode": "13-0647",
+      "hex": "#F5DF4D",
+      "tracks": [
+        {
+          "artist": "Pharrell Williams",
+          "title": "Happy",
+          "durationMs": 232571,
+          "cover": "Pharrell_Williams_Happy.jpg",
+          "track": "Pharrell_Williams_Happy.mp3"
+        },
+        {
+          "artist": "아이유",
+          "title": "라일락",
+          "durationMs": 214251,
+          "cover": "아이유_라일락.jpg",
+          "track": "아이유_라일락.mp3"
+        },
+        {
+          "artist": "BTS",
+          "title": "Dynamite",
+          "durationMs": 200226,
+          "cover": "BTS_Dynamite.jpg",
+          "track": "BTS_Dynamite.mp3"
+        },
+        {
+          "artist": "오마이걸",
+          "title": "Dun Dun Dance",
+          "durationMs": 217873,
+          "cover": "오마이걸_Dun_Dun_Dance.jpg",
+          "track": "오마이걸_Dun_Dun_Dance.mp3"
+        },
+        {
+          "artist": "레드벨벳",
+          "title": "빨간 맛",
+          "durationMs": 205055,
+          "cover": "레드벨벳_빨간_맛.jpg",
+          "track": "레드벨벳_빨간_맛.mp3"
+        },
+        {
+          "artist": "트와이스",
+          "title": "Alcohol-Free",
+          "durationMs": 212648,
+          "cover": "트와이스_Alcohol_Free.jpg",
+          "track": "트와이스_Alcohol_Free.mp3"
+        },
+        {
+          "artist": "소녀시대",
+          "title": "다시 만난 세계",
+          "durationMs": 267320,
+          "cover": "소녀시대_다시_만난_세계.jpg",
+          "track": "소녀시대_다시_만난_세계.mp3"
+        },
+        {
+          "artist": "마마무",
+          "title": "나로 말할 것 같으면",
+          "durationMs": 220346,
+          "cover": "마마무_나로_말할_것_같으면.jpg",
+          "track": "마마무_나로_말할_것_같으면.mp3"
+        },
+        {
+          "artist": "부석순",
+          "title": "파이팅 해야지",
+          "durationMs": 209003,
+          "cover": "부석순_파이팅_해야지.jpg",
+          "track": "부석순_파이팅_해야지.mp3"
+        },
+        {
+          "artist": "볼빨간사춘기",
+          "title": "우주를 줄게",
+          "durationMs": 216015,
+          "cover": "볼빨간사춘기_우주를_줄게.jpg",
+          "track": "볼빨간사춘기_우주를_줄게.mp3"
+        }
+      ]
+    },
+    "SunnyLime": {
+      "colorName": "Sunny Lime",
+      "pantoneCode": "12-0743",
+      "hex": "#E2EF44",
+      "tracks": [
+        {
+          "artist": "NewJeans",
+          "title": "Hype Boy",
+          "durationMs": 180001,
+          "cover": "NewJeans_Hype_Boy.jpg",
+          "track": "NewJeans_Hype_Boy.mp3"
+        },
+        {
+          "artist": "볼빨간사춘기",
+          "title": "여행",
+          "durationMs": 221035,
+          "cover": "볼빨간사춘기_여행.jpg",
+          "track": "볼빨간사춘기_여행.mp3"
+        },
+        {
+          "artist": "Sigrid",
+          "title": "Don\u0027t Feel Like Crying",
+          "durationMs": 158528,
+          "cover": "Sigrid_Don_t_Feel_Like_Crying.jpg",
+          "track": "Sigrid_Don_t_Feel_Like_Crying.mp3"
+        },
+        {
+          "artist": "Anne-Marie",
+          "title": "2002",
+          "durationMs": 186990,
+          "cover": "Anne_Marie_2002.jpg",
+          "track": "Anne_Marie_2002.mp3"
+        },
+        {
+          "artist": "Katy Perry",
+          "title": "California Gurls",
+          "durationMs": 235845,
+          "cover": "Katy_Perry_California_Gurls.jpg",
+          "track": "Katy_Perry_California_Gurls.mp3"
+        },
+        {
+          "artist": "원디렉션",
+          "title": "What Makes You Beautiful",
+          "durationMs": 200342,
+          "cover": "원디렉션_What_Makes_You_Beautiful.jpg",
+          "track": "원디렉션_What_Makes_You_Beautiful.mp3"
+        },
+        {
+          "artist": "위클리",
+          "title": "After School",
+          "durationMs": 205404,
+          "cover": "위클리_After_School.jpg",
+          "track": "위클리_After_School.mp3"
+        },
+        {
+          "artist": "스테이씨",
+          "title": "ASAP",
+          "durationMs": 191948,
+          "cover": "스테이씨_ASAP.jpg",
+          "track": "스테이씨_ASAP.mp3"
+        },
+        {
+          "artist": "프로미스나인",
+          "title": "WE GO",
+          "durationMs": 176553,
+          "cover": "프로미스나인_WE_GO.jpg",
+          "track": "프로미스나인_WE_GO.mp3"
+        },
+        {
+          "artist": "청하",
+          "title": "Love U",
+          "durationMs": 192052,
+          "cover": "청하_Love_U.jpg",
+          "track": "청하_Love_U.mp3"
+        }
+      ]
+    },
+    "SkyBlue": {
+      "colorName": "Sky Blue",
+      "pantoneCode": "14-4318",
+      "hex": "#87CEEB",
+      "tracks": [
+        {
+          "artist": "DAY6",
+          "title": "한 페이지가 될 수 있게",
+          "durationMs": 207595,
+          "cover": "DAY6_한_페이지가_될_수_있게.jpg",
+          "track": "DAY6_한_페이지가_될_수_있게.mp3"
+        },
+        {
+          "artist": "조이",
+          "title": "안녕",
+          "durationMs": 218744,
+          "cover": "조이_안녕.jpg",
+          "track": "조이_안녕.mp3"
+        },
+        {
+          "artist": "루시",
+          "title": "개화",
+          "durationMs": 251368,
+          "cover": "루시_개화.jpg",
+          "track": "루시_개화.mp3"
+        },
+        {
+          "artist": "페퍼톤스",
+          "title": "행운을 빌어요",
+          "durationMs": 260651,
+          "cover": "페퍼톤스_행운을_빌어요.jpg",
+          "track": "페퍼톤스_행운을_빌어요.mp3"
+        },
+        {
+          "artist": "데이브레이크",
+          "title": "들었다 놨다",
+          "durationMs": 223411,
+          "cover": "데이브레이크_들었다_놨다.jpg",
+          "track": "데이브레이크_들었다_놨다.mp3"
+        },
+        {
+          "artist": "딕펑스",
+          "title": "비바 청춘",
+          "durationMs": 240071,
+          "cover": "딕펑스_비바_청춘.jpg",
+          "track": "딕펑스_비바_청춘.mp3"
+        },
+        {
+          "artist": "소란",
+          "title": "살빼지 마요",
+          "durationMs": 248210,
+          "cover": "소란_살빼지_마요.jpg",
+          "track": "소란_살빼지_마요.mp3"
+        },
+        {
+          "artist": "엔플라잉",
+          "title": "옥탑방",
+          "durationMs": 210859,
+          "cover": "엔플라잉_옥탑방.jpg",
+          "track": "엔플라잉_옥탑방.mp3"
+        },
+        {
+          "artist": "멜로망스",
+          "title": "선물",
+          "durationMs": 261085,
+          "cover": "멜로망스_선물.jpg",
+          "track": "멜로망스_선물.mp3"
+        },
+        {
+          "artist": "잔나비",
+          "title": "뜨거운 여름밤은 가고 남은 건 볼품없지만",
+          "durationMs": 243450,
+          "cover": "잔나비_뜨거운_여름밤은_가고_남은_건_볼품없지만.jpg",
+          "track": "잔나비_뜨거운_여름밤은_가고_남은_건_볼품없지만.mp3"
+        }
+      ]
+    },
+    "PrismPink": {
+      "colorName": "Prism Pink",
+      "pantoneCode": "14-2311",
+      "hex": "#F0A1BF",
+      "tracks": [
+        {
+          "artist": "Taylor Swift",
+          "title": "Lover",
+          "durationMs": 229333,
+          "cover": "Taylor_Swift_Lover.jpg",
+          "track": "Taylor_Swift_Lover.mp3"
+        },
+        {
+          "artist": "10CM",
+          "title": "폰서트",
+          "durationMs": 197504,
+          "cover": "10CM_폰서트.jpg",
+          "track": "10CM_폰서트.mp3"
+        },
+        {
+          "artist": "십센치",
+          "title": "봄이 좋냐??",
+          "durationMs": 205775,
+          "cover": "십센치_봄이_좋냐.jpg",
+          "track": "십센치_봄이_좋냐.mp3"
+        },
+        {
+          "artist": "소유X정기고",
+          "title": "썸",
+          "durationMs": 211464,
+          "cover": "소유X정기고_썸.jpg",
+          "track": "소유X정기고_썸.mp3"
+        },
+        {
+          "artist": "악뮤",
+          "title": "200%",
+          "durationMs": 210219,
+          "cover": "악뮤_200.jpg",
+          "track": "악뮤_200.mp3"
+        },
+        {
+          "artist": "수지X백현",
+          "title": "Dream",
+          "durationMs": 222401,
+          "cover": "수지X백현_Dream.jpg",
+          "track": "수지X백현_Dream.mp3"
+        },
+        {
+          "artist": "에릭남X웬디",
+          "title": "봄인가 봐",
+          "durationMs": 198902,
+          "cover": "에릭남X웬디_봄인가_봐.jpg",
+          "track": "에릭남X웬디_봄인가_봐.mp3"
+        },
+        {
+          "artist": "로꼬X유주",
+          "title": "우연히 봄",
+          "durationMs": 201038,
+          "cover": "로꼬X유주_우연히_봄.jpg",
+          "track": "로꼬X유주_우연히_봄.mp3"
+        },
+        {
+          "artist": "경서",
+          "title": "나의 X에게",
+          "durationMs": 190613,
+          "cover": "경서_나의_X에게.jpg",
+          "track": "경서_나의_X에게.mp3"
+        },
+        {
+          "artist": "주시크",
+          "title": "너를 생각해",
+          "durationMs": 214262,
+          "cover": "주시크_너를_생각해.jpg",
+          "track": "주시크_너를_생각해.mp3"
+        }
+      ]
+    }
+  },
+  "Chill": {
+    "CloudDancer": {
+      "colorName": "Cloud Dancer",
+      "pantoneCode": "11-4201",
+      "hex": "#F0F3F4",
+      "tracks": [
+        {
+          "artist": "Cigarettes After Sex",
+          "title": "Heavenly",
+          "durationMs": 286790,
+          "cover": "Cigarettes_After_Sex_Heavenly.jpg",
+          "track": "Cigarettes_After_Sex_Heavenly.mp3"
+        },
+        {
+          "artist": "Laufey",
+          "title": "Fragile",
+          "durationMs": 239978,
+          "cover": "Laufey_Fragile.jpg",
+          "track": "Laufey_Fragile.mp3"
+        },
+        {
+          "artist": "LANY",
+          "title": "Malibu Nights",
+          "durationMs": 286952,
+          "cover": "LANY_Malibu_Nights.jpg",
+          "track": "LANY_Malibu_Nights.mp3"
+        },
+        {
+          "artist": "자이언트 핑크",
+          "title": "너를 사랑하진 않아 (feat. 케이시)",
+          "durationMs": 190566,
+          "cover": "자이언트_핑크_너를_사랑하진_않아_feat_케이시.jpg",
+          "track": "자이언트_핑크_너를_사랑하진_않아_feat_케이시.mp3"
+        },
+        {
+          "artist": "곽진언",
+          "title": "자랑",
+          "durationMs": 271275,
+          "cover": "곽진언_자랑.jpg",
+          "track": "곽진언_자랑.mp3"
+        },
+        {
+          "artist": "가을방학",
+          "title": "가을방학",
+          "durationMs": 254200,
+          "cover": "가을방학_가을방학.jpg",
+          "track": "가을방학_가을방학.mp3"
+        },
+        {
+          "artist": "루시드폴",
+          "title": "보러 가자",
+          "durationMs": 325299,
+          "cover": "루시드폴_보러_가자.jpg",
+          "track": "루시드폴_보러_가자.mp3"
+        },
+        {
+          "artist": "김광석",
+          "title": "거리에서",
+          "durationMs": 293227,
+          "cover": "김광석_거리에서.jpg",
+          "track": "김광석_거리에서.mp3"
+        },
+        {
+          "artist": "양희은",
+          "title": "사랑 그 쓸쓸함에 대하여",
+          "durationMs": 276219,
+          "cover": "양희은_사랑_그_쓸쓸함에_대하여.jpg",
+          "track": "양희은_사랑_그_쓸쓸함에_대하여.mp3"
+        },
+        {
+          "artist": "유재하",
+          "title": "가리워진 길",
+          "durationMs": 211592,
+          "cover": "유재하_가리워진_길.jpg",
+          "track": "유재하_가리워진_길.mp3"
+        }
+      ]
+    },
+    "GlacierGray": {
+      "colorName": "Glacier Gray",
+      "pantoneCode": "14-4102",
+      "hex": "#C4C7C9",
+      "tracks": [
+        {
+          "artist": "Men I Trust",
+          "title": "Show Me How",
+          "durationMs": 215098,
+          "cover": "Men_I_Trust_Show_Me_How.jpg",
+          "track": "Men_I_Trust_Show_Me_How.mp3"
+        },
+        {
+          "artist": "검정치마",
+          "title": "기다린 만큼, 더",
+          "durationMs": 272869,
+          "cover": "검정치마_기다린_만큼_더.jpg",
+          "track": "검정치마_기다린_만큼_더.mp3"
+        },
+        {
+          "artist": "혁오",
+          "title": "Tomboy",
+          "durationMs": 241963,
+          "cover": "혁오_Tomboy.jpg",
+          "track": "혁오_Tomboy.mp3"
+        },
+        {
+          "artist": "카더가든",
+          "title": "나무",
+          "durationMs": 232641,
+          "cover": "카더가든_나무.jpg",
+          "track": "카더가든_나무.mp3"
+        },
+        {
+          "artist": "최유리",
+          "title": "밤, 바다",
+          "durationMs": 254885,
+          "cover": "최유리_밤_바다.jpg",
+          "track": "최유리_밤_바다.mp3"
+        },
+        {
+          "artist": "김사월",
+          "title": "머리맡",
+          "durationMs": 190009,
+          "cover": "김사월_머리맡.jpg",
+          "track": "김사월_머리맡.mp3"
+        },
+        {
+          "artist": "이소라",
+          "title": "바람이 분다",
+          "durationMs": 236809,
+          "cover": "이소라_바람이_분다.jpg",
+          "track": "이소라_바람이_분다.mp3"
+        },
+        {
+          "artist": "토이",
+          "title": "좋은 사람 (feat. 김형중)",
+          "durationMs": 267656,
+          "cover": "토이_좋은_사람_feat_김형중.jpg",
+          "track": "토이_좋은_사람_feat_김형중.mp3"
+        },
+        {
+          "artist": "유희열",
+          "title": "소박했던, 행복했던",
+          "durationMs": 223527,
+          "cover": "유희열_소박했던_행복했던.jpg",
+          "track": "유희열_소박했던_행복했던.mp3"
+        },
+        {
+          "artist": "정밀아",
+          "title": "환란일기",
+          "durationMs": 277500,
+          "cover": "정밀아_환란일기.jpg",
+          "track": "정밀아_환란일기.mp3"
+        }
+      ]
+    },
+    "QuietShade": {
+      "colorName": "Quiet Shade",
+      "pantoneCode": "16-3801",
+      "hex": "#929497",
+      "tracks": [
+        {
+          "artist": "선우정아",
+          "title": "고양이 (feat.IU)",
+          "durationMs": 192598,
+          "cover": "선우정아_고양이_feat_IU.jpg",
+          "track": "선우정아_고양이_feat_IU.mp3"
+        },
+        {
+          "artist": "권진아",
+          "title": "위로",
+          "durationMs": 197045,
+          "cover": "권진아_위로.jpg",
+          "track": "권진아_위로.mp3"
+        },
+        {
+          "artist": "박지윤",
+          "title": "바래진 기억에",
+          "durationMs": 289460,
+          "cover": "박지윤_바래진_기억에.jpg",
+          "track": "박지윤_바래진_기억에.mp3"
+        },
+        {
+          "artist": "이적",
+          "title": "빨래",
+          "durationMs": 231097,
+          "cover": "이적_빨래.jpg",
+          "track": "이적_빨래.mp3"
+        },
+        {
+          "artist": "김동률",
+          "title": "기억의 습작",
+          "durationMs": 308814,
+          "cover": "김동률_기억의_습작.jpg",
+          "track": "김동률_기억의_습작.mp3"
+        },
+        {
+          "artist": "윤종신",
+          "title": "오르막길",
+          "durationMs": 290006,
+          "cover": "윤종신_오르막길.jpg",
+          "track": "윤종신_오르막길.mp3"
+        },
+        {
+          "artist": "박새별",
+          "title": "사랑이 우릴 다시 만나게 한다면",
+          "durationMs": 305707,
+          "cover": "박새별_사랑이_우릴_다시_만나게_한다면.jpg",
+          "track": "박새별_사랑이_우릴_다시_만나게_한다면.mp3"
+        },
+        {
+          "artist": "루네",
+          "title": "누군가를 사랑한다는 것",
+          "durationMs": 283934,
+          "cover": "루네_누군가를_사랑한다는_것.jpg",
+          "track": "루네_누군가를_사랑한다는_것.mp3"
+        },
+        {
+          "artist": "이상은",
+          "title": "비밀의 화원",
+          "durationMs": 252016,
+          "cover": "이상은_비밀의_화원.jpg",
+          "track": "이상은_비밀의_화원.mp3"
+        },
+        {
+          "artist": "한희정",
+          "title": "멜로디로 가득한 고백",
+          "durationMs": 212706,
+          "cover": "한희정_멜로디로_가득한_고백.jpg",
+          "track": "한희정_멜로디로_가득한_고백.mp3"
+        }
+      ]
+    },
+    "WarmSand": {
+      "colorName": "Warm Sand",
+      "pantoneCode": "15-1214",
+      "hex": "#C5B097",
+      "tracks": [
+        {
+          "artist": "Bruno Major",
+          "title": "Nothing",
+          "durationMs": 165407,
+          "cover": "Bruno_Major_Nothing.jpg",
+          "track": "Bruno_Major_Nothing.mp3"
+        },
+        {
+          "artist": "Keshi",
+          "title": "2 soon",
+          "durationMs": 206512,
+          "cover": "Keshi_2_soon.jpg",
+          "track": "Keshi_2_soon.mp3"
+        },
+        {
+          "artist": "정세운",
+          "title": "Beeeee",
+          "durationMs": 178039,
+          "cover": "정세운_Beeeee.jpg",
+          "track": "정세운_Beeeee.mp3"
+        },
+        {
+          "artist": "치즈",
+          "title": "좋아해",
+          "durationMs": 219605,
+          "cover": "치즈_좋아해.jpg",
+          "track": "치즈_좋아해.mp3"
+        },
+        {
+          "artist": "샘김",
+          "title": "그 여름밤",
+          "durationMs": 249792,
+          "cover": "샘김_그_여름밤.jpg",
+          "track": "샘김_그_여름밤.mp3"
+        },
+        {
+          "artist": "정은지",
+          "title": "하늘바라기",
+          "durationMs": 220519,
+          "cover": "정은지_하늘바라기.jpg",
+          "track": "정은지_하늘바라기.mp3"
+        },
+        {
+          "artist": "멜로망스",
+          "title": "동화",
+          "durationMs": 230017,
+          "cover": "멜로망스_동화.jpg",
+          "track": "멜로망스_동화.mp3"
+        },
+        {
+          "artist": "짙은",
+          "title": "고래",
+          "durationMs": 239979,
+          "cover": "짙은_고래.jpg",
+          "track": "짙은_고래.mp3"
+        },
+        {
+          "artist": "에피톤 프로젝트",
+          "title": "선인장",
+          "durationMs": 208678,
+          "cover": "에피톤_프로젝트_선인장.jpg",
+          "track": "에피톤_프로젝트_선인장.mp3"
+        },
+        {
+          "artist": "가을방학",
+          "title": "가끔 미치도록 네가 안고 싶어질 때가 있어",
+          "durationMs": 246120,
+          "cover": "가을방학_가끔_미치도록_네가_안고_싶어질_때가_있어.jpg",
+          "track": "가을방학_가끔_미치도록_네가_안고_싶어질_때가_있어.mp3"
+        }
+      ]
+    }
+  },
+  "Intense": {
+    "InsigniaBlue": {
+      "colorName": "Insignia Blue",
+      "pantoneCode": "19-4028",
+      "hex": "#2E3D59",
+      "tracks": [
+        {
+          "artist": "Travis Scott",
+          "title": "SICKO MODE",
+          "durationMs": 314340,
+          "cover": "Travis_Scott_SICKO_MODE_2.jpg",
+          "track": "Travis_Scott_SICKO_MODE_2.mp3"
+        },
+        {
+          "artist": "Metallica",
+          "title": "Enter Sandman",
+          "durationMs": 331560,
+          "cover": "Metallica_Enter_Sandman.jpg",
+          "track": "Metallica_Enter_Sandman.mp3"
+        },
+        {
+          "artist": "Muse",
+          "title": "Uprising",
+          "durationMs": 307676,
+          "cover": "Muse_Uprising.jpg",
+          "track": "Muse_Uprising.mp3"
+        },
+        {
+          "artist": "Radiohead",
+          "title": "Creep",
+          "durationMs": 240001,
+          "cover": "Radiohead_Creep.jpg",
+          "track": "Radiohead_Creep.mp3"
+        },
+        {
+          "artist": "서태지와 아이들",
+          "title": "교실 이데아",
+          "durationMs": 257869,
+          "cover": "서태지와_아이들_교실_이데아.jpg",
+          "track": "서태지와_아이들_교실_이데아.mp3"
+        },
+        {
+          "artist": "피아",
+          "title": "소용돌이",
+          "durationMs": 195233,
+          "cover": "피아_소용돌이.jpg",
+          "track": "피아_소용돌이.mp3"
+        },
+        {
+          "artist": "넬",
+          "title": "Stay",
+          "durationMs": 219000,
+          "cover": "넬_Stay.jpg",
+          "track": "넬_Stay.mp3"
+        },
+        {
+          "artist": "실리카겔",
+          "title": "NO PAIN",
+          "durationMs": 222354,
+          "cover": "실리카겔_NO_PAIN.jpg",
+          "track": "실리카겔_NO_PAIN.mp3"
+        }
+      ]
+    },
+    "BikingRed": {
+      "colorName": "Biking Red",
+      "pantoneCode": "19-1650",
+      "hex": "#612129",
+      "tracks": [
+        {
+          "artist": "국카스텐",
+          "title": "거울",
+          "durationMs": 279499,
+          "cover": "국카스텐_거울.jpg",
+          "track": "국카스텐_거울.mp3"
+        },
+        {
+          "artist": "Bring Me The Horizon",
+          "title": "Can You Feel My Heart",
+          "durationMs": 228299,
+          "cover": "Bring_Me_The_Horizon_Can_You_Feel_My_Heart.jpg",
+          "track": "Bring_Me_The_Horizon_Can_You_Feel_My_Heart.mp3"
+        },
+        {
+          "artist": "Måneskin",
+          "title": "I WANNA BE YOUR SLAVE",
+          "durationMs": 173395,
+          "cover": "M_neskin_I_WANNA_BE_YOUR_SLAVE.jpg",
+          "track": "M_neskin_I_WANNA_BE_YOUR_SLAVE.mp3"
+        },
+        {
+          "artist": "Linkin Park",
+          "title": "Numb",
+          "durationMs": 187520,
+          "cover": "Linkin_Park_Numb.jpg",
+          "track": "Linkin_Park_Numb.mp3"
+        },
+        {
+          "artist": "Evanescence",
+          "title": "Bring Me To Life",
+          "durationMs": 236400,
+          "cover": "Evanescence_Bring_Me_To_Life.jpg",
+          "track": "Evanescence_Bring_Me_To_Life.mp3"
+        },
+        {
+          "artist": "시나위",
+          "title": "크게 라디오를 켜고",
+          "durationMs": 261155,
+          "cover": "시나위_크게_라디오를_켜고.jpg",
+          "track": "시나위_크게_라디오를_켜고.mp3"
+        },
+        {
+          "artist": "김경호",
+          "title": "나를 슬프게 하는 사람들",
+          "durationMs": 260840,
+          "cover": "김경호_나를_슬프게_하는_사람들.jpg",
+          "track": "김경호_나를_슬프게_하는_사람들.mp3"
+        },
+        {
+          "artist": "윤도현밴드",
+          "title": "박하사탕",
+          "durationMs": 290333,
+          "cover": "윤도현밴드_박하사탕.jpg",
+          "track": "윤도현밴드_박하사탕.mp3"
+        },
+        {
+          "artist": "자우림",
+          "title": "하하하쏭",
+          "durationMs": 193840,
+          "cover": "자우림_하하하쏭.jpg",
+          "track": "자우림_하하하쏭.mp3"
+        },
+        {
+          "artist": "국카스텐",
+          "title": "라젠카, 세이브 어스",
+          "durationMs": 208086,
+          "cover": "국카스텐_라젠카_세이브_어스.jpg",
+          "track": "국카스텐_라젠카_세이브_어스.mp3"
+        }
+      ]
+    },
+    "JetBlack": {
+      "colorName": "Jet Black",
+      "pantoneCode": "19-0303",
+      "hex": "#2B2C2D",
+      "tracks": [
+        {
+          "artist": "Skrillex",
+          "title": "Scary Monsters",
+          "durationMs": 245098,
+          "cover": "Skrillex_Scary_Monsters.jpg",
+          "track": "Skrillex_Scary_Monsters.mp3"
+        },
+        {
+          "artist": "Knife Party",
+          "title": "Bonfire",
+          "durationMs": 272208,
+          "cover": "Knife_Party_Bonfire.jpg",
+          "track": "Knife_Party_Bonfire.mp3"
+        },
+        {
+          "artist": "Marshmello",
+          "title": "Alone",
+          "durationMs": 277246,
+          "cover": "Marshmello_Alone.jpg",
+          "track": "Marshmello_Alone.mp3"
+        },
+        {
+          "artist": "Alan Walker",
+          "title": "Faded",
+          "durationMs": 212683,
+          "cover": "Alan_Walker_Faded.jpg",
+          "track": "Alan_Walker_Faded.mp3"
+        },
+        {
+          "artist": "Martin Garrix",
+          "title": "Tremor",
+          "durationMs": 198400,
+          "cover": "Martin_Garrix_Tremor.jpg",
+          "track": "Martin_Garrix_Tremor.mp3"
+        },
+        {
+          "artist": "DJ Snake",
+          "title": "Turn Down for What",
+          "durationMs": 215808,
+          "cover": "DJ_Snake_Turn_Down_for_What.jpg",
+          "track": "DJ_Snake_Turn_Down_for_What.mp3"
+        },
+        {
+          "artist": "Deadmau5",
+          "title": "Strobe",
+          "durationMs": 214186,
+          "cover": "Deadmau5_Strobe.jpg",
+          "track": "Deadmau5_Strobe.mp3"
+        },
+        {
+          "artist": "Daft Punk",
+          "title": "Harder, Better, Faster, Stronger",
+          "durationMs": 224688,
+          "cover": "Daft_Punk_Harder_Better_Faster_Stronger.jpg",
+          "track": "Daft_Punk_Harder_Better_Faster_Stronger.mp3"
+        },
+        {
+          "artist": "Justice",
+          "title": "D.A.N.C.E.",
+          "durationMs": 242254,
+          "cover": "Justice_D_A_N_C_E.jpg",
+          "track": "Justice_D_A_N_C_E.mp3"
+        },
+        {
+          "artist": "Gesaffelstein",
+          "title": "Pursuit",
+          "durationMs": 305003,
+          "cover": "Gesaffelstein_Pursuit.jpg",
+          "track": "Gesaffelstein_Pursuit.mp3"
+        }
+      ]
+    },
+    "Iron": {
+      "colorName": "Iron",
+      "pantoneCode": "18-1306",
+      "hex": "#735B52",
+      "tracks": [
+        {
+          "artist": "Kendrick Lamar",
+          "title": "HUMBLE.",
+          "durationMs": 183612,
+          "cover": "Kendrick_Lamar_HUMBLE_2.jpg",
+          "track": "Kendrick_Lamar_HUMBLE_2.mp3"
+        },
+        {
+          "artist": "Post Malone",
+          "title": "Rockstar",
+          "durationMs": 217954,
+          "cover": "Post_Malone_Rockstar.jpg",
+          "track": "Post_Malone_Rockstar.mp3"
+        },
+        {
+          "artist": "21 Savage",
+          "title": "a lot",
+          "durationMs": 288640,
+          "cover": "21_Savage_a_lot.jpg",
+          "track": "21_Savage_a_lot.mp3"
+        },
+        {
+          "artist": "Central Cee",
+          "title": "Doja",
+          "durationMs": 105918,
+          "cover": "Central_Cee_Doja.jpg",
+          "track": "Central_Cee_Doja.mp3"
+        },
+        {
+          "artist": "Pop Smoke",
+          "title": "Dior",
+          "durationMs": 216384,
+          "cover": "Pop_Smoke_Dior.jpg",
+          "track": "Pop_Smoke_Dior.mp3"
+        },
+        {
+          "artist": "XXXTENTACION",
+          "title": "Look At Me!",
+          "durationMs": 127338,
+          "cover": "XXXTENTACION_Look_At_Me.jpg",
+          "track": "XXXTENTACION_Look_At_Me.mp3"
+        },
+        {
+          "artist": "$uicideboy$",
+          "title": "Kill Yourself (Part III)",
+          "durationMs": 145078,
+          "cover": "uicideboy_Kill_Yourself_Part_III.jpg",
+          "track": "uicideboy_Kill_Yourself_Part_III.mp3"
+        },
+        {
+          "artist": "Tyler, The Creator",
+          "title": "EARFQUAKE",
+          "durationMs": 190090,
+          "cover": "Tyler_The_Creator_EARFQUAKE.jpg",
+          "track": "Tyler_The_Creator_EARFQUAKE.mp3"
+        },
+        {
+          "artist": "Playboi Carti",
+          "title": "Magnolia",
+          "durationMs": 180500,
+          "cover": "Playboi_Carti_Magnolia.jpg",
+          "track": "Playboi_Carti_Magnolia.mp3"
+        },
+        {
+          "artist": "Lil Uzi Vert",
+          "title": "XO Tour Llif3",
+          "durationMs": 180175,
+          "cover": "Lil_Uzi_Vert_XO_Tour_Llif3.jpg",
+          "track": "Lil_Uzi_Vert_XO_Tour_Llif3.mp3"
+        }
+      ]
+    }
+  }
+}
