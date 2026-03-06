@@ -1,7 +1,10 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { usePlayerStore } from '@/stores/player';
+import { apiRequest } from '@/services/httpClient';
 import handleIcon from '@/assets/icons/handle.svg';
+import likeIcon from '@/assets/icons/like.svg';
+import likeFullIcon from '@/assets/icons/like_full.svg';
 
 const player = usePlayerStore();
 
@@ -169,6 +172,9 @@ const progressStyle = computed(() => ({
 
 const displayTitle = computed(() => player.current_track.title || '곡을 선택해 재생하세요');
 const displayArtist = computed(() => player.current_track.artist || '플레이리스트에서 트랙을 선택하세요');
+const playlistId = computed(() => String(player.current_playlist.id || '').trim());
+const isLikeSubmitting = ref(false);
+const isLiked = computed(() => Boolean(player.current_playlist.liked));
 
 function handleSeek(event) {
   const target = event.currentTarget;
@@ -177,6 +183,38 @@ function handleSeek(event) {
   const rect = target.getBoundingClientRect();
   const ratio = rect.width > 0 ? (event.clientX - rect.left) / rect.width : 0;
   player.seekToRatio(ratio);
+}
+
+async function handleToggleLike() {
+  if (!playlistId.value || isLikeSubmitting.value) return;
+
+  isLikeSubmitting.value = true;
+
+  try {
+    const result = await apiRequest(
+      '/api/playlist/like.php',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          playlist_id: Number(playlistId.value)
+        })
+      },
+      '좋아요 처리에 실패했습니다.'
+    );
+
+    player.patchCurrentPlaylist({
+      liked: Boolean(result?.liked),
+      like_count: Number(result?.like_count || 0)
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : '좋아요 처리에 실패했습니다.';
+    window.alert(message);
+  } finally {
+    isLikeSubmitting.value = false;
+  }
 }
 </script>
 
@@ -213,8 +251,13 @@ function handleSeek(event) {
         <div class="mini-top">
           <p class="mini-title" :class="{ 'is-empty': !player.has_track }">{{ displayTitle }}</p>
           <div class="mini-actions">
-            <button type="button" class="mini-btn">
-              <img src="@/assets/icons/like.svg" alt="좋아요" class="icon-like" />
+            <button
+              type="button"
+              class="mini-btn"
+              :disabled="!playlistId || isLikeSubmitting"
+              @click.stop="handleToggleLike"
+            >
+              <img :src="isLiked ? likeFullIcon : likeIcon" alt="좋아요" class="icon-like" />
             </button>
             <button
               type="button"

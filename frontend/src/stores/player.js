@@ -11,6 +11,7 @@ function createDefaultPlaylist() {
     color_name: '',
     color_hex: DEFAULT_PLAYER_COLOR,
     liked: false,
+    saved: false,
     like_count: 0
   };
 }
@@ -59,6 +60,8 @@ export const usePlayerStore = defineStore('player', () => {
   const current_time = ref(0);
   const duration = ref(0);
   const seek_request_time = ref(null);
+  const is_shuffle = ref(false);
+  const repeat_mode = ref('off');
 
   const isMini = computed(() => mode.value === 'mini');
   const isMain = computed(() => mode.value === 'main');
@@ -78,6 +81,9 @@ export const usePlayerStore = defineStore('player', () => {
   const has_video = computed(
     () => typeof current_track.value.video_url === 'string' && current_track.value.video_url.trim() !== ''
   );
+  const is_repeat = computed(() => repeat_mode.value !== 'off');
+  const is_repeat_all = computed(() => repeat_mode.value === 'all');
+  const is_repeat_one = computed(() => repeat_mode.value === 'one');
 
   function setCurrentPlaylist(playlist) {
     current_playlist.value = normalizePlaylist(playlist);
@@ -100,6 +106,18 @@ export const usePlayerStore = defineStore('player', () => {
     current_time.value = 0;
     duration.value = 0;
     seek_request_time.value = null;
+  }
+
+  function getRandomNextIndex() {
+    if (track_queue.value.length < 2) {
+      return current_index.value;
+    }
+
+    let nextIndex = current_index.value;
+    while (nextIndex === current_index.value) {
+      nextIndex = Math.floor(Math.random() * track_queue.value.length);
+    }
+    return nextIndex;
   }
 
   function setQueue(tracks, options = {}) {
@@ -191,8 +209,26 @@ export const usePlayerStore = defineStore('player', () => {
   }
 
   function playNext() {
-    if (!has_next.value) return;
-    playTrackAt(current_index.value + 1, { autoplay: true, open_mode: mode.value });
+    if (track_queue.value.length < 1) return;
+
+    if (is_shuffle.value) {
+      playTrackAt(getRandomNextIndex(), { autoplay: true, open_mode: mode.value });
+      return;
+    }
+
+    if (has_next.value) {
+      playTrackAt(current_index.value + 1, { autoplay: true, open_mode: mode.value });
+      return;
+    }
+
+    if (is_repeat_one.value) {
+      playTrackAt(current_index.value, { autoplay: true, open_mode: mode.value });
+      return;
+    }
+
+    if (is_repeat_all.value) {
+      playTrackAt(0, { autoplay: true, open_mode: mode.value });
+    }
   }
 
   function playPrev() {
@@ -240,13 +276,52 @@ export const usePlayerStore = defineStore('player', () => {
   }
 
   function handleTrackEnded() {
+    if (track_queue.value.length < 1) {
+      is_playing.value = false;
+      current_time.value = duration.value;
+      return;
+    }
+
+    if (is_repeat_one.value) {
+      playTrackAt(current_index.value, { autoplay: true, open_mode: mode.value });
+      return;
+    }
+
+    if (is_shuffle.value) {
+      playTrackAt(getRandomNextIndex(), { autoplay: true, open_mode: mode.value });
+      return;
+    }
+
     if (current_index.value < track_queue.value.length - 1) {
       playTrackAt(current_index.value + 1, { autoplay: true, open_mode: mode.value });
       return;
     }
 
+    if (is_repeat_all.value) {
+      playTrackAt(0, { autoplay: true, open_mode: mode.value });
+      return;
+    }
+
     is_playing.value = false;
     current_time.value = duration.value;
+  }
+
+  function toggleShuffle() {
+    is_shuffle.value = !is_shuffle.value;
+  }
+
+  function toggleRepeat() {
+    if (repeat_mode.value === 'off') {
+      repeat_mode.value = 'all';
+      return;
+    }
+
+    if (repeat_mode.value === 'all') {
+      repeat_mode.value = 'one';
+      return;
+    }
+
+    repeat_mode.value = 'off';
   }
 
   return {
@@ -259,6 +334,11 @@ export const usePlayerStore = defineStore('player', () => {
     current_time,
     duration,
     seek_request_time,
+    is_shuffle,
+    repeat_mode,
+    is_repeat,
+    is_repeat_all,
+    is_repeat_one,
     isMini,
     isMain,
     isHidden,
@@ -278,6 +358,8 @@ export const usePlayerStore = defineStore('player', () => {
     clearSeekRequest,
     playNext,
     playPrev,
+    toggleShuffle,
+    toggleRepeat,
     openMain,
     openMini,
     closeMain,
