@@ -21,6 +21,7 @@ TONE은 사용자에게 매일 팬톤컬러 기반의 색상과 그에 맞는 �
   <img alt="Vue.js" hspace="3" src="https://img.shields.io/badge/vuejs-%2335495e.svg?style=for-the-badge&logo=vuedotjs&logoColor=%234FC08D" />
   <img alt="Vite" hspace="3" src="https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white" />
   <img alt="Pinia" hspace="3" src="https://img.shields.io/badge/Pinia-FFD859?style=for-the-badge&logo=pinia&logoColor=black" />
+  <br>
   <img alt="PHP" hspace="3" src="https://img.shields.io/badge/php-%23777BB4.svg?style=for-the-badge&logo=php&logoColor=white" />
   <img alt="MySQL" hspace="3" src="https://img.shields.io/badge/mysql-4479A1.svg?style=for-the-badge&logo=mysql&logoColor=white" />
   <img alt="Composer" hspace="3" src="https://img.shields.io/badge/composer-885630?style=for-the-badge&logo=composer&logoColor=white" />
