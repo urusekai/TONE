@@ -85,45 +85,33 @@ function toNumber(value, fallback = 0) {
   return Number.isFinite(parsed) ? parsed : fallback;
 }
 
-function normalizeSong(song) {
-  if (typeof song === 'string') {
-    return song.trim();
+function mapPreviewSongs(songs) {
+  if (!Array.isArray(songs)) {
+    return [];
   }
 
-  if (!song || typeof song !== 'object') {
-    return '';
-  }
+  return songs
+    .map((song) => {
+      const artist = String(song?.artist || '').trim();
+      const title = String(song?.title || '').trim();
 
-  const title = String(song.title || '').trim();
-  const artist = String(song.artist || '').trim();
-
-  if (artist && title) return `${artist} - ${title}`;
-  return title || artist;
+      if (artist && title) return `${artist} - ${title}`;
+      return title || artist;
+    })
+    .filter(Boolean)
+    .slice(0, 3);
 }
 
-function normalizePreviewSongs(source) {
-  const candidates = [
-    source?.previewSongs,
-    source?.preview_songs,
-    source?.songs,
-    source?.tracks
-  ];
-
-  const rawSongs = candidates.find(Array.isArray) || [];
-
-  return rawSongs.map(normalizeSong).filter(Boolean).slice(0, 3);
-}
-
-function normalizeCard(item, index) {
-  const playlistId = item?.id ?? item?.playlistId ?? item?.playlist_id ?? `playlist-${index}`;
+function mapCard(item) {
+  const playlistId = String(item?.id || '');
 
   return {
-    id: String(playlistId),
-    playlistId: String(playlistId),
-    barColor: String(item?.color_hex || item?.colorHex || '#b7aea6'),
-    title: String(item?.color_name || item?.colorName || item?.pantone_code || item?.pantoneCode || ''),
-    songs: normalizePreviewSongs(item),
-    total: toNumber(item?.totalTracks ?? item?.total_tracks ?? item?.trackCount ?? item?.track_count)
+    id: playlistId,
+    playlistId,
+    barColor: String(item?.color_hex || '#b7aea6'),
+    title: String(item?.color_name || ''),
+    songs: mapPreviewSongs(item?.previewSongs),
+    total: toNumber(item?.totalTracks)
   };
 }
 
@@ -137,7 +125,7 @@ async function fetchPlaylists() {
 
   const items = Array.isArray(result?.playlists) ? result.playlists : [];
 
-  return items.map(normalizeCard);
+  return items.map(mapCard);
 }
 
 async function loadCategoryDetail() {
