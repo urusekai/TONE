@@ -402,8 +402,8 @@ function getIconFilter(color) {
 }
 
 .pl-card {
-  width: 320px;
-  height: 134px;
+  width: 312px;
+  height: 130px;
   background: var(--card, #bfc9d6);
   overflow: hidden;
   margin-top: -28px;
@@ -452,7 +452,7 @@ function getIconFilter(color) {
 }
 
 .pl-card:first-child .pl-arrow {
-  top: 10px;
+  top: 40px;
 }
 
 /* 제목 */
@@ -465,6 +465,11 @@ function getIconFilter(color) {
   font-weight: 700;
   letter-spacing: -0.02em;
   text-align: left;
+}
+
+.pl-card:first-child .pl-name {
+  position: relative;
+  top: -10px;
 }
 
 /* 구분선 */
