@@ -188,11 +188,10 @@ function goPlaylist() {
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
 
-  padding: 22px var(--layout-x) calc(var(--app-main-bottom) + 12px);
+  padding: 25px var(--layout-x) calc(var(--app-main-bottom) + 12px);
   display: flex;
   flex-direction: column;
-  gap: 18px;
-
+  gap: 22px;
   /* Firefox */
   scrollbar-width: none;
 
@@ -217,7 +216,7 @@ function goPlaylist() {
   border-radius: 18px;
 
   background: #ffffff;
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 0px 4px rgba(0, 0, 0, 0.25);
   cursor: pointer;
 }
 
