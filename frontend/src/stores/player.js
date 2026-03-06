@@ -24,6 +24,7 @@ function createDefaultTrack() {
     cover_url: defaultThumb,
     audio_url: '',
     video_url: '',
+    duration_ms: 0,
     color_name: '',
     pantone_code: '',
     color_hex: DEFAULT_PLAYER_COLOR
@@ -46,7 +47,8 @@ function normalizeTrack(track) {
         ? track.cover_url
         : defaultThumb,
     audio_url: typeof track?.audio_url === 'string' ? track.audio_url : '',
-    video_url: typeof track?.video_url === 'string' ? track.video_url : ''
+    video_url: typeof track?.video_url === 'string' ? track.video_url : '',
+    duration_ms: Number(track?.duration_ms || 0)
   };
 }
 
@@ -208,6 +210,13 @@ export const usePlayerStore = defineStore('player', () => {
     seek_request_time.value = null;
   }
 
+  function replayCurrentTrack() {
+    if (!has_track.value || current_index.value < 0) return;
+    current_time.value = 0;
+    seek_request_time.value = 0;
+    is_playing.value = true;
+  }
+
   function playNext() {
     if (track_queue.value.length < 1) return;
 
@@ -222,7 +231,7 @@ export const usePlayerStore = defineStore('player', () => {
     }
 
     if (is_repeat_one.value) {
-      playTrackAt(current_index.value, { autoplay: true, open_mode: mode.value });
+      replayCurrentTrack();
       return;
     }
 
@@ -283,7 +292,7 @@ export const usePlayerStore = defineStore('player', () => {
     }
 
     if (is_repeat_one.value) {
-      playTrackAt(current_index.value, { autoplay: true, open_mode: mode.value });
+      replayCurrentTrack();
       return;
     }
 
@@ -356,6 +365,7 @@ export const usePlayerStore = defineStore('player', () => {
     togglePlay,
     seekToRatio,
     clearSeekRequest,
+    replayCurrentTrack,
     playNext,
     playPrev,
     toggleShuffle,

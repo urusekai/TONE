@@ -45,6 +45,7 @@ function toPlayerTrack(track) {
     cover_url: track?.cover_url || trackThumbImage,
     audio_url: String(track?.audio_url || ''),
     video_url: String(track?.video_url || ''),
+    duration_ms: Number(track?.duration_ms || 0),
     color_name: String(playlist.value?.color_name || ''),
     pantone_code: String(playlist.value?.pantone_code || ''),
     color_hex: String(playlist.value?.color_hex || '#B7AEA6')
