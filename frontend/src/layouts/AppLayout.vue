@@ -39,6 +39,7 @@ function toPlayerTrack(track, playlist) {
     cover_url: String(track?.cover_url || ''),
     audio_url: String(track?.audio_url || ''),
     video_url: String(track?.video_url || ''),
+    duration_ms: Number(track?.duration_ms || 0),
     color_name: String(playlist?.color_name || ''),
     pantone_code: String(playlist?.pantone_code || ''),
     color_hex: String(playlist?.color_hex || '#D5E1E8')
@@ -151,6 +152,19 @@ function handleLoadedMetadata() {
   const audio = audioRef.value;
   if (!audio) return;
   player.setDuration(audio.duration);
+  console.log('[player-duration-debug]', {
+    track_id: player.current_track.id,
+    title: player.current_track.title,
+    duration_ms: Number(player.current_track.duration_ms || 0),
+    expected_seconds: Number(player.current_track.duration_ms || 0) / 1000,
+    audio_duration: audio.duration
+  });
+}
+
+function handleDurationChange() {
+  const audio = audioRef.value;
+  if (!audio) return;
+  player.setDuration(audio.duration);
 }
 
 function handleTimeUpdate() {
@@ -184,6 +198,7 @@ onBeforeUnmount(() => {
       ref="audioRef"
       preload="metadata"
       @loadedmetadata="handleLoadedMetadata"
+      @durationchange="handleDurationChange"
       @timeupdate="handleTimeUpdate"
       @play="handleAudioPlay"
       @pause="handleAudioPause"
