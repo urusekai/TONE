@@ -60,18 +60,19 @@
             </div>
 
             <button
-                type="button"
-                class="cc-add"
-                aria-label="팔레트 로그에 저장"
-                @click.capture.stop.prevent="togglePalette(item)"
-                title="팔레트 로그에 저장"
-              >
-                <img
-                :src="paletteLog.has(String(item.id)) ? addCompleteIcon : addIcon"
+              type="button"
+              class="cc-add"
+              aria-label="팔레트 로그에 저장"
+              :disabled="paletteLog.isPending(item.id)"
+              @click.capture.stop.prevent="handleToggleSave(item)"
+              title="팔레트 로그에 저장"
+            >
+              <img
+                :src="paletteLog.has(item.id) ? addCompleteIcon : addIcon"
                 alt=""
                 :style="{ filter: isBright(item.color_hex) ? 'none' : 'brightness(0) invert(1)' }"
-                />
-              </button>
+              />
+            </button>
           </div>
         </a>
       </li>
@@ -199,20 +200,21 @@ function isBright(hex) {
   return brightness > 170;
 }
 
-function togglePalette(item) {
-  paletteLog.toggle({
-    playlistId: String(item.id),
-    colorName: item.color_name,
-    pantoneCode: item.pantone_code,
-    colorHex: item.color_hex,
-    likes: item.like_count,
-    mood: item.mood,
-    totalTracks: item.totalTracks,
-    hashtags: [item.mood]
-  });
+async function handleToggleSave(item) {
+  try {
+    const result = await paletteLog.toggle(item?.id);
+    if (!result) return;
+
+    item.saved = Boolean(result?.saved);
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : '팔레트 로그 저장 처리에 실패했습니다.';
+    window.alert(message);
+  }
 }
 
 onMounted(async () => {
+  await paletteLog.load({ silent: true });
   await loadChartItems();
 });
 </script>
@@ -413,6 +415,11 @@ onMounted(async () => {
   justify-content: center;
   padding: 0;
   background: transparent;
+}
+
+.cc-add:disabled {
+  cursor: default;
+  opacity: 0.7;
 }
 
 .cc-add img {

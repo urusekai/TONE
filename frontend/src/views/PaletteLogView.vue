@@ -6,40 +6,47 @@
         <p class="pl-sub">Current Playlist</p>
       </div>
 
-      <div class="pl-board">
+      <p v-if="isLoading" class="pl-state">팔레트 로그를 불러오는 중...</p>
+      <p v-else-if="errorMessage" class="pl-state pl-state-error">{{ errorMessage }}</p>
+      <p v-else-if="!items.length" class="pl-state">저장된 팔레트 로그가 없습니다.</p>
+
+      <div v-else class="pl-board">
         <ul class="pl-stack" :class="{ 'is-lock': isLock }">
           <li
             v-for="(item, i) in items"
-            :key="item.id"
+            :key="item.playlist_id"
             class="pl-card"
-            :class="{ 'is-in': isAnim, 'is-exit-right': exitId === item.id }"
+            :class="{ 'is-in': isAnim, 'is-exit-right': exitId === String(item.playlist_id) }"
             :style="{
-              '--card': item.color,
-              '--delay': `${i * 50}ms`
+              '--card': item.playlist.color_hex,
+              '--delay': `${i * 50}ms`,
+              zIndex: items.length - i
             }"
           >
-            <!-- ✅ 디자인은 a처럼, 동작은 우리가 제어 -->
             <button
               type="button"
               class="pl-link"
               @click="onCardClick(item)"
-              :style="{ color: getTextColor(item.color) }"
+              :style="{ color: getTextColor(item.playlist.color_hex) }"
             >
-              <span class="pl-arrow" :style="{ filter: getIconFilter(item.color) }">
+              <span class="pl-arrow" :style="{ filter: getIconFilter(item.playlist.color_hex) }">
                 <img :src="arrowIcon" alt=">" />
               </span>
 
-              <h2 class="pl-name">{{ item.name }}</h2>
-              <div class="pl-line" :style="{ background: getLineColor(item.color) }"></div>
+              <h2 class="pl-name">{{ item.playlist.color_name }}</h2>
+              <div
+                class="pl-line"
+                :style="{ background: getLineColor(item.playlist.color_hex) }"
+              ></div>
 
               <div class="pl-meta">
-                <span :style="{ filter: getIconFilter(item.color) }">
+                <span :style="{ filter: getIconFilter(item.playlist.color_hex) }">
                   <img :src="likeIcon" alt="like_full" />
-                  {{ item.likes }}
+                  {{ formatCount(item.playlist.like_count) }}
                 </span>
-                <span :style="{ filter: getIconFilter(item.color) }">
+                <span :style="{ filter: getIconFilter(item.playlist.color_hex) }">
                   <img :src="noteIcon" alt="note" />
-                  {{ item.plays }}
+                  {{ formatPlays(item.playlist.play_count) }}
                 </span>
               </div>
             </button>
@@ -51,8 +58,9 @@
 </template>
 
 <script setup>
-import { onMounted, onBeforeUnmount, nextTick, ref } from 'vue';
+import { nextTick, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
+import { apiRequest } from '@/services/httpClient';
 
 import arrowIcon from '@/assets/icons/arrow-right.svg';
 import likeIcon from '@/assets/icons/like_full.svg';
@@ -61,227 +69,64 @@ import noteIcon from '@/assets/icons/music_note.svg';
 const router = useRouter();
 
 const isAnim = ref(false);
+const isLoading = ref(false);
 const isLock = ref(false);
+const errorMessage = ref('');
 const exitId = ref(null);
 const isTransitioning = ref(false);
-
-// ✅ 더미 데이터 (너가 만든 그대로)
-const items = ref([
-  {
-    id: '02.23|Baby Blue',
-    name: 'Baby Blue',
-    color: '#b6c6d3',
-    likes: '418',
-    plays: '287 Plays'
-  },
-  {
-    id: '02.22|Lavender',
-    name: 'Lavender',
-    color: '#aaa4ca',
-    likes: '902',
-    plays: '254 Plays'
-  },
-  {
-    id: '02.21|Prism Pink',
-    name: 'Prism Pink',
-    color: '#e8a4bb',
-    likes: '167',
-    plays: '228 Plays'
-  },
-  {
-    id: '02.20|Living Coral',
-    name: 'Living Coral',
-    color: '#EC6C5E',
-    likes: '12,218',
-    plays: '196 Plays'
-  },
-  {
-    id: '02.19|Serenity',
-    name: 'Serenity',
-    color: '#91a8d0',
-    likes: '284',
-    plays: '168 Plays'
-  },
-  {
-    id: '02.18|Viva Magenta',
-    name: 'Viva Magenta',
-    color: '#BB2649',
-    likes: '11,763',
-    plays: '142 Plays'
-  },
-  {
-    id: '02.17|Gray Lilac',
-    name: 'Gray Lilac',
-    color: '#d4cacd',
-    likes: '983',
-    plays: '117 Plays'
-  },
-  {
-    id: '02.16|Mountain Trail',
-    name: 'Mountain Trail',
-    color: '#8a756a',
-    likes: '356',
-    plays: '89 Plays'
-  },
-  {
-    id: '02.15|Arona',
-    name: 'Arona',
-    color: '#899aa2',
-    likes: '124',
-    plays: '53 Plays'
-  },
-  {
-    id: '02.14|Regatta',
-    name: 'Regatta',
-    color: '#497ab7',
-    likes: '847',
-    plays: '21 Plays'
-  }
-]);
-
-/**
- * ✅ 템플릿에서 쓰는 카드 클릭 핸들러(원하면 유지)
- * - 이 함수는 "수동 클릭"에서 쓰고,
- * - DOM 이벤트 위임 방식(onClick)과 동시 사용해도 되는데,
- *   중복 클릭 방지를 위해 결국 isTransitioning으로 한번만 타게 됨.
- */
-function onCardClick(item) {
-  if (isTransitioning.value) return;
-  isTransitioning.value = true;
-
-  isLock.value = true;
-  exitId.value = item.id;
-
-  localStorage.setItem('tone.player.payload', JSON.stringify(item));
-
-  // ⚠️ setTimeout 말고 transitionend로 이동하는 게 더 정확함
-  // 하지만 템플릿이 @click="onCardClick(item)"만 쓰는 경우를 대비해서 fallback로 유지
-  window.setTimeout(() => {
-    router.push('/playlist');
-  }, 350);
-}
-
-/* =========================
-   아래부터: "palette-log.js stable"를 Vue용으로 이식 (최우선)
-========================= */
-
-let mo = null;
-let onResize = null;
-let onClick = null;
-
-onMounted(async () => {
-  await nextTick(); // ✅ v-for 렌더 후 DOM 확보
-
-  const page = document.getElementById('palette-log-page');
-  const stack = document.querySelector('.pl-stack');
-  if (!page || !stack) return;
-
-  const getCards = () => Array.from(stack.querySelectorAll('.pl-card'));
-
-  // 1) 순차 등장 (CSS: #palette-log-page.is-anim .pl-card ...)
-  page.classList.add('is-anim');
-  getCards().forEach((card, i) => {
-    card.style.setProperty('--delay', `${i * 50}ms`);
-    requestAnimationFrame(() => card.classList.add('is-in'));
-  });
-
-  // Vue ref도 같이 맞춰둠(템플릿이 :class로 isAnim 쓰는 경우 대비)
-  requestAnimationFrame(() => {
-    isAnim.value = true;
-  });
-
-  // 2) z-index 자동 부여
-  function applyStackZIndex() {
-    const cards = getCards();
-    const total = cards.length;
-    cards.forEach((card, i) => {
-      card.style.zIndex = String(total - i);
-    });
-  }
-  applyStackZIndex();
-
-  // 3) 보드 높이 자동 계산
-  function updateBoardHeight() {
-    const cards = getCards();
-    if (!cards.length) return;
-
-    const overlap = 50; // 기존 stable 값 유지
-    const cardHeight = cards[0].offsetHeight;
-    const total = cards.length;
-    const totalHeight = cardHeight + (total - 1) * (cardHeight - overlap);
-
-    stack.style.minHeight = totalHeight + 'px';
-  }
-  updateBoardHeight();
-
-  onResize = () => updateBoardHeight();
-  window.addEventListener('resize', onResize);
-
-  // 4) 카드 추가/삭제 감지 → z-index/높이 갱신
-  mo = new MutationObserver(() => {
-    applyStackZIndex();
-    updateBoardHeight();
-
-    getCards().forEach((card) => {
-      if (!card.classList.contains('is-in')) card.classList.add('is-in');
-    });
-  });
-  mo.observe(stack, { childList: true });
-
-  // 5) 클릭한 카드 1장만 오른쪽 슬라이드 (이게 진짜 “정확한” 이동)
-  onClick = (e) => {
-    const link = e.target.closest('.pl-link');
-    if (!link) return;
-
-    e.preventDefault();
-    if (isTransitioning.value) return;
-
-    const card = link.closest('.pl-card');
-    if (!card) return;
-
-    isTransitioning.value = true;
-    isLock.value = true;
-
-    // exitId는 Vue 템플릿에서 class 바인딩으로도 쓸 수 있게 맞춤
-    // (템플릿에서 :class="{ 'is-exit-right': exitId===item.id }"라면)
-    const date = card.querySelector('.pl-time')?.textContent?.trim() || '';
-    const name = card.querySelector('.pl-name')?.textContent?.trim() || '';
-    const color = getComputedStyle(card).getPropertyValue('--card')?.trim() || '';
-
-    const id = `${date}|${name}|${color}`;
-    exitId.value = id;
-
-    // ✅ class 직접 부여(템플릿 바인딩이 없어도 동작)
-    stack.classList.add('is-lock');
-    card.classList.add('is-exit-right');
-
-    const payload = { id, date, name, color };
-    localStorage.setItem('tone.player.payload', JSON.stringify(payload));
-
-    const onEnd = (ev) => {
-      if (ev.propertyName !== 'transform') return;
-      card.removeEventListener('transitionend', onEnd);
-      router.push('/playlist');
-    };
-
-    card.addEventListener('transitionend', onEnd);
-  };
-
-  stack.addEventListener('click', onClick);
-});
-
-onBeforeUnmount(() => {
-  if (onResize) window.removeEventListener('resize', onResize);
-  if (mo) mo.disconnect();
-
-  const stack = document.querySelector('.pl-stack');
-  if (stack && onClick) stack.removeEventListener('click', onClick);
-});
+const items = ref([]);
 
 const colors = {
-  darkText: '#3f5f73', // 밝은 배경일 때
-  lightText: '#F2F2EE' // 어두운 배경일 때
+  darkText: '#3f5f73',
+  lightText: '#F2F2EE'
 };
+
+async function loadPaletteLogs() {
+  isLoading.value = true;
+  errorMessage.value = '';
+  isAnim.value = false;
+  items.value = [];
+
+  try {
+    const result = await apiRequest(
+      '/api/palette-logs/list.php',
+      {},
+      '팔레트 로그를 불러오지 못했습니다.'
+    );
+    items.value = Array.isArray(result?.paletteLogs) ? result.paletteLogs : [];
+  } catch (error) {
+    errorMessage.value =
+      error instanceof Error ? error.message : '팔레트 로그를 불러오지 못했습니다.';
+  } finally {
+    isLoading.value = false;
+  }
+}
+
+async function startEntranceAnimation() {
+  await nextTick();
+  if (!items.value.length) return;
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      isAnim.value = true;
+    });
+  });
+}
+
+function onCardClick(item) {
+  if (isTransitioning.value) return;
+
+  isTransitioning.value = true;
+  isLock.value = true;
+  exitId.value = String(item.playlist_id);
+
+  window.setTimeout(() => {
+    router.push({
+      path: '/playlist',
+      query: { id: String(item.playlist_id) }
+    });
+  }, 350);
+}
 
 function parseToRGB(color) {
   if (!color) return null;
@@ -297,9 +142,11 @@ function parseToRGB(color) {
     return { r, g, b };
   }
 
-  const m = c.match(/rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)(?:\s*,\s*[\d.]+)?\s*\)/i);
-  if (m) {
-    return { r: Number(m[1]), g: Number(m[2]), b: Number(m[3]) };
+  const matched = c.match(
+    /rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)(?:\s*,\s*[\d.]+)?\s*\)/i
+  );
+  if (matched) {
+    return { r: Number(matched[1]), g: Number(matched[2]), b: Number(matched[3]) };
   }
 
   return null;
@@ -330,6 +177,27 @@ function getIconFilter(color) {
     ? 'brightness(0) saturate(100%) invert(31%) sepia(18%) saturate(653%) hue-rotate(157deg) brightness(91%) contrast(88%)'
     : 'brightness(0) invert(1)';
 }
+
+function formatCount(value) {
+  return Number(value || 0).toLocaleString('en-US');
+}
+
+function formatPlays(value) {
+  return `${Number(value || 0).toLocaleString('en-US')} Plays`;
+}
+
+onMounted(async () => {
+  await loadPaletteLogs();
+});
+
+watch(
+  items,
+  async (nextItems) => {
+    if (!nextItems.length) return;
+    await startEntranceAnimation();
+  },
+  { deep: true }
+);
 </script>
 <style scoped>
 /* =========================
@@ -368,6 +236,17 @@ function getIconFilter(color) {
   font-size: 14px;
   font-weight: 800;
   opacity: 0.75;
+}
+
+.pl-state {
+  padding: 12px 0;
+  font-size: 14px;
+  color: #3f5f73;
+  text-align: center;
+}
+
+.pl-state-error {
+  color: #b42318;
 }
 
 /* =========================
@@ -410,13 +289,22 @@ function getIconFilter(color) {
   box-shadow:
     0 16px 26px rgba(0, 0, 0, 0.18),
     0 1px 0 rgba(255, 255, 255, 0.25) inset;
-  opacity: 1;
-  transform: none;
+  opacity: 0;
+  transform: translateY(10px);
   will-change: transform, opacity;
+  transition:
+    opacity 0.36s ease,
+    transform 0.36s ease;
+  transition-delay: var(--delay, 0ms);
 }
 
 .pl-card:first-child {
   margin-top: -70px;
+}
+
+#palette-log-page.is-anim .pl-card.is-in {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* 링크 내부 */
@@ -502,23 +390,6 @@ function getIconFilter(color) {
   height: 12px;
   opacity: 1;
   filter: brightness(0) invert(1);
-}
-
-/* =========================
-   A) 카드 순차 등장
-========================= */
-#palette-log-page.is-anim .pl-card {
-  opacity: 0;
-  transform: translateY(10px);
-  transition:
-    opacity 0.36s ease,
-    transform 0.36s ease;
-  transition-delay: var(--delay, 0ms);
-}
-
-#palette-log-page.is-anim .pl-card.is-in {
-  opacity: 1;
-  transform: translateY(0);
 }
 
 /* =========================
