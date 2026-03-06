@@ -1,9 +1,6 @@
 <template>
-  <!-- 페이지 내용 -->
   <main id="category-detail-page">
-    <!-- 무드 헤더 -->
-    <section ref="moodHeaderEl" class="mood-header">
-      <!-- 기존 HTML의 cg-grad + CSS변수 방식 유지 -->
+    <section class="mood-header">
       <div class="cg-grad" :style="gradStyle"></div>
 
       <h1 class="mood-title">{{ moodTitle }}</h1>
@@ -13,22 +10,25 @@
       </div>
     </section>
 
-    <!-- 컬러 리스트 -->
-    <section ref="colorListEl" class="color-list">
+    <section class="color-list">
+      <p v-if="isLoading" class="color-state">플레이리스트를 불러오는 중...</p>
+      <p v-else-if="errorMessage" class="color-state color-state-error">{{ errorMessage }}</p>
+      <p v-else-if="!colorCards.length" class="color-state">등록된 플레이리스트가 없습니다.</p>
+
       <article
         v-for="card in colorCards"
         :key="card.id"
         class="color-card"
         role="button"
         tabindex="0"
-        @click="goPlaylist()"
-        @keydown.enter="goPlaylist()"
+        @click="goPlaylist(card)"
+        @keydown.enter="goPlaylist(card)"
       >
-        <div class="color-bar" :style="{ background: card.barColor }"></div>
+        <div class="color-bar" :style="{ background: card.color_hex }"></div>
 
         <div class="color-content">
           <div class="color-top">
-            <h3 class="color-name">{{ card.title }}</h3>
+            <h3 class="color-name">{{ card.color_name }}</h3>
 
             <div class="color-right">
               <span class="arrow">
@@ -39,9 +39,9 @@
 
           <div class="song-area">
             <ul class="song-list">
-              <li v-for="(s, i) in card.songs" :key="i">{{ s }}</li>
+              <li v-for="(song, index) in card.preview_songs" :key="index">{{ song }}</li>
             </ul>
-            <p class="total">총 {{ card.total }}곡</p>
+            <p class="total">총 {{ card.total_tracks }}곡</p>
           </div>
         </div>
       </article>
@@ -50,77 +50,131 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import arrowRight from '@/assets/icons/arrow-right.svg';
+import { apiRequest } from '@/services/httpClient';
 
 const route = useRoute();
 const router = useRouter();
 
-// 지금은 “기존 파일 그대로” Energetic을 기본값으로 보여줌
 const mood = computed(() => (route.query.mood || 'energetic').toString().toLowerCase());
+const moodLabel = computed(() => String(route.query.label || formatMoodLabel(mood.value)).trim());
+const moodTags = computed(() =>
+  [route.query.tag1, route.query.tag2, route.query.tag3]
+    .map((tag) => String(tag || '').trim())
+    .filter(Boolean)
+);
+const gradStyle = computed(() => ({
+  '--c1': String(route.query.gradC1 || '#f2f2ee'),
+  '--c2': String(route.query.gradC2 || '#cfe6d6'),
+  '--c3': String(route.query.gradC3 || '#b7aea6')
+}));
+const isLoading = ref(false);
+const errorMessage = ref('');
+const playlists = ref([]);
+let latestRequestId = 0;
 
-// (현재는 energetic만 실제 데이터 채워둠: 기존 html 그대로) :contentReference[oaicite:5]{index=5}
-const MOCK_BY_MOOD = {
-  energetic: {
-    title: 'Energetic',
-    tags: ['대담한', '압도적', '맥박수'],
-    grad: { '--c1': '#ff5e5b', '--c2': '#ff8e53', '--c3': '#fdc830' },
-    cards: [
-      {
-        id: 'energetic-1',
-        barColor: '#bb2649',
-        title: 'Viva Magenta',
-        songs: ["Måneskin - Beggin'", "화사 - I'm a B", 'Sam Smith - Unholy'],
-        total: 10
-      },
-      {
-        id: 'energetic-2',
-        barColor: '#003399',
-        title: 'Electric Blue',
-        songs: [
-          'Dua Lipa - Levitating',
-          '블랙핑크 - How You Like ThatHow You Like That',
-          'David Guetta - Titanium'
-        ],
-        total: 10
-      },
-      {
-        id: 'energetic-3',
-        barColor: '#ff0000',
-        title: 'Fiery Red',
-        songs: ['ITZY - WANNABE', '(여자)아이들 - 퀸카', '에스파 - Next Level'],
-        total: 10
-      },
-      {
-        id: 'energetic-4',
-        barColor: '#ffd300',
-        title: 'Cyber Yellow',
-        songs: ['Travis Scott - SICKO MODE', '21 Savage - Redrum', 'Kendrick Lamar - HUMBLE.'],
-        total: 10
-      }
-    ]
-  }
-};
-
-// mood 매핑: 없는 mood면 energetic fallback
-const moodData = computed(() => MOCK_BY_MOOD[mood.value] ?? MOCK_BY_MOOD.energetic);
-
-const moodTitle = computed(() => moodData.value.title);
-const moodTags = computed(() => moodData.value.tags);
-const gradStyle = computed(() => moodData.value.grad);
-const colorCards = computed(() => moodData.value.cards);
-
-// 기존 JS 동작을 Vue로 이식: 카드 클릭 시 playlist로 이동 :contentReference[oaicite:6]{index=6}
-function goPlaylist() {
-  router.push('/playlist');
+function formatMoodLabel(value) {
+  if (!value) return 'Category';
+  return value.charAt(0).toUpperCase() + value.slice(1);
 }
+
+function toNumber(value, fallback = 0) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+function mapPreviewSongs(songs) {
+  if (!Array.isArray(songs)) {
+    return [];
+  }
+
+  return songs
+    .map((song) => {
+      const artist = String(song?.artist || '').trim();
+      const title = String(song?.title || '').trim();
+
+      if (artist && title) return `${artist} - ${title}`;
+      return title || artist;
+    })
+    .filter(Boolean)
+    .slice(0, 3);
+}
+
+function mapCard(item) {
+  return {
+    id: String(item?.id || ''),
+    pantone_code: String(item?.pantone_code || ''),
+    color_name: String(item?.color_name || ''),
+    color_hex: String(item?.color_hex || '#b7aea6'),
+    preview_songs: mapPreviewSongs(item?.previewSongs),
+    total_tracks: toNumber(item?.totalTracks)
+  };
+}
+
+async function fetchPlaylists() {
+  const query = new URLSearchParams({ mood: mood.value });
+  const result = await apiRequest(
+    `/api/categories/playlists.php?${query.toString()}`,
+    {},
+    '플레이리스트 목록을 불러오지 못했습니다.'
+  );
+
+  const items = Array.isArray(result?.playlists) ? result.playlists : [];
+
+  return items.map(mapCard);
+}
+
+async function loadCategoryDetail() {
+  const currentRequestId = ++latestRequestId;
+
+  isLoading.value = true;
+  errorMessage.value = '';
+  playlists.value = [];
+
+  const playlistResult = await fetchPlaylists()
+    .then((value) => ({ ok: true, value }))
+    .catch((error) => ({ ok: false, error }));
+
+  if (currentRequestId !== latestRequestId) {
+    return;
+  }
+
+  if (playlistResult.ok) {
+    playlists.value = playlistResult.value;
+  } else {
+    errorMessage.value =
+      playlistResult.error instanceof Error
+        ? playlistResult.error.message
+        : '플레이리스트 목록을 불러오지 못했습니다.';
+  }
+
+  isLoading.value = false;
+}
+
+const moodTitle = computed(() => moodLabel.value);
+const colorCards = computed(() => playlists.value);
+
+function goPlaylist(card) {
+  if (!card?.id) return;
+
+  router.push({
+    path: '/playlist',
+    query: { id: card.id }
+  });
+}
+
+watch(
+  mood,
+  async () => {
+    await loadCategoryDetail();
+  },
+  { immediate: true }
+);
 </script>
 
 <style scoped>
-/* ====== category-detail.css 그대로 이식 (외부로 안 뺀 버전) ====== */
-
-/* ===== 전체 ===== :contentReference[oaicite:8]{index=8} */
 #category-detail-page {
   width: 100%;
   min-height: 0;
@@ -131,15 +185,12 @@ function goPlaylist() {
   padding-bottom: 0;
 }
 
-/* ===== 무드 헤더 ===== :contentReference[oaicite:9]{index=9} */
 .mood-header {
   position: relative;
   z-index: 1;
   width: 100%;
   flex: 0 0 auto;
   margin: 0;
-
-  /* 여기서 헤더 높이 다시 더하지 말기 */
   padding: 16px var(--layout-x) 20px;
 
   text-align: center;
@@ -178,8 +229,6 @@ function goPlaylist() {
   z-index: 1;
 }
 
-/* ===== 컬러 리스트 ===== :contentReference[oaicite:10]{index=10} */
-/* ✅ 아래만 스크롤 */
 .color-list {
   flex: 1 1 auto;
   height: 0;
@@ -188,11 +237,10 @@ function goPlaylist() {
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
 
-  padding: 22px var(--layout-x) calc(var(--app-main-bottom) + 12px);
+  padding: 25px var(--layout-x) calc(var(--app-main-bottom) + 12px);
   display: flex;
   flex-direction: column;
-  gap: 18px;
-
+  gap: 22px;
   /* Firefox */
   scrollbar-width: none;
 
@@ -204,7 +252,17 @@ function goPlaylist() {
   display: none;
 }
 
-/* 카드 컨테이너 :contentReference[oaicite:11]{index=11} */
+.color-state {
+  margin: 0 auto;
+  color: #3f5f73;
+  font-size: 14px;
+  text-align: center;
+}
+
+.color-state-error {
+  color: #b42318;
+}
+
 .color-card {
   flex: 0 0 auto;
   width: 100%;
@@ -216,19 +274,17 @@ function goPlaylist() {
   overflow: hidden;
   border-radius: 18px;
 
-  background: #f4f4f4;
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+  background: #ffffff;
+  box-shadow: 0 0px 4px rgba(0, 0, 0, 0.25);
   cursor: pointer;
 }
 
-/* 왼쪽 컬러 바 :contentReference[oaicite:12]{index=12} */
 .color-bar {
   width: 95px;
   height: 120px;
   flex: 0 0 95px;
 }
 
-/* 텍스트 영역 :contentReference[oaicite:13]{index=13} */
 .color-content {
   flex: 1;
   padding: 10px;
@@ -237,7 +293,6 @@ function goPlaylist() {
   justify-content: center;
 }
 
-/* 상단: 타이틀 + 우측 :contentReference[oaicite:14]{index=14} */
 .color-top {
   display: flex;
   justify-content: space-between;
@@ -255,7 +310,6 @@ function goPlaylist() {
   margin: 0;
 }
 
-/* 우측 정렬 묶음 :contentReference[oaicite:15]{index=15} */
 .color-right {
   display: flex;
   flex-direction: column;
@@ -299,7 +353,6 @@ function goPlaylist() {
   text-overflow: ellipsis;
 }
 
-/* ✅ 점을 '안쪽'에 직접 그리기 :contentReference[oaicite:16]{index=16} */
 .song-list li::before {
   content: '•';
   position: absolute;
@@ -310,7 +363,7 @@ function goPlaylist() {
 .total {
   flex: 0 0 auto;
   margin: 0;
-  font-size: 11px;
+  font-size: 10px;
   color: #b7aeac;
   white-space: nowrap;
 }

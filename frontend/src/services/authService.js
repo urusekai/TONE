@@ -42,7 +42,8 @@ export async function registerUser(payload) {
         id: payload.id,
         email: payload.email,
         nickname: payload.nickname,
-        profileColor: payload.profileColor
+        profileColor: payload.profileColor,
+        membershipPlan: 'free'
       }
     };
   }
@@ -76,7 +77,8 @@ export async function loginUser(payload) {
         email: 'mock@tone.local',
         nickname: 'Mock',
         provider: 'local',
-        profileColor: '#B7AEA6'
+        profileColor: '#B7AEA6',
+        membershipPlan: 'free'
       }
     };
   }
@@ -136,7 +138,8 @@ export async function completeSocialSignup(payload) {
         email: payload.email,
         nickname: payload.nickname,
         provider: payload.provider || 'kakao',
-        profileColor: payload.profileColor
+        profileColor: payload.profileColor,
+        membershipPlan: 'free'
       }
     };
   }

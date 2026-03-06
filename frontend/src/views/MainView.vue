@@ -7,9 +7,9 @@
 
       <div class="daily-inner">
         <div class="daily-text">
-          <h2>데일리 팬톤 컬러 명</h2>
+          <h2>{{ dailyPlaylist.color_name }}</h2>
           <p>
-            오늘의 톤은 <b>Very Peri</b> 입니다.<br />
+            오늘의 톤은 <b>{{ dailyPlaylist.color_name }}</b> 입니다.<br />
             오늘의 톤에 맞는 플레이리스트입니다.
           </p>
 
@@ -18,18 +18,31 @@
               class="icon-btn big"
               type="button"
               aria-label="play"
-              @click="openMainPlayerDaily"
+              @click="goDailyPlaylist"
             >
               <img src="@/assets/icons/play.svg" alt="play" />
             </button>
 
-            <button class="icon-btn daily-btn" type="button" aria-label="save" @click="goCalendar">
-              <img src="@/assets/icons/calendarSave.svg" alt="calendar" />
+            <button
+              class="icon-btn daily-btn"
+              type="button"
+              aria-label="팔레트 로그 저장"
+              :disabled="paletteLog.isPending(dailyPlaylist.id)"
+              @click="handleTogglePalette(dailyPlaylist)"
+            >
+              <img
+                :src="paletteLog.has(dailyPlaylist.id) ? addCompleteIcon : addIcon"
+                alt="저장"
+              />
             </button>
           </div>
         </div>
 
-        <div class="daily-swatch" aria-hidden="true"></div>
+        <div
+          class="daily-swatch"
+          :style="{ backgroundColor: dailyPlaylist.color_hex }"
+          aria-hidden="true"
+        ></div>
       </div>
     </section>
 
@@ -42,65 +55,31 @@
 
       <div class="spec-track">
         <div ref="specRowEl" class="spec-row">
-          <RouterLink class="spec-card" :to="playlistTo('bordeaux')">
-            <div class="spec-color" style="--c: #97637c"></div>
-            <div class="spec-body">
-              <div class="spec-meta">
-                <span class="spec-code">17-1710</span>
-                <button
-                  class="mini-add"
-                  type="button"
-                  aria-label="add"
-                  @click.capture.stop.prevent="goCalendar"
-                >
-                  <img src="@/assets/icons/calendarSave.svg" alt="calendar" />
-                </button>
-              </div>
-              <div class="spec-name">Bordeaux</div>
-            </div>
-          </RouterLink>
-
           <RouterLink
-            class="spec-card is-next"
-            :to="playlistTo('scarlet-smile')"
-            aria-hidden="true"
+            v-for="(playlist, index) in spectrumPlaylists"
+            :key="playlist.id"
+            class="spec-card"
+            :class="{ 'is-next': index > 0 }"
+            :to="playlistTo(playlist.id)"
           >
-            <div class="spec-color" style="--c: #9f2336"></div>
+            <div class="spec-color" :style="{ '--c': playlist.color_hex }"></div>
             <div class="spec-body">
               <div class="spec-meta">
-                <span class="spec-code">19-1558</span>
+                <span class="spec-code">{{ playlist.pantone_code }}</span>
                 <button
                   class="mini-add"
                   type="button"
-                  aria-label="add"
-                  @click.capture.stop.prevent="goCalendar"
+                  aria-label="팔레트 로그 저장"
+                  :disabled="paletteLog.isPending(playlist.id)"
+                  @click.capture.stop.prevent="handleTogglePalette(playlist)"
                 >
-                  <img src="@/assets/icons/calendarSave.svg" alt="calendar" />
+                  <img
+                    :src="paletteLog.has(playlist.id) ? addCompleteIcon : addIcon"
+                    alt="저장"
+                  />
                 </button>
               </div>
-              <div class="spec-name">Scarlet Smile</div>
-            </div>
-          </RouterLink>
-
-          <RouterLink
-            class="spec-card is-next"
-            :to="playlistTo('pink-lemonade')"
-            aria-hidden="true"
-          >
-            <div class="spec-color" style="--c: #ef6f8e"></div>
-            <div class="spec-body">
-              <div class="spec-meta">
-                <span class="spec-code">16-1735</span>
-                <button
-                  class="mini-add"
-                  type="button"
-                  aria-label="add"
-                  @click.capture.stop.prevent="goCalendar"
-                >
-                  <img src="@/assets/icons/calendarSave.svg" alt="calendar" />
-                </button>
-              </div>
-              <div class="spec-name">Pink Lemonade</div>
+              <div class="spec-name">{{ playlist.color_name }}</div>
             </div>
           </RouterLink>
         </div>
@@ -117,48 +96,22 @@
       </div>
 
       <div class="log-list">
-        <RouterLink class="log-item" :to="playlistTo('veiled-vista')" style="--bg: #b6c6d3">
-          <div class="log-top">14-4122</div>
+        <p v-if="!paletteLogPreview.length" class="log-empty">아직 저장한 팔레트 로그가 없습니다.</p>
+        <RouterLink
+          v-for="log in paletteLogPreview"
+          :key="`${log.playlist_id}-${log.created_at}`"
+          class="log-item"
+          :to="playlistTo(log.playlist_id)"
+          :style="{ '--bg': log.playlist.color_hex }"
+        >
+          <div class="log-top">{{ log.playlist.pantone_code }}</div>
           <div class="log-main">
-            <strong>Baby Blue</strong>
+            <strong>{{ log.playlist.color_name }}</strong>
             <span class="chev icon-white">
               <img src="@/assets/icons/arrow-right.svg" alt=">" />
             </span>
           </div>
-          <div class="log-sub">♫ 287 Plays</div>
-        </RouterLink>
-
-        <RouterLink class="log-item" :to="playlistTo('baltic-sea')" style="--bg: #aaa4ca">
-          <div class="log-top">15-3920</div>
-          <div class="log-main">
-            <strong>Lavender</strong>
-            <span class="chev icon-white">
-              <img src="@/assets/icons/arrow-right.svg" alt=">" />
-            </span>
-          </div>
-          <div class="log-sub">♫ 254 Plays</div>
-        </RouterLink>
-
-        <RouterLink class="log-item" :to="playlistTo('golden-mist')" style="--bg: #e8a4bb">
-          <div class="log-top">14-2311</div>
-          <div class="log-main">
-            <strong>Prism Pink</strong>
-            <span class="chev icon-white">
-              <img src="@/assets/icons/arrow-right.svg" alt=">" />
-            </span>
-          </div>
-          <div class="log-sub">♫ 228 Plays</div>
-        </RouterLink>
-
-        <RouterLink class="log-item" :to="playlistTo('quiet-violet')" style="--bg: #fa7268">
-          <div class="log-top">16-1546</div>
-          <div class="log-main">
-            <strong>Living Coral</strong>
-            <span class="chev icon-white">
-              <img src="@/assets/icons/arrow-right.svg" alt=">" />
-            </span>
-          </div>
-          <div class="log-sub">♫ 196 Plays</div>
+          <div class="log-sub">♫ 총 {{ log.playlist.totalTracks }}곡</div>
         </RouterLink>
       </div>
     </section>
@@ -180,43 +133,70 @@
 </template>
 
 <script setup>
-import { onMounted, onBeforeUnmount, nextTick, ref } from 'vue';
+import { computed, onMounted, onBeforeUnmount, nextTick, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import { usePlayerStore } from '@/stores/player';
+import { usePaletteLogStore } from '@/stores/paletteLog';
+import addIcon from '@/assets/icons/add.svg';
+import addCompleteIcon from '@/assets/icons/addComplete.svg';
 
 const router = useRouter();
-const player = usePlayerStore();
+const paletteLog = usePaletteLogStore();
 
 const rootEl = ref(null);
 const specRowEl = ref(null);
+const dailyPlaylist = {
+  id: 8,
+  pantone_code: '18-3834',
+  color_name: 'Deep Wisteria',
+  color_hex: '#615694',
+  total_tracks: 10
+};
+const spectrumPlaylists = [
+  {
+    id: 11,
+    pantone_code: '18-3838',
+    color_name: 'Ultra Violet',
+    color_hex: '#5F4B8B',
+    total_tracks: 10
+  },
+  {
+    id: 5,
+    pantone_code: '19-4052',
+    color_name: 'Classic Blue',
+    color_hex: '#0F4C81',
+    total_tracks: 10
+  },
+  {
+    id: 19,
+    pantone_code: '16-3801',
+    color_name: 'Quiet Shade',
+    color_hex: '#929497',
+    total_tracks: 10
+  }
+];
+const paletteLogPreview = computed(() => paletteLog.paletteLogs.slice(0, 4));
 
 let cleanupSpectrumDrag = null;
 
 /* ---------- 라우팅 헬퍼 ---------- */
-// 지금은 임시로 /playlist?pid=... 형태
+// 지금은 임시로 /playlist?id=... 형태
 // 라우터를 /playlist/:id 로 쓰면 return { name:'playlist', params:{ id } } 로 바꾸면 됨.
-function playlistTo(pid) {
-  return { path: '/playlist', query: { pid } };
+function playlistTo(id) {
+  return { path: '/playlist', query: { id } };
 }
 
-function openMainPlayerDaily() {
-  // 1) 플레이어에 트랙/플레이리스트 세팅 (store에 맞춰서)
-  player.openMain({
-    title: 'Falling Behind',
-    artist: 'Laufey',
-    cover: new URL('@/assets/images/thumb.png', import.meta.url).href
-  });
-  // 2) 메인플레이어 열기
-  player.openMain();
+function goDailyPlaylist() {
+  router.push(playlistTo(dailyPlaylist.id));
 }
 
-/* ---------- (임시) 저장 버튼 동작 ---------- */
-function goCalendar() {
-  router.push('/calendar');
-}
-function onSaveSpectrum(pid) {
-  // TODO: 캘린더 저장 로직 연결
-  console.log('[save] spectrum:', pid);
+async function handleTogglePalette(item) {
+  try {
+    await paletteLog.toggle(item?.id);
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : '팔레트 로그 저장 처리에 실패했습니다.';
+    window.alert(message);
+  }
 }
 
 /* ---------- color utils (hex/rgb/rgba 전부 처리) ---------- */
@@ -361,6 +341,7 @@ function bindSpectrumDrag(row) {
 }
 
 onMounted(async () => {
+  await paletteLog.load({ silent: true });
   await nextTick();
 
   cleanupSpectrumDrag = bindSpectrumDrag(specRowEl.value);
@@ -374,6 +355,15 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   if (cleanupSpectrumDrag) cleanupSpectrumDrag();
 });
+
+watch(
+  paletteLogPreview,
+  async () => {
+    await nextTick();
+    applyLogItemTheme(rootEl.value);
+  },
+  { deep: true }
+);
 </script>
 
 <style>
@@ -423,7 +413,7 @@ onBeforeUnmount(() => {
   margin: 0 0 8px;
   font-size: 20px;
   font-weight: 700;
-  color: #6969ad;
+  color: #615694;
 }
 
 .daily-text p {
@@ -434,7 +424,7 @@ onBeforeUnmount(() => {
 }
 
 .daily-text b {
-  color: #6868ab;
+  color: #615694;
   font-weight: 700;
 }
 
@@ -464,10 +454,16 @@ onBeforeUnmount(() => {
   padding-left: 3px;
   border-radius: 999px;
   background: rgba(95, 96, 170, 0.95);
+  box-shadow: inset 0 0 10px 1px rgba(0, 0, 0, 0.25);
 }
 
 .daily-btn {
   padding-right: 15px;
+}
+
+.daily-btn:disabled,
+.mini-add:disabled {
+  opacity: 0.7;
 }
 
 .icon-btn img {
@@ -485,7 +481,7 @@ onBeforeUnmount(() => {
   height: 105px;
   margin-left: 15px;
   border-radius: 29.5px;
-  background: #6868ab;
+  background: #615694;
   border: 3px solid #ffffff;
   box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.25);
 }
@@ -602,6 +598,13 @@ onBeforeUnmount(() => {
 .log-list {
   display: grid;
   gap: 14px;
+}
+
+.log-empty {
+  padding: 14px 0;
+  font-size: 13px;
+  color: #6b7280;
+  text-align: center;
 }
 
 .log-item {

@@ -1,98 +1,103 @@
-// src/stores/paletteLog.js
 import { defineStore } from 'pinia';
+import { apiRequest } from '@/services/httpClient';
 
-const KEY = 'tone.paletteLog.items';
-
-function load() {
-  try {
-    return JSON.parse(localStorage.getItem(KEY)) ?? [];
-  } catch {
-    return [];
-  }
-}
-function save(items) {
-  localStorage.setItem(KEY, JSON.stringify(items));
+function isLoginRequiredError(error) {
+  return error instanceof Error && error.message.includes('로그인이 필요합니다.');
 }
 
 export const usePaletteLogStore = defineStore('paletteLog', {
   state: () => ({
-    items: load(),
-
-    // ✅ add 버튼 전역 바인딩용(스토어 내부 관리)
-    _addBound: false,
-    _addHandler: null
+    paletteLogs: [],
+    isLoading: false,
+    isLoaded: false,
+    pendingMap: {}
   }),
 
   getters: {
-    has: (state) => (playlistId) => state.items.some((it) => it.playlistId === playlistId)
+    has: (state) => (playlistId) =>
+      state.paletteLogs.some((item) => String(item.playlist_id) === String(playlistId)),
+    isPending: (state) => (playlistId) => Boolean(state.pendingMap[String(playlistId)])
   },
 
   actions: {
-    add(entry) {
-      if (!entry?.playlistId) return;
-      if (this.items.some((it) => it.playlistId === entry.playlistId)) return;
-
-      this.items.unshift({
-        ...entry,
-        savedAt: Date.now()
-      });
-
-      save(this.items);
+    setPending(playlistId, value) {
+      this.pendingMap = {
+        ...this.pendingMap,
+        [String(playlistId)]: value
+      };
     },
 
-    remove(playlistId) {
-      this.items = this.items.filter((it) => it.playlistId !== playlistId);
-      save(this.items);
+    async load(options = {}) {
+      const { force = false, silent = false } = options;
+
+      if (this.isLoaded && !force) {
+        return this.paletteLogs;
+      }
+
+      if (!silent) {
+        this.isLoading = true;
+      }
+
+      try {
+        const result = await apiRequest(
+          '/api/palette-logs/list.php',
+          {},
+          '팔레트 로그를 불러오지 못했습니다.'
+        );
+
+        this.paletteLogs = Array.isArray(result?.paletteLogs) ? result.paletteLogs : [];
+      } catch (error) {
+        if (isLoginRequiredError(error)) {
+          this.paletteLogs = [];
+        } else {
+          throw error;
+        }
+      } finally {
+        this.isLoaded = true;
+
+        if (!silent) {
+          this.isLoading = false;
+        }
+      }
+
+      return this.paletteLogs;
     },
 
-    toggle(entry) {
-      if (!entry?.playlistId) return;
-      if (this.has(entry.playlistId)) this.remove(entry.playlistId);
-      else this.add(entry);
+    async toggle(playlistId) {
+      const normalizedPlaylistId = String(playlistId || '').trim();
+      if (!normalizedPlaylistId || this.isPending(normalizedPlaylistId)) {
+        return null;
+      }
+
+      this.setPending(normalizedPlaylistId, true);
+
+      try {
+        const result = await apiRequest(
+          '/api/palette-logs/save.php',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              playlist_id: Number(normalizedPlaylistId)
+            })
+          },
+          '팔레트 로그 저장 처리에 실패했습니다.'
+        );
+
+        await this.load({ force: true, silent: true });
+
+        return result;
+      } finally {
+        this.setPending(normalizedPlaylistId, false);
+      }
     },
 
     clear() {
-      this.items = [];
-      save(this.items);
-    },
-
-    /* =========================
-       ✅ 여기부터 추가 (date 제거 버전)
-    ========================= */
-    bindAddButtons() {
-      if (this._addBound) return;
-      this._addBound = true;
-
-      this._addHandler = (e) => {
-        const btn = e.target.closest('[data-action="add-to-log"]');
-        if (!btn) return;
-
-        const root = btn.closest('[data-log-item]') || btn;
-
-        const entry = {
-          playlistId: root.dataset.playlistId || root.dataset.id,
-          name: root.dataset.name || '',
-          color: root.dataset.color || '',
-          likes: root.dataset.likes || '0,000',
-          plays: root.dataset.plays || '100 Plays'
-        };
-
-        if (!entry.playlistId) return;
-
-        this.toggle(entry);
-
-        // ✅ 버튼 상태 class (아이콘 교체는 다음 단계에서)
-        btn.classList.toggle('is-added', this.has(entry.playlistId));
-      };
-
-      document.addEventListener('click', this._addHandler);
-    },
-
-    unbindAddButtons() {
-      if (!this._addBound) return;
-      document.removeEventListener('click', this._addHandler);
-      this._addHandler = null;
-      this._addBound = false;
+      this.paletteLogs = [];
+      this.isLoaded = false;
+      this.pendingMap = {};
     }
   }
 });

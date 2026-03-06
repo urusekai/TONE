@@ -1,46 +1,202 @@
 <script setup>
+import { computed, ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import { usePlayerStore } from '@/stores/player';
-import heroThumbImage from '@/assets/images/thumb-color.png';
+import { usePaletteLogStore } from '@/stores/paletteLog';
 import trackThumbImage from '@/assets/images/thumb.png';
 import likeIcon from '@/assets/icons/like.svg';
+import likeFullIcon from '@/assets/icons/like_full.svg';
 import playCircleIcon from '@/assets/icons/play-circle.svg';
+import addIcon from '@/assets/icons/add.svg';
+import addCompleteIcon from '@/assets/icons/addComplete.svg';
+import { apiRequest } from '@/services/httpClient';
 
+const route = useRoute();
 const player = usePlayerStore();
+const paletteLog = usePaletteLogStore();
+const playlistId = computed(() => String(route.query.id || '').trim());
+const isLoading = ref(false);
+const isLikeSubmitting = ref(false);
+const errorMessage = ref('');
+const playlist = ref(null);
+const tracks = ref([]);
 
-const trackList = Array.from({ length: 11 }, (_, index) => ({
-  id: index + 1,
-  title: 'Falling Behind',
-  artist: 'Laufey',
-  cover: trackThumbImage
-}));
+function formatLikes(value) {
+  return Number(value || 0).toLocaleString('en-US');
+}
+
+function toPlayerPlaylist(value) {
+  return {
+    id: String(value?.id || ''),
+    pantoneCode: String(value?.pantone_code || ''),
+    colorName: String(value?.color_name || ''),
+    colorHex: String(value?.color_hex || '#B7AEA6'),
+    liked: Boolean(value?.liked),
+    likeCount: Number(value?.like_count || 0)
+  };
+}
+
+async function loadPlaylistDetail() {
+  if (!playlistId.value) {
+    playlist.value = null;
+    tracks.value = [];
+    player.clearCurrentPlaylist();
+    errorMessage.value = '플레이리스트 정보가 없습니다.';
+    return;
+  }
+
+  isLoading.value = true;
+  errorMessage.value = '';
+  playlist.value = null;
+  tracks.value = [];
+
+  try {
+    await paletteLog.load({ silent: true });
+
+    const result = await apiRequest(
+      `/api/playlist/detail.php?id=${encodeURIComponent(playlistId.value)}`,
+      {},
+      '플레이리스트 정보를 불러오지 못했습니다.'
+    );
+
+    playlist.value = result?.playlist ?? null;
+    tracks.value = Array.isArray(result?.tracks) ? result.tracks : [];
+
+    if (playlist.value) {
+      player.setCurrentPlaylist(toPlayerPlaylist(playlist.value));
+    }
+  } catch (error) {
+    player.clearCurrentPlaylist();
+    errorMessage.value =
+      error instanceof Error ? error.message : '플레이리스트 정보를 불러오지 못했습니다.';
+  } finally {
+    isLoading.value = false;
+  }
+}
+
+async function handleToggleSave() {
+  if (!playlist.value?.id) return;
+
+  try {
+    const result = await paletteLog.toggle(playlist.value.id);
+    if (!result) return;
+
+    playlist.value = {
+      ...playlist.value,
+      saved: Boolean(result?.saved)
+    };
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : '팔레트 로그 저장 처리에 실패했습니다.';
+    window.alert(message);
+  }
+}
+
+async function handleToggleLike() {
+  if (!playlist.value?.id || isLikeSubmitting.value) return;
+
+  isLikeSubmitting.value = true;
+
+  try {
+    const result = await apiRequest(
+      '/api/playlist/like.php',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          playlist_id: playlist.value.id
+        })
+      },
+      '좋아요 처리에 실패했습니다.'
+    );
+
+    const nextLiked = Boolean(result?.liked);
+    const nextLikeCount = Number(result?.like_count || 0);
+
+    playlist.value = {
+      ...playlist.value,
+      liked: nextLiked,
+      like_count: nextLikeCount
+    };
+
+    player.patchCurrentPlaylist({
+      liked: nextLiked,
+      likeCount: nextLikeCount
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : '좋아요 처리에 실패했습니다.';
+    window.alert(message);
+  } finally {
+    isLikeSubmitting.value = false;
+  }
+}
 
 function handleOpenMainPlayer(track) {
-  player.openMain(track);
+  player.openMain({
+    title: track?.title || '',
+    artist: track?.artist || '',
+    cover: track?.cover_url || trackThumbImage,
+    url: track?.audio_url || ''
+  });
 }
 
 function handleOpenFirstTrack() {
-  if (!trackList.length) return;
-  player.openMain(trackList[0]);
+  if (!tracks.value.length) return;
+  handleOpenMainPlayer(tracks.value[0]);
 }
+
+watch(
+  playlistId,
+  async () => {
+    await loadPlaylistDetail();
+  },
+  { immediate: true }
+);
 </script>
 
 <template>
   <main id="playlist">
-    <section class="playlist-hero">
-      <img class="playlist-hero__thumb" :src="heroThumbImage" alt="썸네일" />
+    <p v-if="isLoading" class="playlist-state">플레이리스트를 불러오는 중...</p>
+    <p v-else-if="errorMessage" class="playlist-state playlist-state-error">{{ errorMessage }}</p>
+
+    <section v-else-if="playlist" class="playlist-hero">
+      <div class="playlist-hero__thumb" :style="{ backgroundColor: playlist.color_hex || '#b7aea6' }"></div>
       <div class="playlist-hero__content">
         <div class="playlist-hero__text">
-          <p class="playlist-hero__title">Pale Dogwood</p>
-          <p class="playlist-hero__code">12-3456</p>
+          <p class="playlist-hero__title">{{ playlist.color_name || '' }}</p>
+          <p class="playlist-hero__code">{{ playlist.pantone_code || '' }}</p>
         </div>
         <div class="playlist-hero__actions">
-          <div class="playlist-hero__likes">
-            <img :src="likeIcon" alt="좋아요" />
-            <span>12,300</span>
-          </div>
-          <button type="button" class="playlist-hero__play-button" @click="handleOpenFirstTrack">
-            <img :src="playCircleIcon" alt="재생" />
+          <button
+            type="button"
+            class="playlist-hero__likes"
+            :disabled="isLikeSubmitting"
+            @click="handleToggleLike"
+          >
+            <img :src="playlist.liked ? likeFullIcon : likeIcon" alt="좋아요" />
+            <span>{{ formatLikes(playlist.like_count) }}</span>
           </button>
+          <div class="playlist-hero__play-actions">
+            <button
+              type="button"
+              class="playlist-hero__save-button"
+              :disabled="paletteLog.isPending(playlist.id)"
+              @click="handleToggleSave"
+            >
+              <img
+                class="playlist-hero__add-icon"
+                :src="playlist.saved ? addCompleteIcon : addIcon"
+                alt="저장"
+              />
+            </button>
+            <button type="button" class="playlist-hero__play-button" @click="handleOpenFirstTrack">
+              <span class="playlist-hero__play-circle">
+                <img :src="playCircleIcon" alt="재생" />
+              </span>
+            </button>
+          </div>
         </div>
       </div>
     </section>
@@ -48,7 +204,7 @@ function handleOpenFirstTrack() {
     <section class="playlist-tracks">
       <ul class="playlist-tracks__list">
         <li
-          v-for="track in trackList"
+          v-for="track in tracks"
           :key="track.id"
           class="playlist-track-item"
           role="button"
@@ -57,7 +213,11 @@ function handleOpenFirstTrack() {
           @keydown.enter.prevent="handleOpenMainPlayer(track)"
           @keydown.space.prevent="handleOpenMainPlayer(track)"
         >
-          <img class="playlist-track-item__thumb" :src="track.cover" alt="썸네일" />
+          <img
+            class="playlist-track-item__thumb"
+            :src="track.cover_url || trackThumbImage"
+            alt="썸네일"
+          />
           <div class="playlist-track-item__meta">
             <p class="playlist-track-item__title">{{ track.title }}</p>
             <p class="playlist-track-item__artist">{{ track.artist }}</p>
@@ -80,21 +240,33 @@ function handleOpenFirstTrack() {
   padding-bottom: 0;
 }
 
+.playlist-state {
+  padding: 12px 0;
+  font-size: 14px;
+  color: #3f5f73;
+  text-align: center;
+}
+
+.playlist-state-error {
+  color: #b42318;
+}
+
 #playlist .playlist-hero {
   display: flex;
   flex: 0 0 auto;
   width: auto;
   gap: 20px;
   margin-inline: calc(var(--playlist-main-side-padding) * -1);
-  padding: 0 var(--playlist-main-side-padding) 20px;
+  padding: 0 var(--playlist-main-side-padding) 25px;
   box-shadow: 0 10px 12px -12px rgba(0, 0, 0, 0.45);
 }
 
 #playlist .playlist-hero__thumb {
-  border-radius: 20px;
-  border: 5px solid white;
+  border-radius: 17px;
+  border: 3px solid white;
   width: 100px;
   height: 100px;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.25);
 }
 
 #playlist .playlist-hero__content {
@@ -125,21 +297,70 @@ function handleOpenFirstTrack() {
   padding-bottom: 3px;
   display: flex;
   gap: 3px;
+  align-items: center;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
 }
 
-#playlist .playlist-hero__likes img {
-  width: 15px;
-  height: 15px;
+#playlist button.playlist-hero__likes:disabled {
+  opacity: 0.7;
+}
+
+/* 저장/재생 버튼 그룹 */
+#playlist .playlist-hero__play-actions {
+  height: 36px;
+  border-radius: 50px;
+  padding-left: 15px;
+  background: #f2f2ee;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 0 4px inset rgba(0, 0, 0, 0.25);
+}
+
+#playlist .playlist-hero__save-button,
+#playlist .playlist-hero__play-button {
+  height: 100%;
+  border: 0;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+#playlist .playlist-hero__save-button {
+  width: 18px;
+}
+
+#playlist .playlist-hero__save-button:disabled {
+  opacity: 0.7;
 }
 
 #playlist .playlist-hero__play-button {
-  width: 35px;
-  height: 35px;
+  width: 33px;
+  height: 36px;
 }
 
-#playlist .playlist-hero__play-button img {
-  height: 100%;
+#playlist .playlist-hero__add-icon {
+  width: 18px;
+  height: 18px;
+}
+
+#playlist .playlist-hero__play-circle {
+  width: 33px;
+  height: 33px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-text-primary); /* 프로젝트 변수 있으면 그대로 활용 */
+}
+
+#playlist .playlist-hero__play-circle img {
   width: 100%;
+  height: 100%;
 }
 
 #playlist .playlist-tracks {
