@@ -24,11 +24,11 @@
         @click="goPlaylist(card)"
         @keydown.enter="goPlaylist(card)"
       >
-        <div class="color-bar" :style="{ background: card.barColor }"></div>
+        <div class="color-bar" :style="{ background: card.color_hex }"></div>
 
         <div class="color-content">
           <div class="color-top">
-            <h3 class="color-name">{{ card.title }}</h3>
+            <h3 class="color-name">{{ card.color_name }}</h3>
 
             <div class="color-right">
               <span class="arrow">
@@ -39,9 +39,9 @@
 
           <div class="song-area">
             <ul class="song-list">
-              <li v-for="(s, i) in card.songs" :key="i">{{ s }}</li>
+              <li v-for="(song, index) in card.preview_songs" :key="index">{{ song }}</li>
             </ul>
-            <p class="total">총 {{ card.total }}곡</p>
+            <p class="total">총 {{ card.total_tracks }}곡</p>
           </div>
         </div>
       </article>
@@ -103,15 +103,13 @@ function mapPreviewSongs(songs) {
 }
 
 function mapCard(item) {
-  const playlistId = String(item?.id || '');
-
   return {
-    id: playlistId,
-    playlistId,
-    barColor: String(item?.color_hex || '#b7aea6'),
-    title: String(item?.color_name || ''),
-    songs: mapPreviewSongs(item?.previewSongs),
-    total: toNumber(item?.totalTracks)
+    id: String(item?.id || ''),
+    pantone_code: String(item?.pantone_code || ''),
+    color_name: String(item?.color_name || ''),
+    color_hex: String(item?.color_hex || '#b7aea6'),
+    preview_songs: mapPreviewSongs(item?.previewSongs),
+    total_tracks: toNumber(item?.totalTracks)
   };
 }
 
@@ -159,11 +157,11 @@ const moodTitle = computed(() => moodLabel.value);
 const colorCards = computed(() => playlists.value);
 
 function goPlaylist(card) {
-  if (!card?.playlistId) return;
+  if (!card?.id) return;
 
   router.push({
     path: '/playlist',
-    query: { id: card.playlistId }
+    query: { id: card.id }
   });
 }
 

@@ -14,7 +14,7 @@ const playlistId = computed(() => String(route.query.id || '').trim());
 const isLoading = ref(false);
 const errorMessage = ref('');
 const playlist = ref(null);
-const trackList = ref([]);
+const tracks = ref([]);
 
 function formatLikes(value) {
   return Number(value || 0).toLocaleString('en-US');
@@ -23,7 +23,7 @@ function formatLikes(value) {
 async function loadPlaylistDetail() {
   if (!playlistId.value) {
     playlist.value = null;
-    trackList.value = [];
+    tracks.value = [];
     errorMessage.value = '플레이리스트 정보가 없습니다.';
     return;
   }
@@ -31,7 +31,7 @@ async function loadPlaylistDetail() {
   isLoading.value = true;
   errorMessage.value = '';
   playlist.value = null;
-  trackList.value = [];
+  tracks.value = [];
 
   try {
     const result = await apiRequest(
@@ -41,7 +41,7 @@ async function loadPlaylistDetail() {
     );
 
     playlist.value = result?.playlist ?? null;
-    trackList.value = Array.isArray(result?.tracks) ? result.tracks : [];
+    tracks.value = Array.isArray(result?.tracks) ? result.tracks : [];
   } catch (error) {
     errorMessage.value =
       error instanceof Error ? error.message : '플레이리스트 정보를 불러오지 못했습니다.';
@@ -60,8 +60,8 @@ function handleOpenMainPlayer(track) {
 }
 
 function handleOpenFirstTrack() {
-  if (!trackList.value.length) return;
-  handleOpenMainPlayer(trackList.value[0]);
+  if (!tracks.value.length) return;
+  handleOpenMainPlayer(tracks.value[0]);
 }
 
 watch(
@@ -103,7 +103,7 @@ watch(
     <section class="playlist-tracks">
       <ul class="playlist-tracks__list">
         <li
-          v-for="track in trackList"
+          v-for="track in tracks"
           :key="track.id"
           class="playlist-track-item"
           role="button"
