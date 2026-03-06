@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     exit;
 }
 
-$userUuid = trim((string) ($_SESSION['user_uuid'] ?? ''));
+$userUuid = Auth::requireAuthenticatedUser();
 
 $mood = trim((string) ($_GET['mood'] ?? ''));
 if ($mood === '') {
@@ -45,63 +45,36 @@ try {
         exit;
     }
 
-    if ($userUuid !== '') {
-        $playlistsStmt = $pdo->prepare(
-            'SELECT
-                p.id,
-                p.pantone_code,
-                p.color_name,
-                p.color_hex,
-                p.like_count,
-                p.play_count,
-                COUNT(pt.track_id) AS total_tracks,
-                MAX(CASE WHEN pl.user_uuid IS NULL THEN 0 ELSE 1 END) AS liked
-             FROM playlists p
-             LEFT JOIN playlist_tracks pt
-               ON pt.playlist_id = p.id
-             LEFT JOIN playlist_likes pl
-               ON pl.playlist_id = p.id
-              AND pl.user_uuid = :user_uuid
-             WHERE p.category_id = :category_id
-             GROUP BY
-                p.id,
-                p.pantone_code,
-                p.color_name,
-                p.color_hex,
-                p.like_count,
-                p.play_count
-             ORDER BY p.id ASC'
-        );
-        $playlistsStmt->execute([
-            'category_id' => $category['id'],
-            'user_uuid' => $userUuid
-        ]);
-    } else {
-        $playlistsStmt = $pdo->prepare(
-            'SELECT
-                p.id,
-                p.pantone_code,
-                p.color_name,
-                p.color_hex,
-                p.like_count,
-                p.play_count,
-                COUNT(pt.track_id) AS total_tracks,
-                0 AS liked
-             FROM playlists p
-             LEFT JOIN playlist_tracks pt
-               ON pt.playlist_id = p.id
-             WHERE p.category_id = :category_id
-             GROUP BY
-                p.id,
-                p.pantone_code,
-                p.color_name,
-                p.color_hex,
-                p.like_count,
-                p.play_count
-             ORDER BY p.id ASC'
-        );
-        $playlistsStmt->execute(['category_id' => $category['id']]);
-    }
+    $playlistsStmt = $pdo->prepare(
+        'SELECT
+            p.id,
+            p.pantone_code,
+            p.color_name,
+            p.color_hex,
+            p.like_count,
+            p.play_count,
+            COUNT(pt.track_id) AS total_tracks,
+            MAX(CASE WHEN pl.user_uuid IS NULL THEN 0 ELSE 1 END) AS liked
+         FROM playlists p
+         LEFT JOIN playlist_tracks pt
+           ON pt.playlist_id = p.id
+         LEFT JOIN playlist_likes pl
+           ON pl.playlist_id = p.id
+          AND pl.user_uuid = :user_uuid
+         WHERE p.category_id = :category_id
+         GROUP BY
+            p.id,
+            p.pantone_code,
+            p.color_name,
+            p.color_hex,
+            p.like_count,
+            p.play_count
+         ORDER BY p.id ASC'
+    );
+    $playlistsStmt->execute([
+        'category_id' => $category['id'],
+        'user_uuid' => $userUuid
+    ]);
     $playlistRows = $playlistsStmt->fetchAll();
 
     $previewStmt = $pdo->prepare(

@@ -1,4 +1,27 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import { buildApiUrl } from '@/services/httpClient';
+
+const AUTH_STORAGE_KEY = 'tone_current_user';
+
+function hasStoredSession() {
+  try {
+    const raw = localStorage.getItem(AUTH_STORAGE_KEY);
+    if (!raw) return false;
+
+    const parsed = JSON.parse(raw);
+    return Boolean(parsed && typeof parsed === 'object');
+  } catch {
+    return false;
+  }
+}
+
+async function hasServerSession() {
+  const response = await fetch(buildApiUrl('/api/auth/me.php'), {
+    credentials: 'include'
+  });
+
+  return response.ok;
+}
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -16,6 +39,7 @@ const router = createRouter({
     },
     {
       path: '/',
+      meta: { requiresAuth: true },
       component: () => import('../layouts/AppLayout.vue'),
       children: [
         {
@@ -87,6 +111,38 @@ const router = createRouter({
       ]
     }
   ]
+});
+
+router.beforeEach(async (to) => {
+  if (!to.matched.some((record) => record.meta.requiresAuth)) {
+    return true;
+  }
+
+  if (!hasStoredSession()) {
+    return {
+      path: '/login',
+      query: to.path === '/login' ? undefined : { redirect: to.fullPath }
+    };
+  }
+
+  try {
+    if (await hasServerSession()) {
+      return true;
+    }
+  } catch {
+    // 세션 확인 실패 시 로그인으로 이동
+  }
+
+  try {
+    localStorage.removeItem(AUTH_STORAGE_KEY);
+  } catch {
+    // ignore storage failure
+  }
+
+  return {
+    path: '/login',
+    query: to.path === '/login' ? undefined : { redirect: to.fullPath }
+  };
 });
 
 export default router;
