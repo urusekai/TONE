@@ -45,36 +45,31 @@ watch(
 );
 
 /* ✅ HEX 색상 → 상대 명도 계산 */
-function hexToRgb(hex) {
-  if (!hex) return null;
-  let h = String(hex).replace('#', '').trim();
-  if (h.length === 3)
-    h = h
+function isBright(hex) {
+  const c = String(hex || '')
+    .replace('#', '')
+    .trim();
+
+  if (c.length === 3) {
+    const expanded = c
       .split('')
-      .map((c) => c + c)
+      .map((ch) => ch + ch)
       .join('');
-  if (h.length !== 6) return null;
-  const n = parseInt(h, 16);
-  return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
-}
-function srgbToLinear(v) {
-  v /= 255;
-  return v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
-}
-function luminanceFromHex(hex) {
-  const rgb = hexToRgb(hex);
-  if (!rgb) return 1;
-  const R = srgbToLinear(rgb.r);
-  const G = srgbToLinear(rgb.g);
-  const B = srgbToLinear(rgb.b);
-  return 0.2126 * R + 0.7152 * G + 0.0722 * B;
+    return isBright(`#${expanded}`);
+  }
+
+  if (c.length !== 6) return false;
+
+  const r = parseInt(c.slice(0, 2), 16);
+  const g = parseInt(c.slice(2, 4), 16);
+  const b = parseInt(c.slice(4, 6), 16);
+
+  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+  return brightness > 170;
 }
 
 /* ✅ 배경색 기반으로 텍스트/아이콘 색 결정 */
-const isDarkTone = computed(() => {
-  const lum = luminanceFromHex(track.value.toneBg);
-  return lum < 0.55; // 기준값 필요하면 조절
-});
+const isDarkTone = computed(() => !isBright(track.value.toneBg));
 
 /* ✅ 텍스트/도트 컬러 */
 const toneText = computed(() => (isDarkTone.value ? '#F2F2EE' : '#3F5F73'));
@@ -82,11 +77,9 @@ const toneTextSub = computed(() =>
   isDarkTone.value ? 'rgba(242,242,238,0.78)' : 'rgba(63,95,115,0.75)'
 );
 const toneDotOff = computed(() =>
-  isDarkTone.value ? 'rgba(242,242,238,0.25)' : 'rgba(63,95,115,0.25)'
+  isDarkTone.value ? 'rgba(242,242,238,0.78)' : 'rgba(63,95,115,0.75)'
 );
-const toneDotOn = computed(() =>
-  isDarkTone.value ? 'rgba(242,242,238,0.85)' : 'rgba(63,95,115,0.85)'
-);
+const toneDotOn = computed(() => (isDarkTone.value ? 'rgba(242,242,238,1)' : 'rgba(63,95,115,1)'));
 
 /* ✅ 아이콘 src 스위칭 */
 const iconArrow = computed(() => (isDarkTone.value ? arrowDownLight : arrowDown));
