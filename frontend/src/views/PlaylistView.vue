@@ -4,6 +4,7 @@ import heroThumbImage from '@/assets/images/thumb-color.png';
 import trackThumbImage from '@/assets/images/thumb.png';
 import likeIcon from '@/assets/icons/like.svg';
 import playCircleIcon from '@/assets/icons/play-circle.svg';
+import addIcon from '@/assets/icons/add.svg';
 
 const player = usePlayerStore();
 
@@ -39,7 +40,10 @@ function handleOpenFirstTrack() {
             <span>12,300</span>
           </div>
           <button type="button" class="playlist-hero__play-button" @click="handleOpenFirstTrack">
-            <img :src="playCircleIcon" alt="재생" />
+            <img class="playlist-hero__add-icon" :src="addIcon" alt="추가" />
+            <span class="playlist-hero__play-circle">
+              <img :src="playCircleIcon" alt="재생" />
+            </span>
           </button>
         </div>
       </div>
@@ -86,15 +90,16 @@ function handleOpenFirstTrack() {
   width: auto;
   gap: 20px;
   margin-inline: calc(var(--playlist-main-side-padding) * -1);
-  padding: 0 var(--playlist-main-side-padding) 20px;
+  padding: 0 var(--playlist-main-side-padding) 25px;
   box-shadow: 0 10px 12px -12px rgba(0, 0, 0, 0.45);
 }
 
 #playlist .playlist-hero__thumb {
-  border-radius: 20px;
-  border: 5px solid white;
+  border-radius: 17px;
+  border: 3px solid white;
   width: 100px;
   height: 100px;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.25);
 }
 
 #playlist .playlist-hero__content {
@@ -127,19 +132,37 @@ function handleOpenFirstTrack() {
   gap: 3px;
 }
 
-#playlist .playlist-hero__likes img {
-  width: 15px;
-  height: 15px;
-}
-
+/* 재생버튼 */
 #playlist .playlist-hero__play-button {
-  width: 35px;
-  height: 35px;
+  width: auto;
+  height: 36px;
+  border-radius: 50px;
+  padding-left: 15px;
+  background: #f2f2ee;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 0 4px inset rgba(0, 0, 0, 0.25);
 }
 
-#playlist .playlist-hero__play-button img {
-  height: 100%;
+#playlist .playlist-hero__add-icon {
+  width: 18px;
+  height: 18px;
+}
+
+#playlist .playlist-hero__play-circle {
+  width: 33px;
+  height: 33px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-text-primary); /* 프로젝트 변수 있으면 그대로 활용 */
+}
+
+#playlist .playlist-hero__play-circle img {
   width: 100%;
+  height: 100%;
 }
 
 #playlist .playlist-tracks {
