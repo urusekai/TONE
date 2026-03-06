@@ -35,7 +35,7 @@ async function loadPlaylistDetail() {
 
   try {
     const result = await apiRequest(
-      `/api/playlists/detail.php?id=${encodeURIComponent(playlistId.value)}`,
+      `/api/playlist/detail.php?id=${encodeURIComponent(playlistId.value)}`,
       {},
       '플레이리스트 정보를 불러오지 못했습니다.'
     );
@@ -54,7 +54,8 @@ function handleOpenMainPlayer(track) {
   player.openMain({
     title: track?.title || '',
     artist: track?.artist || '',
-    cover: trackThumbImage
+    cover: track?.cover_url || trackThumbImage,
+    url: track?.audio_url || ''
   });
 }
 
@@ -111,7 +112,11 @@ watch(
           @keydown.enter.prevent="handleOpenMainPlayer(track)"
           @keydown.space.prevent="handleOpenMainPlayer(track)"
         >
-          <img class="playlist-track-item__thumb" :src="trackThumbImage" alt="썸네일" />
+          <img
+            class="playlist-track-item__thumb"
+            :src="track.cover_url || trackThumbImage"
+            alt="썸네일"
+          />
           <div class="playlist-track-item__meta">
             <p class="playlist-track-item__title">{{ track.title }}</p>
             <p class="playlist-track-item__artist">{{ track.artist }}</p>
