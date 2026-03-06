@@ -2,15 +2,18 @@
 import { computed, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { usePlayerStore } from '@/stores/player';
+import { usePaletteLogStore } from '@/stores/paletteLog';
 import trackThumbImage from '@/assets/images/thumb.png';
 import likeIcon from '@/assets/icons/like.svg';
 import likeFullIcon from '@/assets/icons/like_full.svg';
 import playCircleIcon from '@/assets/icons/play-circle.svg';
 import addIcon from '@/assets/icons/add.svg';
+import addCompleteIcon from '@/assets/icons/addComplete.svg';
 import { apiRequest } from '@/services/httpClient';
 
 const route = useRoute();
 const player = usePlayerStore();
+const paletteLog = usePaletteLogStore();
 const playlistId = computed(() => String(route.query.id || '').trim());
 const isLoading = ref(false);
 const isLikeSubmitting = ref(false);
@@ -48,6 +51,8 @@ async function loadPlaylistDetail() {
   tracks.value = [];
 
   try {
+    await paletteLog.load({ silent: true });
+
     const result = await apiRequest(
       `/api/playlist/detail.php?id=${encodeURIComponent(playlistId.value)}`,
       {},
@@ -66,6 +71,24 @@ async function loadPlaylistDetail() {
       error instanceof Error ? error.message : '플레이리스트 정보를 불러오지 못했습니다.';
   } finally {
     isLoading.value = false;
+  }
+}
+
+async function handleToggleSave() {
+  if (!playlist.value?.id) return;
+
+  try {
+    const result = await paletteLog.toggle(playlist.value.id);
+    if (!result) return;
+
+    playlist.value = {
+      ...playlist.value,
+      saved: Boolean(result?.saved)
+    };
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : '팔레트 로그 저장 처리에 실패했습니다.';
+    window.alert(message);
   }
 }
 
@@ -155,12 +178,25 @@ watch(
             <img :src="playlist.liked ? likeFullIcon : likeIcon" alt="좋아요" />
             <span>{{ formatLikes(playlist.like_count) }}</span>
           </button>
-          <button type="button" class="playlist-hero__play-button" @click="handleOpenFirstTrack">
-            <img class="playlist-hero__add-icon" :src="addIcon" alt="추가" />
-            <span class="playlist-hero__play-circle">
-              <img :src="playCircleIcon" alt="재생" />
-            </span>
-          </button>
+          <div class="playlist-hero__play-actions">
+            <button
+              type="button"
+              class="playlist-hero__save-button"
+              :disabled="paletteLog.isPending(playlist.id)"
+              @click="handleToggleSave"
+            >
+              <img
+                class="playlist-hero__add-icon"
+                :src="playlist.saved ? addCompleteIcon : addIcon"
+                alt="저장"
+              />
+            </button>
+            <button type="button" class="playlist-hero__play-button" @click="handleOpenFirstTrack">
+              <span class="playlist-hero__play-circle">
+                <img :src="playCircleIcon" alt="재생" />
+              </span>
+            </button>
+          </div>
         </div>
       </div>
     </section>
@@ -271,9 +307,8 @@ watch(
   opacity: 0.7;
 }
 
-/* 재생버튼 */
-#playlist .playlist-hero__play-button {
-  width: auto;
+/* 저장/재생 버튼 그룹 */
+#playlist .playlist-hero__play-actions {
   height: 36px;
   border-radius: 50px;
   padding-left: 15px;
@@ -282,6 +317,30 @@ watch(
   align-items: center;
   gap: 10px;
   box-shadow: 0 0 4px inset rgba(0, 0, 0, 0.25);
+}
+
+#playlist .playlist-hero__save-button,
+#playlist .playlist-hero__play-button {
+  height: 100%;
+  border: 0;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+#playlist .playlist-hero__save-button {
+  width: 18px;
+}
+
+#playlist .playlist-hero__save-button:disabled {
+  opacity: 0.7;
+}
+
+#playlist .playlist-hero__play-button {
+  width: 33px;
+  height: 36px;
 }
 
 #playlist .playlist-hero__add-icon {

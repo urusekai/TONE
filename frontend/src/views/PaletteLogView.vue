@@ -19,7 +19,8 @@
             :class="{ 'is-in': isAnim, 'is-exit-right': exitId === String(item.playlist_id) }"
             :style="{
               '--card': item.playlist.color_hex,
-              '--delay': `${i * 50}ms`
+              '--delay': `${i * 50}ms`,
+              zIndex: items.length - i
             }"
           >
             <button
@@ -57,7 +58,7 @@
 </template>
 
 <script setup>
-import { nextTick, onMounted, ref } from 'vue';
+import { nextTick, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { apiRequest } from '@/services/httpClient';
 
@@ -83,6 +84,7 @@ const colors = {
 async function loadPaletteLogs() {
   isLoading.value = true;
   errorMessage.value = '';
+  isAnim.value = false;
   items.value = [];
 
   try {
@@ -105,7 +107,9 @@ async function startEntranceAnimation() {
   if (!items.value.length) return;
 
   requestAnimationFrame(() => {
-    isAnim.value = true;
+    requestAnimationFrame(() => {
+      isAnim.value = true;
+    });
   });
 }
 
@@ -184,8 +188,16 @@ function formatPlays(value) {
 
 onMounted(async () => {
   await loadPaletteLogs();
-  await startEntranceAnimation();
 });
+
+watch(
+  items,
+  async (nextItems) => {
+    if (!nextItems.length) return;
+    await startEntranceAnimation();
+  },
+  { deep: true }
+);
 </script>
 <style scoped>
 /* =========================

@@ -42,19 +42,24 @@ try {
                 c.id AS category_id,
                 c.mood AS category_mood,
                 c.label AS category_label,
-                CASE WHEN pl.user_uuid IS NULL THEN 0 ELSE 1 END AS liked
+                CASE WHEN pl.user_uuid IS NULL THEN 0 ELSE 1 END AS liked,
+                CASE WHEN pal.user_uuid IS NULL THEN 0 ELSE 1 END AS saved
              FROM playlists p
              INNER JOIN categories c
                ON c.id = p.category_id
              LEFT JOIN playlist_likes pl
                ON pl.playlist_id = p.id
-              AND pl.user_uuid = :user_uuid
+              AND pl.user_uuid = :like_user_uuid
+             LEFT JOIN palette_logs pal
+               ON pal.playlist_id = p.id
+              AND pal.user_uuid = :saved_user_uuid
              WHERE p.id = :playlist_id
              LIMIT 1'
         );
         $playlistStmt->execute([
             'playlist_id' => $playlistId,
-            'user_uuid' => $userUuid
+            'like_user_uuid' => $userUuid,
+            'saved_user_uuid' => $userUuid
         ]);
     } else {
         $playlistStmt = $pdo->prepare(
@@ -68,7 +73,8 @@ try {
                 c.id AS category_id,
                 c.mood AS category_mood,
                 c.label AS category_label,
-                0 AS liked
+                0 AS liked,
+                0 AS saved
              FROM playlists p
              INNER JOIN categories c
                ON c.id = p.category_id
@@ -127,6 +133,7 @@ try {
             'color_hex' => (string) $playlist['color_hex'],
             'like_count' => (int) $playlist['like_count'],
             'liked' => (bool) $playlist['liked'],
+            'saved' => (bool) $playlist['saved'],
             'play_count' => (int) $playlist['play_count'],
             'category' => [
                 'id' => (int) $playlist['category_id'],

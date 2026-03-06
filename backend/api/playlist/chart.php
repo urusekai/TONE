@@ -35,7 +35,8 @@ try {
                 c.mood,
                 c.label AS category_label,
                 COUNT(pt.track_id) AS total_tracks,
-                MAX(CASE WHEN pl.user_uuid IS NULL THEN 0 ELSE 1 END) AS liked
+                MAX(CASE WHEN pl.user_uuid IS NULL THEN 0 ELSE 1 END) AS liked,
+                MAX(CASE WHEN pal.user_uuid IS NULL THEN 0 ELSE 1 END) AS saved
              FROM playlists p
              INNER JOIN categories c
                ON c.id = p.category_id
@@ -43,7 +44,10 @@ try {
                ON pt.playlist_id = p.id
              LEFT JOIN playlist_likes pl
                ON pl.playlist_id = p.id
-              AND pl.user_uuid = :user_uuid
+              AND pl.user_uuid = :like_user_uuid
+             LEFT JOIN palette_logs pal
+               ON pal.playlist_id = p.id
+              AND pal.user_uuid = :saved_user_uuid
              GROUP BY
                 p.id,
                 p.pantone_code,
@@ -55,7 +59,10 @@ try {
                 c.label
              ORDER BY p.like_count DESC, p.play_count DESC, p.id ASC'
         );
-        $stmt->execute(['user_uuid' => $userUuid]);
+        $stmt->execute([
+            'like_user_uuid' => $userUuid,
+            'saved_user_uuid' => $userUuid
+        ]);
     } else {
         $stmt = $pdo->query(
             'SELECT
@@ -68,7 +75,8 @@ try {
                 c.mood,
                 c.label AS category_label,
                 COUNT(pt.track_id) AS total_tracks,
-                0 AS liked
+                0 AS liked,
+                0 AS saved
              FROM playlists p
              INNER JOIN categories c
                ON c.id = p.category_id
@@ -101,7 +109,8 @@ try {
                 'mood' => (string) $row['mood'],
                 'category_label' => (string) $row['category_label'],
                 'totalTracks' => (int) $row['total_tracks'],
-                'liked' => (bool) $row['liked']
+                'liked' => (bool) $row['liked'],
+                'saved' => (bool) $row['saved']
             ];
         },
         $rows

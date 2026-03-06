@@ -23,8 +23,17 @@
               <img src="@/assets/icons/play.svg" alt="play" />
             </button>
 
-            <button class="icon-btn daily-btn" type="button" aria-label="save" @click="goCalendar">
-              <img src="@/assets/icons/calendarSave.svg" alt="calendar" />
+            <button
+              class="icon-btn daily-btn"
+              type="button"
+              aria-label="팔레트 로그 저장"
+              :disabled="paletteLog.isPending(dailyPlaylist.id)"
+              @click="handleTogglePalette(dailyPlaylist)"
+            >
+              <img
+                :src="paletteLog.has(dailyPlaylist.id) ? addCompleteIcon : addIcon"
+                alt="저장"
+              />
             </button>
           </div>
         </div>
@@ -60,10 +69,14 @@
                 <button
                   class="mini-add"
                   type="button"
-                  aria-label="add"
-                  @click.capture.stop.prevent="goCalendar"
+                  aria-label="팔레트 로그 저장"
+                  :disabled="paletteLog.isPending(playlist.id)"
+                  @click.capture.stop.prevent="handleTogglePalette(playlist)"
                 >
-                  <img src="@/assets/icons/calendarSave.svg" alt="calendar" />
+                  <img
+                    :src="paletteLog.has(playlist.id) ? addCompleteIcon : addIcon"
+                    alt="저장"
+                  />
                 </button>
               </div>
               <div class="spec-name">{{ playlist.color_name }}</div>
@@ -83,21 +96,22 @@
       </div>
 
       <div class="log-list">
+        <p v-if="!paletteLogPreview.length" class="log-empty">아직 저장한 팔레트 로그가 없습니다.</p>
         <RouterLink
-          v-for="playlist in paletteLogPlaylists"
-          :key="playlist.id"
+          v-for="log in paletteLogPreview"
+          :key="`${log.playlist_id}-${log.created_at}`"
           class="log-item"
-          :to="playlistTo(playlist.id)"
-          :style="{ '--bg': playlist.color_hex }"
+          :to="playlistTo(log.playlist_id)"
+          :style="{ '--bg': log.playlist.color_hex }"
         >
-          <div class="log-top">{{ playlist.pantone_code }}</div>
+          <div class="log-top">{{ log.playlist.pantone_code }}</div>
           <div class="log-main">
-            <strong>{{ playlist.color_name }}</strong>
+            <strong>{{ log.playlist.color_name }}</strong>
             <span class="chev icon-white">
               <img src="@/assets/icons/arrow-right.svg" alt=">" />
             </span>
           </div>
-          <div class="log-sub">♫ 총 {{ playlist.total_tracks }}곡</div>
+          <div class="log-sub">♫ 총 {{ log.playlist.totalTracks }}곡</div>
         </RouterLink>
       </div>
     </section>
@@ -119,10 +133,14 @@
 </template>
 
 <script setup>
-import { onMounted, onBeforeUnmount, nextTick, ref } from 'vue';
+import { computed, onMounted, onBeforeUnmount, nextTick, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
+import { usePaletteLogStore } from '@/stores/paletteLog';
+import addIcon from '@/assets/icons/add.svg';
+import addCompleteIcon from '@/assets/icons/addComplete.svg';
 
 const router = useRouter();
+const paletteLog = usePaletteLogStore();
 
 const rootEl = ref(null);
 const specRowEl = ref(null);
@@ -156,36 +174,7 @@ const spectrumPlaylists = [
     total_tracks: 10
   }
 ];
-const paletteLogPlaylists = [
-  {
-    id: 17,
-    pantone_code: '11-4201',
-    color_name: 'Cloud Dancer',
-    color_hex: '#F0F3F4',
-    total_tracks: 10
-  },
-  {
-    id: 18,
-    pantone_code: '14-4102',
-    color_name: 'Glacier Gray',
-    color_hex: '#C4C7C9',
-    total_tracks: 10
-  },
-  {
-    id: 16,
-    pantone_code: '14-2311',
-    color_name: 'Prism Pink',
-    color_hex: '#F0A1BF',
-    total_tracks: 10
-  },
-  {
-    id: 9,
-    pantone_code: '16-1546',
-    color_name: 'Living Coral',
-    color_hex: '#FF6F61',
-    total_tracks: 10
-  }
-];
+const paletteLogPreview = computed(() => paletteLog.paletteLogs.slice(0, 4));
 
 let cleanupSpectrumDrag = null;
 
@@ -200,9 +189,14 @@ function goDailyPlaylist() {
   router.push(playlistTo(dailyPlaylist.id));
 }
 
-/* ---------- (임시) 저장 버튼 동작 ---------- */
-function goCalendar() {
-  router.push('/calendar');
+async function handleTogglePalette(item) {
+  try {
+    await paletteLog.toggle(item?.id);
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : '팔레트 로그 저장 처리에 실패했습니다.';
+    window.alert(message);
+  }
 }
 
 /* ---------- color utils (hex/rgb/rgba 전부 처리) ---------- */
@@ -347,6 +341,7 @@ function bindSpectrumDrag(row) {
 }
 
 onMounted(async () => {
+  await paletteLog.load({ silent: true });
   await nextTick();
 
   cleanupSpectrumDrag = bindSpectrumDrag(specRowEl.value);
@@ -360,6 +355,15 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   if (cleanupSpectrumDrag) cleanupSpectrumDrag();
 });
+
+watch(
+  paletteLogPreview,
+  async () => {
+    await nextTick();
+    applyLogItemTheme(rootEl.value);
+  },
+  { deep: true }
+);
 </script>
 
 <style>
@@ -455,6 +459,11 @@ onBeforeUnmount(() => {
 
 .daily-btn {
   padding-right: 15px;
+}
+
+.daily-btn:disabled,
+.mini-add:disabled {
+  opacity: 0.7;
 }
 
 .icon-btn img {
@@ -589,6 +598,13 @@ onBeforeUnmount(() => {
 .log-list {
   display: grid;
   gap: 14px;
+}
+
+.log-empty {
+  padding: 14px 0;
+  font-size: 13px;
+  color: #6b7280;
+  text-align: center;
 }
 
 .log-item {
