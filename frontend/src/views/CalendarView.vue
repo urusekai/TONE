@@ -5,6 +5,7 @@ import { useCalendarStore, createDefaultEntry } from '@/stores/calendarStore';
 import { useAuthStore } from '@/stores/auth';
 import { updateMyProfileColor } from '@/services/userService';
 import { fetchTodayCalendarPlaylist } from '@/services/calendarService';
+import ToastMessage from '@/components/ToastMessage.vue';
 
 const authStore = useAuthStore();
 
@@ -40,6 +41,8 @@ const memoText = ref('');
 const isMonthLoading = ref(false);
 const isSavingMemo = ref(false);
 const todayFallbackEntry = ref(null);
+const toastMessage = ref('');
+const isToastOpen = ref(false);
 
 const calendarStore = useCalendarStore();
 
@@ -199,7 +202,7 @@ async function saveMemo() {
     if (selectedKey.value === todayKey) {
       todayFallbackEntry.value = null;
     }
-    window.alert('저장되었습니다!');
+    showToast('저장되었습니다!');
   } catch (error) {
     const message =
       error instanceof Error ? error.message : '메모 저장 중 오류가 발생했습니다.';
@@ -211,6 +214,15 @@ async function saveMemo() {
 
 function handleMemoInput(event) {
   memoText.value = event.target.value;
+}
+
+function showToast(message) {
+  toastMessage.value = message;
+  isToastOpen.value = false;
+
+  window.requestAnimationFrame(() => {
+    isToastOpen.value = true;
+  });
 }
 
 function goPlaylist() {
@@ -234,7 +246,7 @@ async function setProfileColor() {
     const result = await updateMyProfileColor(color);
     const nextColor = result?.profileColor || color;
     authStore.setProfileColor(nextColor);
-    showToast();
+    showToast('프로필이 설정되었습니다.');
   } catch (error) {
     const message =
       error instanceof Error ? error.message : '프로필 색상 변경 중 오류가 발생했습니다.';
@@ -242,16 +254,6 @@ async function setProfileColor() {
   } finally {
     isChangingProfileColor.value = false;
   }
-}
-
-/* Toast UI */
-const toastVisible = ref(false);
-
-function showToast() {
-  toastVisible.value = true;
-  setTimeout(() => {
-    toastVisible.value = false;
-  }, 2000);
 }
 
 watch(currentMonthKey, () => {
@@ -405,7 +407,7 @@ watch(
         </div>
       </section>
     </main>
-    <div v-if="toastVisible" class="toast">프로필 컬러가 변경되었습니다</div>
+    <ToastMessage :open="isToastOpen" :message="toastMessage" @close="isToastOpen = false" />
   </div>
 </template>
 
@@ -744,34 +746,4 @@ watch(
   cursor: default;
 }
 
-/* Toast */
-.toast {
-  position: fixed;
-  bottom: 90px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #3f5f73;
-  color: white;
-  padding: 10px 18px;
-  border-radius: 20px;
-  font-size: 13px;
-  animation: toastFade 2s ease forwards;
-}
-
-@keyframes toastFade {
-  0% {
-    opacity: 0;
-    transform: translate(-50%, 20px);
-  }
-  20% {
-    opacity: 1;
-    transform: translate(-50%, 0);
-  }
-  80% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
-}
 </style>
