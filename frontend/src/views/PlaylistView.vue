@@ -28,12 +28,40 @@ function formatLikes(value) {
 function toPlayerPlaylist(value) {
   return {
     id: String(value?.id || ''),
-    pantoneCode: String(value?.pantone_code || ''),
-    colorName: String(value?.color_name || ''),
-    colorHex: String(value?.color_hex || '#B7AEA6'),
+    pantone_code: String(value?.pantone_code || ''),
+    color_name: String(value?.color_name || ''),
+    color_hex: String(value?.color_hex || '#B7AEA6'),
     liked: Boolean(value?.liked),
-    likeCount: Number(value?.like_count || 0)
+    like_count: Number(value?.like_count || 0)
   };
+}
+
+function toPlayerTrack(track) {
+  return {
+    id: String(track?.id || ''),
+    title: String(track?.title || ''),
+    artist: String(track?.artist || ''),
+    cover_url: track?.cover_url || trackThumbImage,
+    audio_url: String(track?.audio_url || ''),
+    video_url: String(track?.video_url || ''),
+    color_name: String(playlist.value?.color_name || ''),
+    pantone_code: String(playlist.value?.pantone_code || ''),
+    color_hex: String(playlist.value?.color_hex || '#B7AEA6')
+  };
+}
+
+function playTrackAt(trackIndex, openMode = 'main') {
+  if (!playlist.value || trackIndex < 0 || trackIndex >= tracks.value.length) return;
+
+  player.setCurrentPlaylist(toPlayerPlaylist(playlist.value));
+  player.setQueue(
+    tracks.value.map((item) => toPlayerTrack(item)),
+    {
+      startIndex: trackIndex,
+      autoplay: true,
+      open_mode: openMode
+    }
+  );
 }
 
 async function loadPlaylistDetail() {
@@ -123,7 +151,7 @@ async function handleToggleLike() {
 
     player.patchCurrentPlaylist({
       liked: nextLiked,
-      likeCount: nextLikeCount
+      like_count: nextLikeCount
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : '좋아요 처리에 실패했습니다.';
@@ -134,17 +162,13 @@ async function handleToggleLike() {
 }
 
 function handleOpenMainPlayer(track) {
-  player.openMain({
-    title: track?.title || '',
-    artist: track?.artist || '',
-    cover: track?.cover_url || trackThumbImage,
-    url: track?.audio_url || ''
-  });
+  const trackIndex = tracks.value.findIndex((item) => String(item?.id || '') === String(track?.id || ''));
+  playTrackAt(trackIndex >= 0 ? trackIndex : 0, 'main');
 }
 
 function handleOpenFirstTrack() {
   if (!tracks.value.length) return;
-  handleOpenMainPlayer(tracks.value[0]);
+  playTrackAt(0, 'main');
 }
 
 watch(

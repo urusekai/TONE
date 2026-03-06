@@ -43,6 +43,7 @@ CREATE TABLE IF NOT EXISTS tracks (
   artist VARCHAR(100) NOT NULL COMMENT '아티스트명',
   audio_filename VARCHAR(255) NOT NULL COMMENT '음원 파일명',
   cover_filename VARCHAR(255) NOT NULL COMMENT '커버 이미지 파일명',
+  video_filename VARCHAR(255) NOT NULL DEFAULT 'movie1.mp4' COMMENT '영상 파일명',
   duration_ms INT UNSIGNED NOT NULL COMMENT '재생 길이(밀리초)',
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성 시각',
   PRIMARY KEY (id),

@@ -98,6 +98,7 @@ try {
             t.artist,
             t.audio_filename,
             t.cover_filename,
+            t.video_filename,
             t.duration_ms,
             pt.track_order
          FROM playlist_tracks pt
@@ -117,6 +118,7 @@ try {
                 'artist' => (string) $row['artist'],
                 'cover_url' => MediaUrl::buildCoverUrl($row['cover_filename']),
                 'audio_url' => MediaUrl::buildAudioUrl($row['audio_filename']),
+                'video_url' => MediaUrl::buildVideoUrl($row['video_filename'] ?? null),
                 'duration_ms' => (int) $row['duration_ms'],
                 'track_order' => (int) $row['track_order']
             ];

@@ -109,9 +109,9 @@ const calendarDays = computed(() => {
    선택된 데이터 동기화
 ========================= */
 watch(
-  selectedKey,
+  selectedData,
   () => {
-    // ✅ memoText 안전 처리
+    // 선택된 날짜 데이터가 비동기로 로드될 때도 메모를 다시 맞춘다.
     memoText.value = selectedData.value.memo || '';
   },
   { immediate: true }

@@ -25,6 +25,7 @@ export async function saveCalendarEntry(payload) {
 export async function fetchTodayCalendarPlaylist() {
   const result = await apiRequest('/api/playlist/daily.php', {}, '오늘의 톤을 불러오지 못했습니다.');
   const playlist = result?.playlist;
+  const track = playlist?.track;
 
   if (!playlist?.id) {
     throw new Error('오늘의 톤 정보를 찾을 수 없습니다.');
@@ -39,9 +40,9 @@ export async function fetchTodayCalendarPlaylist() {
     number: playlist.pantone_code,
     color: playlist.color_hex,
     music: {
-      title: '',
-      artist: '',
-      cover: null
+      title: track?.title || '',
+      artist: track?.artist || '',
+      cover: track?.cover_url || null
     }
   };
 }

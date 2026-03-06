@@ -1,28 +1,24 @@
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { computed, nextTick, ref, watch } from 'vue';
 import { usePlayerStore } from '@/stores/player';
-import { useAuthStore } from '@/stores/auth';
 
 import arrowDown from '@/assets/icons/arrow-down.svg';
 import arrowDownLight from '@/assets/icons/arrow-down_light.svg';
 
 const player = usePlayerStore();
-const authStore = useAuthStore();
-
-/* ✅ MV 모드 */
 const isMV = ref(false);
+const videoRef = ref(null);
 
-/* ✅ currentTrack 방어 + 필요한 필드 기본값 */
 const track = computed(() => {
-  const t = player.currentTrack ?? {};
+  const t = player.current_track ?? {};
   return {
-    title: t.title ?? 'Title',
-    artist: t.artist ?? 'Artist',
-    cover: t.cover ?? '',
-    colorName: t.colorName ?? 'Very Peri',
-    pantoneCode: t.pantoneCode ?? '17-3938',
-    toneBg: t.toneBg ?? '#6868AB',
-    mvUrl: t.mvUrl ?? '',
+    title: t.title ?? '',
+    artist: t.artist ?? '',
+    cover_url: t.cover_url ?? '',
+    color_name: t.color_name ?? '',
+    pantone_code: t.pantone_code ?? '',
+    color_hex: t.color_hex ?? '#D5E1E8',
+    video_url: t.video_url ?? '',
     ...t
   };
 });
@@ -36,15 +32,76 @@ function toggleMV() {
   isMV.value = !isMV.value;
 }
 
-/* ✅ 열릴 때마다 MV 초기화(권장) */
+function syncVideoTime() {
+  const video = videoRef.value;
+  if (!video || !track.value.video_url) return;
+
+  const targetTime = Math.max(0, Number(player.current_time) || 0);
+  if (!Number.isFinite(video.duration) || video.duration <= 0) {
+    video.currentTime = targetTime;
+    return;
+  }
+
+  const normalizedTime = targetTime % video.duration;
+  if (Math.abs(video.currentTime - normalizedTime) > 1.5) {
+    video.currentTime = normalizedTime;
+  }
+}
+
+async function syncVideoPlayback() {
+  const video = videoRef.value;
+  if (!video || !isMV.value || !track.value.video_url) return;
+
+  syncVideoTime();
+
+  if (player.is_playing) {
+    try {
+      await video.play();
+    } catch {
+      // 자동재생 제한이 걸려도 오디오 재생은 유지
+    }
+    return;
+  }
+
+  video.pause();
+}
+
 watch(
   () => player.isMain,
   (open) => {
-    if (open) isMV.value = false;
+    if (open) {
+      isMV.value = false;
+      return;
+    }
+
+    const video = videoRef.value;
+    if (video) video.pause();
   }
 );
 
-/* ✅ HEX 색상 → 상대 명도 계산 */
+watch(
+  () => [isMV.value, player.is_playing, track.value.video_url, player.current_track.id],
+  async () => {
+    await nextTick();
+    await syncVideoPlayback();
+  }
+);
+
+watch(
+  () => player.current_time,
+  () => {
+    if (!isMV.value) return;
+    syncVideoTime();
+  }
+);
+
+watch(
+  () => player.current_track.id,
+  () => {
+    isMV.value = false;
+  }
+);
+
 function isBright(hex) {
   const c = String(hex || '')
     .replace('#', '')
@@ -68,10 +125,8 @@ function isBright(hex) {
   return brightness > 170;
 }
 
-/* ✅ 배경색 기반으로 텍스트/아이콘 색 결정 */
-const isDarkTone = computed(() => !isBright(track.value.toneBg));
+const isDarkTone = computed(() => !isBright(track.value.color_hex));
 
-/* ✅ 텍스트/도트 컬러 */
 const toneText = computed(() => (isDarkTone.value ? '#F2F2EE' : '#3F5F73'));
 const toneTextSub = computed(() =>
   isDarkTone.value ? 'rgba(242,242,238,0.78)' : 'rgba(63,95,115,0.75)'
@@ -81,16 +136,42 @@ const toneDotOff = computed(() =>
 );
 const toneDotOn = computed(() => (isDarkTone.value ? 'rgba(242,242,238,1)' : 'rgba(63,95,115,1)'));
 
-/* ✅ 아이콘 src 스위칭 */
 const iconArrow = computed(() => (isDarkTone.value ? arrowDownLight : arrowDown));
-
-/* ✅ CSS 변수로 내려주기 */
 const toneVars = computed(() => ({
   '--tone-text': toneText.value,
   '--tone-sub': toneTextSub.value,
   '--tone-dot-off': toneDotOff.value,
   '--tone-dot-on': toneDotOn.value
 }));
+
+const progressStyle = computed(() => ({
+  '--progress': `${player.progress_percent}%`
+}));
+
+const isPlaying = computed(() => player.is_playing);
+const displayColorName = computed(() => track.value.color_name || 'Now Playing');
+const displayTitle = computed(() => track.value.title || '곡을 선택해 재생하세요');
+const displayArtist = computed(() => track.value.artist || '플레이리스트에서 트랙을 선택하면 재생됩니다');
+
+function formatTime(seconds) {
+  const safe = Number.isFinite(seconds) ? Math.max(0, Math.floor(seconds)) : 0;
+  const minute = Math.floor(safe / 60);
+  const second = safe % 60;
+  return `${String(minute).padStart(2, '0')}:${String(second).padStart(2, '0')}`;
+}
+
+function handleSeek(event) {
+  const target = event.currentTarget;
+  if (!target || player.duration <= 0) return;
+
+  const rect = target.getBoundingClientRect();
+  const ratio = rect.width > 0 ? (event.clientX - rect.left) / rect.width : 0;
+  player.seekToRatio(ratio);
+}
+
+function handleVideoLoadedMetadata() {
+  syncVideoTime();
+}
 </script>
 
 <template>
@@ -99,7 +180,7 @@ const toneVars = computed(() => ({
       <header
         class="main-player__header"
         :class="{ 'is-mv': isMV }"
-        :style="{ background: track.toneBg }"
+        :style="{ background: track.color_hex }"
       >
         <button type="button" class="main-player__back-btn" @click="handleCloseMain">
           <img :src="iconArrow" alt="메인플레이어 닫기" />
@@ -107,7 +188,7 @@ const toneVars = computed(() => ({
 
         <div class="main-player__header-center" :class="{ 'is-active': isMV, 'is-empty': !isMV }">
           <p class="main-player__header-label">PLAYLIST</p>
-          <p class="main-player__header-name">{{ track.colorName }}</p>
+          <p class="main-player__header-name">{{ displayColorName }}</p>
         </div>
 
         <button
@@ -124,21 +205,34 @@ const toneVars = computed(() => ({
         </button>
       </header>
 
-      <div v-if="isMV" class="main-player__mv">
+      <button v-if="isMV" type="button" class="main-player__mv" @click="toggleMV">
         <video
+          v-if="track.video_url"
+          ref="videoRef"
+          :key="track.video_url || track.id"
           class="main-player__mv-video"
-          :src="track.mvUrl"
+          :src="track.video_url"
           autoplay
           muted
+          loop
+          preload="metadata"
           playsinline
-          controls
+          @loadedmetadata="handleVideoLoadedMetadata"
         ></video>
-      </div>
+        <div v-else class="main-player__mv-empty">
+          <img
+            v-if="track.cover_url"
+            :src="track.cover_url"
+            alt="앨범커버"
+            class="main-player__mv-placeholder"
+          />
+        </div>
+      </button>
 
-      <div v-else class="main-player__tone" :style="{ background: track.toneBg }">
+      <div v-else class="main-player__tone" :style="{ background: track.color_hex }">
         <div class="main-player__tone-meta" :class="{ 'is-hidden': isMV }">
-          <p class="main-player__color-name">{{ track.colorName }}</p>
-          <p class="main-player__color-code">{{ track.pantoneCode }}</p>
+          <p class="main-player__color-name">{{ displayColorName }}</p>
+          <p class="main-player__color-code">{{ track.pantone_code }}</p>
         </div>
 
         <button
@@ -148,8 +242,8 @@ const toneVars = computed(() => ({
           aria-label="뮤직비디오 보기"
         >
           <img
-            v-if="track.cover"
-            :src="track.cover"
+            v-if="track.cover_url"
+            :src="track.cover_url"
             alt="앨범커버"
             class="main-player__cover-circle"
           />
@@ -158,28 +252,44 @@ const toneVars = computed(() => ({
     </div>
 
     <div class="main-player__info">
-      <p class="main-player__title">{{ track.title }}</p>
-      <p class="main-player__artist">{{ track.artist }}</p>
+      <p class="main-player__title" :class="{ 'is-empty': !player.has_track }">{{ displayTitle }}</p>
+      <p class="main-player__artist" :class="{ 'is-empty': !player.has_track }">{{ displayArtist }}</p>
     </div>
 
-    <div class="main-player__progress">
-      <div class="main-player__progress-cover" style="--progress: 65%"></div>
+    <div class="main-player__progress" @click="handleSeek">
+      <div class="main-player__progress-cover" :style="progressStyle"></div>
     </div>
 
     <div class="main-player__time">
-      <span>00:00</span>
-      <span>00:00</span>
+      <span>{{ formatTime(player.current_time) }}</span>
+      <span>{{ formatTime(player.duration) }}</span>
     </div>
 
     <div class="main-player__actions-top">
-      <button type="button" class="main-player__prev-btn">
+      <button
+        type="button"
+        class="main-player__prev-btn"
+        :disabled="!player.has_track || !player.has_prev"
+        @click="player.playPrev"
+      >
         <img src="@/assets/icons/prev-song.svg" alt="이전곡" />
       </button>
-      <button type="button" class="main-player__play-toggle-btn is-playing">
+      <button
+        type="button"
+        class="main-player__play-toggle-btn"
+        :disabled="!player.has_track"
+        :class="{ 'is-playing': isPlaying }"
+        @click="player.togglePlay"
+      >
         <img src="@/assets/icons/pause-circle.svg" alt="일시정지" />
         <img src="@/assets/icons/play-circle.svg" alt="재생" />
       </button>
-      <button type="button" class="main-player__next-btn">
+      <button
+        type="button"
+        class="main-player__next-btn"
+        :disabled="!player.has_track || !player.has_next"
+        @click="player.playNext"
+      >
         <img src="@/assets/icons/next-song.svg" alt="다음곡" />
       </button>
     </div>
@@ -483,6 +593,10 @@ const toneVars = computed(() => ({
   height: 430px;
   background: #000;
   flex-shrink: 0;
+  border: 0;
+  padding: 0;
+  display: block;
+  cursor: pointer;
 }
 
 .main-player__mv-video {
@@ -490,6 +604,26 @@ const toneVars = computed(() => ({
   height: 100%;
   object-fit: cover;
   display: block;
+}
+
+.main-player__mv-empty {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(circle at top, rgba(255, 255, 255, 0.08), transparent 45%),
+    linear-gradient(180deg, #1d2227 0%, #101316 100%);
+}
+
+.main-player__mv-placeholder {
+  width: 140px;
+  height: 140px;
+  border-radius: 999px;
+  object-fit: cover;
+  border: 4px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 24px rgba(0, 0, 0, 0.3);
 }
 
 /* ==================================================
@@ -513,6 +647,10 @@ const toneVars = computed(() => ({
   font-weight: 500;
 }
 
+.main-player__artist.is-empty {
+  color: var(--color-text-secondary);
+}
+
 .main-player__progress {
   position: relative;
   width: 100%;
@@ -521,6 +659,7 @@ const toneVars = computed(() => ({
   border-radius: 999px;
   overflow: hidden;
   background: linear-gradient(90deg, #a8d4e6 0%, #c3b7d6 49%, #f5c9c6 100%);
+  cursor: pointer;
 }
 
 .main-player__progress-cover {
@@ -575,6 +714,12 @@ const toneVars = computed(() => ({
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.main-player__play-toggle-btn:disabled,
+.main-player__prev-btn:disabled,
+.main-player__next-btn:disabled {
+  opacity: 0.45;
 }
 
 .main-player__play-toggle-btn img {
