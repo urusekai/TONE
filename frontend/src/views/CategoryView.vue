@@ -9,7 +9,19 @@
       <li v-for="item in categories" :key="item.mood" class="cg-item">
         <RouterLink
           class="cg-link"
-          :to="{ path: '/category-detail', query: { mood: item.mood } }"
+          :to="{
+            path: '/category-detail',
+            query: {
+              mood: item.mood,
+              label: item.label,
+              tag1: item.tags[0] || '',
+              tag2: item.tags[1] || '',
+              tag3: item.tags[2] || '',
+              gradC1: item.grad.c1,
+              gradC2: item.grad.c2,
+              gradC3: item.grad.c3
+            }
+          }"
           :aria-label="`${item.label} 카테고리 보기`"
         >
           <div class="cg-grad" :style="item.grad" aria-hidden="true"></div>
@@ -57,7 +69,10 @@ async function loadCategories() {
       grad: {
         '--c1': String(item.grad_c1 || '#f2f2ee'),
         '--c2': String(item.grad_c2 || '#cfe6d6'),
-        '--c3': String(item.grad_c3 || '#b7aea6')
+        '--c3': String(item.grad_c3 || '#b7aea6'),
+        c1: String(item.grad_c1 || '#f2f2ee'),
+        c2: String(item.grad_c2 || '#cfe6d6'),
+        c3: String(item.grad_c3 || '#b7aea6')
       }
     }));
   } catch (error) {
