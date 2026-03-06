@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router';
 import { useCalendarStore, createDefaultEntry } from '@/stores/calendarStore';
 import { useAuthStore } from '@/stores/auth';
 import { updateMyProfileColor } from '@/services/userService';
+import { fetchTodayCalendarPlaylist } from '@/services/calendarService';
 
 const authStore = useAuthStore();
 
@@ -14,12 +15,18 @@ import pauseIcon from '@/assets/icons/pause.svg';
 import addIcon from '@/assets/icons/add.svg';
 import thumbTrack from '@/assets/images/thumb-track.png';
 
-const route = useRoute();
-
 function formatKey(year, month, day) {
   // ✅ YYYY-MM-DD 형식
   return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 }
+
+function getTodayKey() {
+  const today = new Date();
+  return formatKey(today.getFullYear(), today.getMonth() + 1, today.getDate());
+}
+
+const route = useRoute();
+const todayKey = getTodayKey();
 
 /* =========================
    상태
@@ -29,8 +36,10 @@ const viewDate = ref(new Date());
 const selectedKey = ref(
   formatKey(viewDate.value.getFullYear(), viewDate.value.getMonth() + 1, viewDate.value.getDate())
 );
-const isEditing = ref(false);
 const memoText = ref('');
+const isMonthLoading = ref(false);
+const isSavingMemo = ref(false);
+const todayFallbackEntry = ref(null);
 
 const calendarStore = useCalendarStore();
 
@@ -40,9 +49,6 @@ const calendarStore = useCalendarStore();
    - 전달받으면 해당 날짜로 selectedKey 업데이트
 ========================= */
 onMounted(() => {
-  // ✅ localStorage 데이터 확실히 로드 (새로고침 시 대비)
-  calendarStore.loadFromLocalStorage();
-
   if (route.query.date) {
     const dateFromQuery = String(route.query.date);
     // YYYY-MM-DD 형식 검증
@@ -62,9 +68,17 @@ onMounted(() => {
   - store의 기본값과 일치하여 예측 가능한 동작
 */
 const selectedData = computed(() => {
-  // ✅ createDefaultEntry 사용으로 defaultData 통일
+  if (selectedKey.value === todayKey && todayFallbackEntry.value) {
+    return todayFallbackEntry.value;
+  }
+
   return calendarStore.calendarData[selectedKey.value] || createDefaultEntry();
 });
+
+const hasSelectedEntry = computed(() =>
+  Boolean(calendarStore.calendarData[selectedKey.value]) ||
+  (selectedKey.value === todayKey && Boolean(todayFallbackEntry.value))
+);
 
 /* =========================
    달력 계산
@@ -72,6 +86,9 @@ const selectedData = computed(() => {
 const currentMonth = computed(() => viewDate.value.getMonth());
 const currentYear = computed(() => viewDate.value.getFullYear());
 const monthLabel = computed(() => `${String(currentMonth.value + 1).padStart(2, '0')}월`);
+const currentMonthKey = computed(
+  () => `${currentYear.value}-${String(currentMonth.value + 1).padStart(2, '0')}`
+);
 
 const daysInMonth = computed(() =>
   new Date(currentYear.value, currentMonth.value + 1, 0).getDate()
@@ -93,7 +110,6 @@ watch(
   () => {
     // ✅ memoText 안전 처리
     memoText.value = selectedData.value.memo || '';
-    isEditing.value = false;
   },
   { immediate: true }
 );
@@ -106,8 +122,11 @@ watch(
 watch(
   () => `${currentYear.value}-${currentMonth.value}`,
   () => {
-    // 현재 월의 1일로 selectedKey 업데이트
-    selectedKey.value = formatKey(currentYear.value, currentMonth.value + 1, 1);
+    const monthFirstKey = formatKey(currentYear.value, currentMonth.value + 1, 1);
+    const monthLastKey = formatKey(currentYear.value, currentMonth.value + 1, daysInMonth.value);
+    const todayInCurrentMonth = todayKey >= monthFirstKey && todayKey <= monthLastKey;
+
+    selectedKey.value = todayInCurrentMonth ? todayKey : monthFirstKey;
   }
 );
 
@@ -123,6 +142,10 @@ const dayColorMap = computed(() => {
   calendarDays.value.forEach((day) => {
     if (day) {
       const key = formatKey(currentYear.value, currentMonth.value + 1, day);
+      if (key === todayKey && todayFallbackEntry.value?.color) {
+        map[day] = todayFallbackEntry.value.color;
+        return;
+      }
       map[day] = calendarStore.calendarData[key]?.color || '#d9d9d9';
     }
   });
@@ -134,7 +157,9 @@ const dayColorMap = computed(() => {
 ========================= */
 function selectDate(day) {
   if (!day) return;
-  selectedKey.value = formatKey(currentYear.value, currentMonth.value + 1, day);
+  const nextKey = formatKey(currentYear.value, currentMonth.value + 1, day);
+  if (nextKey !== todayKey && !calendarStore.calendarData[nextKey]) return;
+  selectedKey.value = nextKey;
 }
 
 function prevMonth() {
@@ -144,15 +169,48 @@ function nextMonth() {
   viewDate.value = new Date(currentYear.value, currentMonth.value + 1, 1);
 }
 
-function startEdit() {
-  isEditing.value = true;
+async function loadMonthEntries() {
+  isMonthLoading.value = true;
+
+  try {
+    await calendarStore.loadMonth(currentMonthKey.value);
+    if (currentMonthKey.value === todayKey.slice(0, 7) && !calendarStore.calendarData[todayKey]) {
+      todayFallbackEntry.value = await fetchTodayCalendarPlaylist();
+    } else {
+      todayFallbackEntry.value = null;
+    }
+  } catch (error) {
+    todayFallbackEntry.value = null;
+    const message =
+      error instanceof Error ? error.message : '캘린더 기록을 불러오지 못했습니다.';
+    window.alert(message);
+  } finally {
+    isMonthLoading.value = false;
+  }
 }
 
-/* ✅ 메모 저장: store로만 */
-function saveMemo() {
-  calendarStore.saveMemo(selectedKey.value, memoText.value);
-  isEditing.value = false;
-  alert('저장되었습니다!');
+async function saveMemo() {
+  if (isSavingMemo.value) return;
+
+  isSavingMemo.value = true;
+
+  try {
+    await calendarStore.saveMemo(selectedKey.value, memoText.value, selectedData.value?.playlistId);
+    if (selectedKey.value === todayKey) {
+      todayFallbackEntry.value = null;
+    }
+    window.alert('저장되었습니다!');
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : '메모 저장 중 오류가 발생했습니다.';
+    window.alert(message);
+  } finally {
+    isSavingMemo.value = false;
+  }
+}
+
+function handleMemoInput(event) {
+  memoText.value = event.target.value;
 }
 
 function goPlaylist() {
@@ -195,6 +253,24 @@ function showToast() {
     toastVisible.value = false;
   }, 2000);
 }
+
+watch(currentMonthKey, () => {
+  loadMonthEntries();
+}, { immediate: true });
+
+watch(
+  () => calendarStore.calendarData,
+  () => {
+    if (route.query.date) return;
+
+    const monthFirstKey = formatKey(currentYear.value, currentMonth.value + 1, 1);
+    const monthLastKey = formatKey(currentYear.value, currentMonth.value + 1, daysInMonth.value);
+    const todayInCurrentMonth = todayKey >= monthFirstKey && todayKey <= monthLastKey;
+
+    selectedKey.value = todayInCurrentMonth ? todayKey : monthFirstKey;
+  },
+  { deep: true, immediate: true }
+);
 </script>
 
 <template>
@@ -215,13 +291,19 @@ function showToast() {
           </button>
         </div>
 
+        <p v-if="isMonthLoading" class="calendar-state">캘린더 기록을 불러오는 중...</p>
+
         <div class="calendar-grid" id="calendarGrid">
           <div
             v-for="(day, idx) in calendarDays"
             :key="idx"
             class="calendar-day"
             :class="{
-              selected: day && formatKey(currentYear, currentMonth + 1, day) === selectedKey
+              selected: day && formatKey(currentYear, currentMonth + 1, day) === selectedKey,
+              'is-disabled':
+                day &&
+                formatKey(currentYear, currentMonth + 1, day) !== todayKey &&
+                !calendarStore.calendarData[formatKey(currentYear, currentMonth + 1, day)]
             }"
             @click="selectDate(day)"
           >
@@ -270,7 +352,7 @@ function showToast() {
             <button
               type="button"
               class="btn-profile-set"
-              :disabled="isChangingProfileColor"
+              :disabled="isChangingProfileColor || !hasSelectedEntry"
               @click="setProfileColor"
             >
               {{ isChangingProfileColor ? '변경중...' : '프로필 설정' }}
@@ -295,10 +377,14 @@ function showToast() {
           <div class="memo-header">
             <h4>기록 메모</h4>
             <div class="memo-buttons">
-              <button type="button" class="btn-outline" @click="startEdit">
-                {{ isEditing ? '수정 중' : '수정' }}
+              <button
+                type="button"
+                class="btn-primary"
+                :disabled="isSavingMemo || !hasSelectedEntry"
+                @click="saveMemo"
+              >
+                {{ isSavingMemo ? '저장중...' : '저장' }}
               </button>
-              <button type="button" class="btn-primary" @click="saveMemo">저장</button>
             </div>
           </div>
 
@@ -307,8 +393,9 @@ function showToast() {
               id="memoInput"
               placeholder="오늘의 톤을 한 줄로 남겨주세요!"
               maxlength="50"
-              :readonly="!isEditing"
-              v-model="memoText"
+              :readonly="!hasSelectedEntry"
+              :value="memoText"
+              @input="handleMemoInput"
             ></textarea>
             <div class="memo-count">
               <span id="currentCount">{{ memoCount }}</span
@@ -383,10 +470,22 @@ function showToast() {
   text-align: center;
 }
 
+#calendar .calendar-state {
+  margin: 0 0 16px;
+  text-align: center;
+  font-size: 13px;
+  color: #3f5f73;
+}
+
 #calendar .calendar-day {
   font-size: 10px;
   font-weight: 600;
   cursor: pointer;
+}
+
+#calendar .calendar-day.is-disabled {
+  cursor: default;
+  opacity: 0.45;
 }
 
 #calendar .day-dot {
@@ -600,7 +699,6 @@ function showToast() {
   gap: 8px;
 }
 
-#calendar .btn-outline,
 #calendar .btn-primary {
   display: inline-flex;
   align-items: center;
@@ -612,12 +710,6 @@ function showToast() {
   border-radius: 14px;
   cursor: pointer;
   transition: all 0.2s;
-}
-
-#calendar .btn-outline {
-  background: #fff;
-  border: 1px solid #3f5f73;
-  color: #3f5f73;
 }
 
 #calendar .btn-primary {
@@ -648,11 +740,8 @@ function showToast() {
   font-weight: 700;
 }
 
-#calendar #memoInput:not([readonly]) {
-  background-color: #e9e9e1;
-  border-radius: 8px;
-  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.05);
-  color: #3f5f73d2;
+#calendar #memoInput[readonly] {
+  cursor: default;
 }
 
 /* Toast */

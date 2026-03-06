@@ -122,6 +122,36 @@ CREATE TABLE IF NOT EXISTS playlist_tracks (
 -- 2) SEED DATA (DML)
 -- ========================================
 
+-- users 테스트 계정
+INSERT INTO users (
+  user_uuid,
+  id,
+  email,
+  password_hash,
+  nickname,
+  profile_color,
+  provider,
+  provider_id,
+  membership_plan
+)
+VALUES (
+  '11111111-1111-1111-1111-111111111111',
+  'testuser',
+  'testuser@naver.com',
+  '$2y$10$BLw.2Or1Fm9MCxgtc3NSaO4BG9bWQn/UsU6EDcK6EzopP286qSrsO',
+  '테스트',
+  '#B7AEA6',
+  'local',
+  NULL,
+  'free'
+)
+ON DUPLICATE KEY UPDATE
+  email = VALUES(email),
+  password_hash = VALUES(password_hash),
+  nickname = VALUES(nickname),
+  profile_color = VALUES(profile_color),
+  membership_plan = VALUES(membership_plan);
+
 -- categories 기본 데이터
 INSERT INTO categories (mood, label, tag1, tag2, tag3, grad_c1, grad_c2, grad_c3)
 VALUES
@@ -668,3 +698,15 @@ VALUES
   ((SELECT id FROM playlists WHERE pantone_code = '18-1306'), (SELECT id FROM tracks WHERE audio_filename = 'Lil_Uzi_Vert_XO_Tour_Llif3.mp3'), 10)
 ON DUPLICATE KEY UPDATE
   track_order = VALUES(track_order);
+
+-- calendar_entries 테스트 데이터 (2026-03, testuser 기준)
+INSERT INTO calendar_entries (user_uuid, entry_date, playlist_id, memo)
+VALUES
+  ((SELECT user_uuid FROM users WHERE id = 'testuser'), '2026-03-01', (SELECT id FROM playlists WHERE pantone_code = '18-1750'), '3월의 시작, 강렬한 무드'),
+  ((SELECT user_uuid FROM users WHERE id = 'testuser'), '2026-03-02', (SELECT id FROM playlists WHERE pantone_code = '18-4245'), '차분하게 집중한 하루'),
+  ((SELECT user_uuid FROM users WHERE id = 'testuser'), '2026-03-03', (SELECT id FROM playlists WHERE pantone_code = '18-1664'), '에너지 넘치게 작업'),
+  ((SELECT user_uuid FROM users WHERE id = 'testuser'), '2026-03-04', (SELECT id FROM playlists WHERE pantone_code = '14-0760'), '조금은 뜨겁고 선명한 기분')
+ON DUPLICATE KEY UPDATE
+  playlist_id = VALUES(playlist_id),
+  memo = VALUES(memo),
+  updated_at = CURRENT_TIMESTAMP;

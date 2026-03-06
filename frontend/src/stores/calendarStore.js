@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia';
-
-const STORAGE_KEY = 'tone_calendar_data';
+import { fetchCalendarEntries, saveCalendarEntry } from '@/services/calendarService';
 
 /*
   날짜별 데이터를 저장하는 객체 (Record)
@@ -28,6 +27,8 @@ const STORAGE_KEY = 'tone_calendar_data';
 // ✅ export하여 외부에서도 사용 가능
 export function createDefaultEntry() {
   return {
+    id: null,
+    playlistId: null,
     name: '기록 없음',
     number: '00-0000',
     color: '#d9d9d9',
@@ -42,92 +43,65 @@ export function createDefaultEntry() {
 
 export const useCalendarStore = defineStore('calendar', {
   state: () => ({
-    // ✅ 날짜별 기록
     calendarData: {},
-    // ✅ loadFromLocalStorage 한 번만 실행하는 플래그
-    _loaded: false
+    currentMonth: '',
+    isLoading: false
   }),
 
   actions: {
-    /*
-      앱 시작 시 localStorage 데이터 불러오기
+    setMonthEntries(entries) {
+      const nextData = {};
 
-      ⚠️ NOTE
-      - main.js에서 1번 호출 (권장)
-      - 한 번만 로드됨 (_loaded 플래그 사용)
-      - CalendarView.onMounted에서도 호출되지만 플래그로 인해 1회만 실행
-    */
-    loadFromLocalStorage() {
-      // ✅ 플래그 기반 한 번만 로드
-      if (this._loaded) {
-        return;
-      }
+      entries.forEach((entry) => {
+        if (!entry?.entryDate) return;
 
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        try {
-          const parsed = JSON.parse(saved);
-          this.calendarData = typeof parsed === 'object' && parsed !== null ? parsed : {};
-        } catch (e) {
-          // 저장된 값이 깨졌을 때 안전장치
-          console.warn('[calendarStore] localStorage 파싱 실패:', e);
-          this.calendarData = {};
-        }
-      }
+        nextData[entry.entryDate] = {
+          ...createDefaultEntry(),
+          ...entry,
+          music: {
+            ...createDefaultEntry().music,
+            ...(entry.music || {})
+          }
+        };
+      });
 
-      this._loaded = true;  // ✅ 로드 완료 표시
+      this.calendarData = nextData;
     },
 
-    /*
-      localStorage 저장
+    async loadMonth(month) {
+      this.isLoading = true;
 
-      ⚠️ NOTE
-      추후 로그인 시스템이 생기면 서버 DB 저장 방식으로 변경될 수 있음
-    */
-    saveToLocalStorage() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(this.calendarData));
+      try {
+        const result = await fetchCalendarEntries(month);
+        this.currentMonth = result?.month || month;
+        this.setMonthEntries(Array.isArray(result?.entries) ? result.entries : []);
+      } finally {
+        this.isLoading = false;
+      }
     },
 
-    /*
-      날짜 데이터 저장 / 업데이트
-      - MainView에서 daily tone 저장할 때 사용
-
-      payload 예시:
-      { name, number, color, music: { title, artist, cover } }
-    */
-    saveDailyTone(dateKey, payload) {
+    async saveMemo(dateKey, memo, playlistId = null) {
       const prev = this.calendarData[dateKey] || createDefaultEntry();
+      const result = await saveCalendarEntry({
+        entryDate: dateKey,
+        memo,
+        playlistId
+      });
+      const entry = result?.entry;
 
-      this.calendarData[dateKey] = {
+      if (!entry?.entryDate) {
+        throw new Error('저장된 캘린더 기록을 확인할 수 없습니다.');
+      }
+
+      this.calendarData[entry.entryDate] = {
         ...prev,
-        ...payload,
-        // music는 객체라서 안전하게 merge
-        music: { ...prev.music, ...(payload?.music || {}) }
-      };
-
-      this.saveToLocalStorage();
-    },
-
-    /*
-      메모 저장
-      - CalendarView에서 memo 저장 버튼 클릭 시 사용
-      - ✅ 명시적으로 필드 지정 (유지/변경 구분)
-    */
-    saveMemo(dateKey, memo) {
-      const prev = this.calendarData[dateKey] || createDefaultEntry();
-
-      // ✅ 명시적으로 어떤 필드를 유지하는지 표기
-      this.calendarData[dateKey] = {
-        // 유지할 필드
-        name: prev.name,
-        number: prev.number,
-        color: prev.color,
-        music: prev.music,
-        // 변경할 필드
+        ...entry,
+        music: {
+          ...prev.music,
+          ...(entry.music || {})
+        },
         memo
       };
-
-      this.saveToLocalStorage();
     }
   }
 });
