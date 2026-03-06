@@ -37,8 +37,11 @@ try {
         exit;
     }
 
-    $todayKey = (new DateTimeImmutable('now'))->format('Y-m-d');
-    $offset = abs(crc32($todayKey)) % $playlistCount;
+    $today = new DateTimeImmutable('today');
+    $todayKey = $today->format('Y-m-d');
+    $epoch = new DateTimeImmutable('2026-01-01');
+    $dayOffset = (int) $epoch->diff($today)->format('%r%a');
+    $offset = (($dayOffset % $playlistCount) + $playlistCount) % $playlistCount;
 
     $dailyStmt = $pdo->prepare(
         'SELECT
@@ -50,13 +53,22 @@ try {
             p.play_count,
             c.mood,
             c.label AS category_label,
-            CASE WHEN pal.user_uuid IS NULL THEN 0 ELSE 1 END AS saved
+            CASE WHEN pal.user_uuid IS NULL THEN 0 ELSE 1 END AS saved,
+            t.title AS track_title,
+            t.artist AS track_artist,
+            t.cover_filename AS track_cover_filename,
+            t.audio_filename AS track_audio_filename
          FROM playlists p
          INNER JOIN categories c
            ON c.id = p.category_id
          LEFT JOIN palette_logs pal
            ON pal.playlist_id = p.id
           AND pal.user_uuid = :saved_user_uuid
+         LEFT JOIN playlist_tracks pt
+           ON pt.playlist_id = p.id
+          AND pt.track_order = 1
+         LEFT JOIN tracks t
+           ON t.id = pt.track_id
          ORDER BY p.id ASC
          LIMIT 1 OFFSET :offset_value'
     );
@@ -83,7 +95,13 @@ try {
             'play_count' => (int) $playlist['play_count'],
             'mood' => (string) $playlist['mood'],
             'category_label' => (string) $playlist['category_label'],
-            'saved' => (bool) $playlist['saved']
+            'saved' => (bool) $playlist['saved'],
+            'track' => [
+                'title' => (string) ($playlist['track_title'] ?? ''),
+                'artist' => (string) ($playlist['track_artist'] ?? ''),
+                'cover_url' => MediaUrl::buildCoverUrl($playlist['track_cover_filename'] ?? null),
+                'audio_url' => MediaUrl::buildAudioUrl($playlist['track_audio_filename'] ?? null),
+            ]
         ]
     ], JSON_UNESCAPED_UNICODE);
 } catch (Throwable $e) {

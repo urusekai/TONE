@@ -12,6 +12,11 @@ class MediaUrl
         return self::buildUrl($filename, $_ENV['R2_AUDIO_PREFIX'] ?? 'audio');
     }
 
+    public static function buildVideoUrl(?string $filename): string
+    {
+        return self::buildUrl($filename, $_ENV['R2_VIDEO_PREFIX'] ?? 'video');
+    }
+
     private static function buildUrl(?string $filename, string $prefix): string
     {
         $trimmedFilename = trim((string) $filename);

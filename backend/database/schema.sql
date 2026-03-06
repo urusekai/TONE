@@ -43,6 +43,7 @@ CREATE TABLE IF NOT EXISTS tracks (
   artist VARCHAR(100) NOT NULL COMMENT '아티스트명',
   audio_filename VARCHAR(255) NOT NULL COMMENT '음원 파일명',
   cover_filename VARCHAR(255) NOT NULL COMMENT '커버 이미지 파일명',
+  video_filename VARCHAR(255) NOT NULL DEFAULT 'movie1.mp4' COMMENT '영상 파일명',
   duration_ms INT UNSIGNED NOT NULL COMMENT '재생 길이(밀리초)',
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성 시각',
   PRIMARY KEY (id),
@@ -88,6 +89,22 @@ CREATE TABLE IF NOT EXISTS palette_logs (
   CONSTRAINT fk_palette_logs_playlist FOREIGN KEY (playlist_id) REFERENCES playlists (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='유저가 저장한 팔레트 로그 목록';
 
+-- 사용자별 날짜 기록
+CREATE TABLE IF NOT EXISTS calendar_entries (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '캘린더 기록 ID',
+  user_uuid CHAR(36) NOT NULL COMMENT '사용자 UUID',
+  entry_date DATE NOT NULL COMMENT '기록 날짜',
+  playlist_id INT UNSIGNED NOT NULL COMMENT '연결된 플레이리스트 ID',
+  memo TEXT DEFAULT NULL COMMENT '기록 메모',
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성 시각',
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정 시각',
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_calendar_entries_user_date (user_uuid, entry_date),
+  KEY idx_calendar_entries_playlist_id (playlist_id),
+  CONSTRAINT fk_calendar_entries_user FOREIGN KEY (user_uuid) REFERENCES users (user_uuid) ON DELETE CASCADE,
+  CONSTRAINT fk_calendar_entries_playlist FOREIGN KEY (playlist_id) REFERENCES playlists (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='사용자별 날짜 기록';
+
 -- 플레이리스트-트랙 매핑
 CREATE TABLE IF NOT EXISTS playlist_tracks (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '플레이리스트 트랙 매핑 ID',
@@ -105,6 +122,36 @@ CREATE TABLE IF NOT EXISTS playlist_tracks (
 -- ========================================
 -- 2) SEED DATA (DML)
 -- ========================================
+
+-- users 테스트 계정
+INSERT INTO users (
+  user_uuid,
+  id,
+  email,
+  password_hash,
+  nickname,
+  profile_color,
+  provider,
+  provider_id,
+  membership_plan
+)
+VALUES (
+  '11111111-1111-1111-1111-111111111111',
+  'testuser',
+  'testuser@naver.com',
+  '$2y$10$BLw.2Or1Fm9MCxgtc3NSaO4BG9bWQn/UsU6EDcK6EzopP286qSrsO',
+  '테스트',
+  '#B7AEA6',
+  'local',
+  NULL,
+  'free'
+)
+ON DUPLICATE KEY UPDATE
+  email = VALUES(email),
+  password_hash = VALUES(password_hash),
+  nickname = VALUES(nickname),
+  profile_color = VALUES(profile_color),
+  membership_plan = VALUES(membership_plan);
 
 -- categories 기본 데이터
 INSERT INTO categories (mood, label, tag1, tag2, tag3, grad_c1, grad_c2, grad_c3)
@@ -652,3 +699,15 @@ VALUES
   ((SELECT id FROM playlists WHERE pantone_code = '18-1306'), (SELECT id FROM tracks WHERE audio_filename = 'Lil_Uzi_Vert_XO_Tour_Llif3.mp3'), 10)
 ON DUPLICATE KEY UPDATE
   track_order = VALUES(track_order);
+
+-- calendar_entries 테스트 데이터 (2026-03, testuser 기준)
+INSERT INTO calendar_entries (user_uuid, entry_date, playlist_id, memo)
+VALUES
+  ((SELECT user_uuid FROM users WHERE id = 'testuser'), '2026-03-01', (SELECT id FROM playlists WHERE pantone_code = '18-1750'), '3월의 시작, 강렬한 무드'),
+  ((SELECT user_uuid FROM users WHERE id = 'testuser'), '2026-03-02', (SELECT id FROM playlists WHERE pantone_code = '18-4245'), '차분하게 집중한 하루'),
+  ((SELECT user_uuid FROM users WHERE id = 'testuser'), '2026-03-03', (SELECT id FROM playlists WHERE pantone_code = '18-1664'), '에너지 넘치게 작업'),
+  ((SELECT user_uuid FROM users WHERE id = 'testuser'), '2026-03-04', (SELECT id FROM playlists WHERE pantone_code = '14-0760'), '조금은 뜨겁고 선명한 기분')
+ON DUPLICATE KEY UPDATE
+  playlist_id = VALUES(playlist_id),
+  memo = VALUES(memo),
+  updated_at = CURRENT_TIMESTAMP;

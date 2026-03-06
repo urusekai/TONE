@@ -22,6 +22,7 @@ let ignoreClickUntil = 0;
 let resizeObserver = null;
 
 function handleOpenMain() {
+  if (!player.has_track) return;
   player.openMain();
 }
 
@@ -161,6 +162,22 @@ const surfaceOffset = computed(() => {
 const surfaceStyle = computed(() => ({
   transform: `translate(-50%, ${surfaceOffset.value}px)`
 }));
+
+const progressStyle = computed(() => ({
+  '--progress': `${player.progress_percent}%`
+}));
+
+const displayTitle = computed(() => player.current_track.title || '곡을 선택해 재생하세요');
+const displayArtist = computed(() => player.current_track.artist || '플레이리스트에서 트랙을 선택하세요');
+
+function handleSeek(event) {
+  const target = event.currentTarget;
+  if (!target || player.duration <= 0) return;
+
+  const rect = target.getBoundingClientRect();
+  const ratio = rect.width > 0 ? (event.clientX - rect.left) / rect.width : 0;
+  player.seekToRatio(ratio);
+}
 </script>
 
 <template>
@@ -189,25 +206,31 @@ const surfaceStyle = computed(() => ({
     </div>
 
     <div class="mini-content">
-      <button type="button" class="mini-thumb" @click="handleOpenMain">
-        <img :src="player.currentTrack.cover" alt="앨범 커버" />
+      <button type="button" class="mini-thumb" :disabled="!player.has_track" @click="handleOpenMain">
+        <img :src="player.current_track.cover_url" alt="앨범 커버" />
       </button>
       <div class="mini-body">
         <div class="mini-top">
-          <p class="mini-title">{{ player.currentTrack.title }}</p>
+          <p class="mini-title" :class="{ 'is-empty': !player.has_track }">{{ displayTitle }}</p>
           <div class="mini-actions">
             <button type="button" class="mini-btn">
               <img src="@/assets/icons/like.svg" alt="좋아요" class="icon-like" />
             </button>
-            <button type="button" class="mini-btn is-playing">
+            <button
+              type="button"
+              class="mini-btn"
+              :disabled="!player.has_track"
+              :class="{ 'is-playing': player.is_playing }"
+              @click.stop="player.togglePlay"
+            >
               <img src="@/assets/icons/play.svg" alt="재생" class="icon-play" />
               <img src="@/assets/icons/pause.svg" alt="재생일시정지" class="icon-pause" />
             </button>
           </div>
         </div>
-        <p class="mini-artist">{{ player.currentTrack.artist }}</p>
-        <div class="mini-progress">
-          <div class="mini-progress-cover" style="--progress: 65%"></div>
+        <p class="mini-artist" :class="{ 'is-empty': !player.has_track }">{{ displayArtist }}</p>
+        <div class="mini-progress" @click="handleSeek">
+          <div class="mini-progress-cover" :style="progressStyle"></div>
         </div>
       </div>
     </div>
@@ -279,6 +302,10 @@ const surfaceStyle = computed(() => ({
   display: flex;
 }
 
+.mini-thumb:disabled {
+  cursor: default;
+}
+
 .mini-thumb img {
   width: 100%;
   height: 100%;
@@ -301,6 +328,10 @@ const surfaceStyle = computed(() => ({
   font-size: 20px;
   font-weight: 700;
   line-height: 1;
+}
+
+.mini-artist.is-empty {
+  color: var(--color-text-secondary);
 }
 
 .mini-actions {
@@ -349,6 +380,11 @@ const surfaceStyle = computed(() => ({
   background: linear-gradient(90deg, #a8d4e6 0%, #c3b7d6 49%, #f5c9c6 100%);
   margin-top: auto;
   margin-bottom: 2px;
+  cursor: pointer;
+}
+
+.mini-btn:disabled {
+  opacity: 0.45;
 }
 
 .mini-progress-cover {

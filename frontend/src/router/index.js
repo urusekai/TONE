@@ -1,4 +1,13 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import { buildApiUrl } from '@/services/httpClient';
+
+async function hasServerSession() {
+  const response = await fetch(buildApiUrl('/api/auth/me.php'), {
+    credentials: 'include'
+  });
+
+  return response.ok;
+}
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -16,6 +25,7 @@ const router = createRouter({
     },
     {
       path: '/',
+      meta: { requiresAuth: true },
       component: () => import('../layouts/AppLayout.vue'),
       children: [
         {
@@ -87,6 +97,25 @@ const router = createRouter({
       ]
     }
   ]
+});
+
+router.beforeEach(async (to) => {
+  if (!to.matched.some((record) => record.meta.requiresAuth)) {
+    return true;
+  }
+
+  try {
+    if (await hasServerSession()) {
+      return true;
+    }
+  } catch {
+    // 세션 확인 실패 시 로그인으로 이동
+  }
+
+  return {
+    path: '/login',
+    query: to.path === '/login' ? undefined : { redirect: to.fullPath }
+  };
 });
 
 export default router;
