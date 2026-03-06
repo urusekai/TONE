@@ -464,6 +464,7 @@ onBeforeUnmount(() => {
   padding-left: 3px;
   border-radius: 999px;
   background: rgba(95, 96, 170, 0.95);
+  box-shadow: inset 0 0 10px 1px rgba(0, 0, 0, 0.25);
 }
 
 .daily-btn {
