@@ -1,8 +1,14 @@
 <script setup>
-import { reactive, ref, watch } from 'vue';
+import { onMounted, reactive, ref, watch } from 'vue';
+import { Swiper, SwiperSlide } from 'swiper/vue';
+import { FreeMode } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/free-mode';
 import { useRouter } from 'vue-router';
+import { apiRequest } from '@/services/httpClient';
 
 const router = useRouter();
+const swiperModules = [FreeMode];
 
 const STORAGE_KEY = 'tone_recent_tags_v1';
 const MAX_TAGS = 12;
@@ -20,27 +26,12 @@ const loadTags = () => {
 
 const searchData = reactive({
   tags: loadTags(),
-  recentColors: [
-    { name: 'Butter cream', code: '#EFE1A7' },
-    { name: 'Cerulean', code: '#9BB7D4' },
-    { name: 'Tangerine', code: '#DD4124' },
-    { name: 'Rose Quartz', code: '#F7CAC9' },
-    { name: 'Classic Blue', code: '#0F4C81' },
-    { name: 'Green Ash', code: '#A0DAA9' },
-    { name: 'Viva Magenta', code: '#BE3455' },
-    { name: 'Ultimate Gray', code: '#939597' }
-  ],
-  recommended: [
-    { brand: 'PANTONE', name: 'Pale Khaki', code: '#C4B495' },
-    { brand: 'PANTONE', name: 'Gray Lilac', code: '#D6CBD3' },
-    { brand: 'PANTONE', name: 'Gray Sand', code: '#E7D1B6' },
-    { brand: 'PANTONE', name: 'Viva Magenta', code: '#BE3455' },
-    { brand: 'PANTONE', name: 'Pale Dogwood', code: '#8D91C7' },
-    { brand: 'PANTONE', name: 'Color Pale Dogwood', code: '#ADB696' }
-  ]
+  recentColors: [],
+  recommended: []
 });
 
 const keyword = ref('');
+const isLoadingColors = ref(false);
 
 // tags가 바뀔 때마다 localStorage 저장
 watch(
@@ -76,9 +67,9 @@ function removeTag(tag) {
 }
 
 function goToPlaylist(payload) {
-  // 필요하면 query로 넘기기 (playlist에서 검색값 받기 가능)
-  // 예: router.push({ path: '/playlist', query: { q: payload?.name ?? '' } })
-  router.push('/playlist');
+  const playlistId = String(payload?.id || '').trim();
+  if (!playlistId) return;
+  router.push({ path: '/playlist', query: { id: playlistId } });
 }
 
 function onSubmit(e) {
@@ -91,6 +82,55 @@ function onSubmit(e) {
   searchData.tags.unshift(t); // 맨 앞에 추가
   keyword.value = ''; // 입력창 초기화
 }
+
+function mapRecentColor(item) {
+  const playlist = item?.playlist ?? {};
+  return {
+    id: String(playlist?.id || ''),
+    name: String(playlist?.color_name || ''),
+    code: String(playlist?.color_hex || '#B7AEA6')
+  };
+}
+
+function mapRecommendedColor(item) {
+  return {
+    id: String(item?.id || ''),
+    brand: 'PANTONE',
+    name: String(item?.color_name || ''),
+    code: String(item?.color_hex || '#B7AEA6')
+  };
+}
+
+async function loadSearchCollections() {
+  isLoadingColors.value = true;
+
+  try {
+    const [recentResult, chartResult] = await Promise.all([
+      apiRequest('/api/palette-logs/list.php', {}, '최근 컬러를 불러오지 못했습니다.'),
+      apiRequest('/api/playlist/chart.php', {}, '인기 컬러를 불러오지 못했습니다.')
+    ]);
+
+    const paletteLogs = Array.isArray(recentResult?.paletteLogs) ? recentResult.paletteLogs : [];
+    const chartPlaylists = Array.isArray(chartResult?.playlists) ? chartResult.playlists : [];
+
+    const recentUnique = paletteLogs.filter(
+      (item, index, array) =>
+        array.findIndex((target) => String(target?.playlist?.id || '') === String(item?.playlist?.id || '')) === index
+    );
+
+    searchData.recentColors = recentUnique.slice(0, 8).map(mapRecentColor);
+    searchData.recommended = chartPlaylists.slice(0, 6).map(mapRecommendedColor);
+  } catch {
+    searchData.recentColors = [];
+    searchData.recommended = [];
+  } finally {
+    isLoadingColors.value = false;
+  }
+}
+
+onMounted(async () => {
+  await loadSearchCollections();
+});
 </script>
 
 <template>
@@ -109,14 +149,25 @@ function onSubmit(e) {
       <section class="search-section">
         <h3 class="section-title">최근 검색어</h3>
 
-        <div class="scroll-container" id="tag-list">
-          <div v-for="t in searchData.tags" :key="t" class="tag">
-            {{ t }}
-            <button class="btn-delete" type="button" @click.stop="removeTag(t)">
-              <img src="@/assets/icons/remove.svg" alt="삭제" />
-            </button>
-          </div>
-        </div>
+        <Swiper
+          class="search-swiper tag-swiper"
+          :modules="swiperModules"
+          :slides-per-view="'auto'"
+          :space-between="14"
+          :free-mode="{ enabled: true, momentumBounce: false }"
+          :grab-cursor="true"
+          :resistance-ratio="0"
+          :watch-overflow="true"
+        >
+          <SwiperSlide v-for="t in searchData.tags" :key="t" class="tag-slide">
+            <div class="tag">
+              {{ t }}
+              <button class="btn-delete" type="button" @click.stop="removeTag(t)">
+                <img src="@/assets/icons/remove.svg" alt="삭제" />
+              </button>
+            </div>
+          </SwiperSlide>
+        </Swiper>
       </section>
 
       <!-- 최근 컬러 -->
@@ -124,17 +175,28 @@ function onSubmit(e) {
         <h3 class="section-title">최근 컬러</h3>
 
         <div class="recent-colors-wrapper">
-          <div class="scroll-container" id="color-circle-list">
-            <div
-              v-for="c in searchData.recentColors"
-              :key="c.name"
-              class="color-item"
-              @click="goToPlaylist(c)"
-            >
-              <div class="color-circle" :style="{ backgroundColor: c.code }"></div>
-              <span class="color-label">{{ c.name }}</span>
-            </div>
-          </div>
+          <p v-if="isLoadingColors" class="section-empty recent-colors-empty">불러오는 중...</p>
+          <p v-else-if="searchData.recentColors.length === 0" class="section-empty recent-colors-empty">
+            최근 저장한 컬러가 없습니다.
+          </p>
+          <Swiper
+            v-else
+            class="search-swiper recent-colors-swiper"
+            :modules="swiperModules"
+            :slides-per-view="'auto'"
+            :space-between="14"
+            :free-mode="{ enabled: true, momentumBounce: false }"
+            :grab-cursor="true"
+            :resistance-ratio="0"
+            :watch-overflow="true"
+          >
+            <SwiperSlide v-for="c in searchData.recentColors" :key="c.name" class="color-slide">
+              <div class="color-item" @click="goToPlaylist(c)">
+                <div class="color-circle" :style="{ backgroundColor: c.code }"></div>
+                <span class="color-label">{{ c.name }}</span>
+              </div>
+            </SwiperSlide>
+          </Swiper>
         </div>
       </section>
 
@@ -142,6 +204,10 @@ function onSubmit(e) {
       <section class="recommended-colors-section">
         <h3 class="section-title">인기 추천 컬러</h3>
 
+        <p v-if="isLoadingColors" class="section-empty">불러오는 중...</p>
+        <p v-else-if="searchData.recommended.length === 0" class="section-empty">
+          표시할 인기 컬러가 없습니다.
+        </p>
         <div class="color-card-grid" id="color-card-grid">
           <article
             v-for="r in searchData.recommended"
@@ -183,6 +249,13 @@ function onSubmit(e) {
   margin: 0 0 var(--title-content-gap);
 }
 
+.section-empty {
+  width: 100%;
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
 .search-section,
 .recent-colors-section,
 .recommended-colors-section {
@@ -210,10 +283,6 @@ function onSubmit(e) {
   overflow-y: auto;
   overscroll-behavior: contain;
   padding-bottom: calc(var(--app-main-bottom) + var(--section-gap));
-}
-
-.search-content-scroll::-webkit-scrollbar {
-  display: none;
 }
 
 .search-input-box {
@@ -251,37 +320,22 @@ function onSubmit(e) {
   opacity: 0.5;
 }
 
-/* 3. 가로 스크롤 공통 */
-.scroll-container {
-  display: flex;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
+/* 3. 가로 스와이프 공통 */
+.search-swiper {
+  overflow: visible;
 }
 
-#tag-list {
-  gap: 14px;
+.tag-swiper {
+  padding: 0;
 }
 
-/* ✅ 최근 컬러 스크롤 줄(진짜 스크롤되는 요소) */
-#color-circle-list {
+.tag-slide {
+  width: auto;
+}
+
+.recent-colors-swiper {
   box-sizing: border-box;
   padding: 0 14px;
-  gap: 14px;
-  align-items: flex-start;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scroll-snap-type: x mandatory;
-  scroll-padding-inline: 18px;
-}
-
-.scroll-container::-webkit-scrollbar {
-  display: none;
-}
-
-/* (선택) 스냅: 아이템이 딱딱 붙게 */
-.recent-colors-wrapper .color-item {
-  scroll-snap-align: start;
 }
 
 /* 최근 검색어 태그 */
@@ -294,6 +348,7 @@ function onSubmit(e) {
   border-radius: 20px;
   font-size: 14px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
 }
 
 .btn-delete {
@@ -323,14 +378,21 @@ function onSubmit(e) {
   position: relative;
 }
 
+.recent-colors-empty {
+  padding: 0 14px;
+}
+
 .color-item {
-  flex: 0 0 auto;
   width: 65px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   cursor: pointer;
+}
+
+.color-slide {
+  width: 65px;
 }
 
 .color-circle {

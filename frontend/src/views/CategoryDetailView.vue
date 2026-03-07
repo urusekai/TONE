@@ -241,15 +241,6 @@ watch(
   display: flex;
   flex-direction: column;
   gap: 22px;
-  /* Firefox */
-  scrollbar-width: none;
-
-  /* IE, Edge 레거시 */
-  -ms-overflow-style: none;
-}
-
-.color-list::-webkit-scrollbar {
-  display: none;
 }
 
 .color-state {
