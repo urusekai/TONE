@@ -1,6 +1,7 @@
 <script setup>
-import { reactive, ref, watch } from 'vue';
+import { onMounted, reactive, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
+import { apiRequest } from '@/services/httpClient';
 
 const router = useRouter();
 
@@ -20,27 +21,12 @@ const loadTags = () => {
 
 const searchData = reactive({
   tags: loadTags(),
-  recentColors: [
-    { name: 'Butter cream', code: '#EFE1A7' },
-    { name: 'Cerulean', code: '#9BB7D4' },
-    { name: 'Tangerine', code: '#DD4124' },
-    { name: 'Rose Quartz', code: '#F7CAC9' },
-    { name: 'Classic Blue', code: '#0F4C81' },
-    { name: 'Green Ash', code: '#A0DAA9' },
-    { name: 'Viva Magenta', code: '#BE3455' },
-    { name: 'Ultimate Gray', code: '#939597' }
-  ],
-  recommended: [
-    { brand: 'PANTONE', name: 'Pale Khaki', code: '#C4B495' },
-    { brand: 'PANTONE', name: 'Gray Lilac', code: '#D6CBD3' },
-    { brand: 'PANTONE', name: 'Gray Sand', code: '#E7D1B6' },
-    { brand: 'PANTONE', name: 'Viva Magenta', code: '#BE3455' },
-    { brand: 'PANTONE', name: 'Pale Dogwood', code: '#8D91C7' },
-    { brand: 'PANTONE', name: 'Color Pale Dogwood', code: '#ADB696' }
-  ]
+  recentColors: [],
+  recommended: []
 });
 
 const keyword = ref('');
+const isLoadingColors = ref(false);
 
 // tags가 바뀔 때마다 localStorage 저장
 watch(
@@ -76,9 +62,9 @@ function removeTag(tag) {
 }
 
 function goToPlaylist(payload) {
-  // 필요하면 query로 넘기기 (playlist에서 검색값 받기 가능)
-  // 예: router.push({ path: '/playlist', query: { q: payload?.name ?? '' } })
-  router.push('/playlist');
+  const playlistId = String(payload?.id || '').trim();
+  if (!playlistId) return;
+  router.push({ path: '/playlist', query: { id: playlistId } });
 }
 
 function onSubmit(e) {
@@ -91,6 +77,55 @@ function onSubmit(e) {
   searchData.tags.unshift(t); // 맨 앞에 추가
   keyword.value = ''; // 입력창 초기화
 }
+
+function mapRecentColor(item) {
+  const playlist = item?.playlist ?? {};
+  return {
+    id: String(playlist?.id || ''),
+    name: String(playlist?.color_name || ''),
+    code: String(playlist?.color_hex || '#B7AEA6')
+  };
+}
+
+function mapRecommendedColor(item) {
+  return {
+    id: String(item?.id || ''),
+    brand: 'PANTONE',
+    name: String(item?.color_name || ''),
+    code: String(item?.color_hex || '#B7AEA6')
+  };
+}
+
+async function loadSearchCollections() {
+  isLoadingColors.value = true;
+
+  try {
+    const [recentResult, chartResult] = await Promise.all([
+      apiRequest('/api/palette-logs/list.php', {}, '최근 컬러를 불러오지 못했습니다.'),
+      apiRequest('/api/playlist/chart.php', {}, '인기 컬러를 불러오지 못했습니다.')
+    ]);
+
+    const paletteLogs = Array.isArray(recentResult?.paletteLogs) ? recentResult.paletteLogs : [];
+    const chartPlaylists = Array.isArray(chartResult?.playlists) ? chartResult.playlists : [];
+
+    const recentUnique = paletteLogs.filter(
+      (item, index, array) =>
+        array.findIndex((target) => String(target?.playlist?.id || '') === String(item?.playlist?.id || '')) === index
+    );
+
+    searchData.recentColors = recentUnique.slice(0, 8).map(mapRecentColor);
+    searchData.recommended = chartPlaylists.slice(0, 6).map(mapRecommendedColor);
+  } catch {
+    searchData.recentColors = [];
+    searchData.recommended = [];
+  } finally {
+    isLoadingColors.value = false;
+  }
+}
+
+onMounted(async () => {
+  await loadSearchCollections();
+});
 </script>
 
 <template>
@@ -125,6 +160,10 @@ function onSubmit(e) {
 
         <div class="recent-colors-wrapper">
           <div class="scroll-container" id="color-circle-list">
+            <p v-if="isLoadingColors" class="section-empty">불러오는 중...</p>
+            <p v-else-if="searchData.recentColors.length === 0" class="section-empty">
+              최근 저장한 컬러가 없습니다.
+            </p>
             <div
               v-for="c in searchData.recentColors"
               :key="c.name"
@@ -142,6 +181,10 @@ function onSubmit(e) {
       <section class="recommended-colors-section">
         <h3 class="section-title">인기 추천 컬러</h3>
 
+        <p v-if="isLoadingColors" class="section-empty">불러오는 중...</p>
+        <p v-else-if="searchData.recommended.length === 0" class="section-empty">
+          표시할 인기 컬러가 없습니다.
+        </p>
         <div class="color-card-grid" id="color-card-grid">
           <article
             v-for="r in searchData.recommended"
@@ -181,6 +224,13 @@ function onSubmit(e) {
   font-size: 17px;
   font-weight: 700;
   margin: 0 0 var(--title-content-gap);
+}
+
+.section-empty {
+  width: 100%;
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-text-secondary);
 }
 
 .search-section,
