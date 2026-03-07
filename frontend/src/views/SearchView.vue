@@ -1,9 +1,14 @@
 <script setup>
 import { onMounted, reactive, ref, watch } from 'vue';
+import { Swiper, SwiperSlide } from 'swiper/vue';
+import { FreeMode } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/free-mode';
 import { useRouter } from 'vue-router';
 import { apiRequest } from '@/services/httpClient';
 
 const router = useRouter();
+const swiperModules = [FreeMode];
 
 const STORAGE_KEY = 'tone_recent_tags_v1';
 const MAX_TAGS = 12;
@@ -144,14 +149,25 @@ onMounted(async () => {
       <section class="search-section">
         <h3 class="section-title">최근 검색어</h3>
 
-        <div class="scroll-container" id="tag-list">
-          <div v-for="t in searchData.tags" :key="t" class="tag">
-            {{ t }}
-            <button class="btn-delete" type="button" @click.stop="removeTag(t)">
-              <img src="@/assets/icons/remove.svg" alt="삭제" />
-            </button>
-          </div>
-        </div>
+        <Swiper
+          class="search-swiper tag-swiper"
+          :modules="swiperModules"
+          :slides-per-view="'auto'"
+          :space-between="14"
+          :free-mode="{ enabled: true, momentumBounce: false }"
+          :grab-cursor="true"
+          :resistance-ratio="0"
+          :watch-overflow="true"
+        >
+          <SwiperSlide v-for="t in searchData.tags" :key="t" class="tag-slide">
+            <div class="tag">
+              {{ t }}
+              <button class="btn-delete" type="button" @click.stop="removeTag(t)">
+                <img src="@/assets/icons/remove.svg" alt="삭제" />
+              </button>
+            </div>
+          </SwiperSlide>
+        </Swiper>
       </section>
 
       <!-- 최근 컬러 -->
@@ -159,21 +175,28 @@ onMounted(async () => {
         <h3 class="section-title">최근 컬러</h3>
 
         <div class="recent-colors-wrapper">
-          <div class="scroll-container" id="color-circle-list">
-            <p v-if="isLoadingColors" class="section-empty">불러오는 중...</p>
-            <p v-else-if="searchData.recentColors.length === 0" class="section-empty">
-              최근 저장한 컬러가 없습니다.
-            </p>
-            <div
-              v-for="c in searchData.recentColors"
-              :key="c.name"
-              class="color-item"
-              @click="goToPlaylist(c)"
-            >
-              <div class="color-circle" :style="{ backgroundColor: c.code }"></div>
-              <span class="color-label">{{ c.name }}</span>
-            </div>
-          </div>
+          <p v-if="isLoadingColors" class="section-empty recent-colors-empty">불러오는 중...</p>
+          <p v-else-if="searchData.recentColors.length === 0" class="section-empty recent-colors-empty">
+            최근 저장한 컬러가 없습니다.
+          </p>
+          <Swiper
+            v-else
+            class="search-swiper recent-colors-swiper"
+            :modules="swiperModules"
+            :slides-per-view="'auto'"
+            :space-between="14"
+            :free-mode="{ enabled: true, momentumBounce: false }"
+            :grab-cursor="true"
+            :resistance-ratio="0"
+            :watch-overflow="true"
+          >
+            <SwiperSlide v-for="c in searchData.recentColors" :key="c.name" class="color-slide">
+              <div class="color-item" @click="goToPlaylist(c)">
+                <div class="color-circle" :style="{ backgroundColor: c.code }"></div>
+                <span class="color-label">{{ c.name }}</span>
+              </div>
+            </SwiperSlide>
+          </Swiper>
         </div>
       </section>
 
@@ -297,33 +320,22 @@ onMounted(async () => {
   opacity: 0.5;
 }
 
-/* 3. 가로 스크롤 공통 */
-.scroll-container {
-  display: flex;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
+/* 3. 가로 스와이프 공통 */
+.search-swiper {
+  overflow: visible;
 }
 
-#tag-list {
-  gap: 14px;
+.tag-swiper {
+  padding: 0;
 }
 
-/* ✅ 최근 컬러 스크롤 줄(진짜 스크롤되는 요소) */
-#color-circle-list {
+.tag-slide {
+  width: auto;
+}
+
+.recent-colors-swiper {
   box-sizing: border-box;
   padding: 0 14px;
-  gap: 14px;
-  align-items: flex-start;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scroll-snap-type: x mandatory;
-  scroll-padding-inline: 18px;
-}
-
-/* (선택) 스냅: 아이템이 딱딱 붙게 */
-.recent-colors-wrapper .color-item {
-  scroll-snap-align: start;
 }
 
 /* 최근 검색어 태그 */
@@ -336,6 +348,7 @@ onMounted(async () => {
   border-radius: 20px;
   font-size: 14px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
 }
 
 .btn-delete {
@@ -365,14 +378,21 @@ onMounted(async () => {
   position: relative;
 }
 
+.recent-colors-empty {
+  padding: 0 14px;
+}
+
 .color-item {
-  flex: 0 0 auto;
   width: 65px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   cursor: pointer;
+}
+
+.color-slide {
+  width: 65px;
 }
 
 .color-circle {

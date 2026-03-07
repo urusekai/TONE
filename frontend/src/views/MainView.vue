@@ -69,35 +69,40 @@
       </p>
 
       <div v-else class="spec-track">
-        <div ref="specRowEl" class="spec-row">
-          <RouterLink
-            v-for="(playlist, index) in spectrumPlaylists"
-            :key="playlist.id"
-            class="spec-card"
-            :class="{ 'is-next': index > 0 }"
-            :to="playlistTo(playlist.id)"
-          >
-            <div class="spec-color" :style="{ '--c': playlist.color_hex }"></div>
-            <div class="spec-body">
-              <div class="spec-meta">
-                <span class="spec-code">{{ playlist.pantone_code }}</span>
-                <button
-                  class="mini-add"
-                  type="button"
-                  aria-label="팔레트 로그 저장"
-                  :disabled="paletteLog.isPending(playlist.id)"
-                  @click.capture.stop.prevent="handleTogglePalette(playlist)"
-                >
-                  <img
-                    :src="paletteLog.has(playlist.id) ? addCompleteIcon : addIcon"
-                    alt="저장"
-                  />
-                </button>
+        <Swiper
+          class="spec-swiper"
+          :modules="swiperModules"
+          :slides-per-view="'auto'"
+          :space-between="14"
+          :free-mode="{ enabled: true, momentumBounce: false }"
+          :grab-cursor="true"
+          :resistance-ratio="0"
+          :watch-overflow="true"
+        >
+          <SwiperSlide v-for="playlist in spectrumPlaylists" :key="playlist.id" class="spec-slide">
+            <RouterLink class="spec-card" :to="playlistTo(playlist.id)">
+              <div class="spec-color" :style="{ '--c': playlist.color_hex }"></div>
+              <div class="spec-body">
+                <div class="spec-meta">
+                  <span class="spec-code">{{ playlist.pantone_code }}</span>
+                  <button
+                    class="mini-add"
+                    type="button"
+                    aria-label="팔레트 로그 저장"
+                    :disabled="paletteLog.isPending(playlist.id)"
+                    @click.capture.stop.prevent="handleTogglePalette(playlist)"
+                  >
+                    <img
+                      :src="paletteLog.has(playlist.id) ? addCompleteIcon : addIcon"
+                      alt="저장"
+                    />
+                  </button>
+                </div>
+                <div class="spec-name">{{ playlist.color_name }}</div>
               </div>
-              <div class="spec-name">{{ playlist.color_name }}</div>
-            </div>
-          </RouterLink>
-        </div>
+            </RouterLink>
+          </SwiperSlide>
+        </Swiper>
       </div>
     </section>
 
@@ -148,7 +153,11 @@
 </template>
 
 <script setup>
-import { computed, onMounted, onBeforeUnmount, nextTick, ref, watch } from 'vue';
+import { computed, onMounted, nextTick, ref, watch } from 'vue';
+import { Swiper, SwiperSlide } from 'swiper/vue';
+import { FreeMode } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/free-mode';
 import { useRouter } from 'vue-router';
 import { usePaletteLogStore } from '@/stores/paletteLog';
 import { apiRequest } from '@/services/httpClient';
@@ -157,9 +166,9 @@ import addCompleteIcon from '@/assets/icons/addComplete.svg';
 
 const router = useRouter();
 const paletteLog = usePaletteLogStore();
+const swiperModules = [FreeMode];
 
 const rootEl = ref(null);
-const specRowEl = ref(null);
 const dailyPlaylist = ref(null);
 const isDailyLoading = ref(false);
 const isSpectrumLoading = ref(false);
@@ -167,8 +176,6 @@ const dailyErrorMessage = ref('');
 const spectrumPlaylists = ref([]);
 const spectrumErrorMessage = ref('');
 const paletteLogPreview = computed(() => paletteLog.paletteLogs.slice(0, 4));
-
-let cleanupSpectrumDrag = null;
 
 /* ---------- 라우팅 헬퍼 ---------- */
 // 지금은 임시로 /playlist?id=... 형태
@@ -296,110 +303,16 @@ function applyLogItemTheme(root) {
   });
 }
 
-/* ---------- Spectrum: 드래그 스크롤 ---------- */
-function bindSpectrumDrag(row) {
-  if (!row) return () => {};
-
-  let isPointerDown = false;
-  let isDragging = false;
-  let startX = 0;
-  let startScrollLeft = 0;
-  let pointerId = null;
-
-  const DRAG_THRESHOLD = 8; // 이 거리 넘을 때만 드래그로 인정
-
-  row.style.cursor = 'grab';
-  row.style.userSelect = 'none';
-  row.style.touchAction = 'pan-y';
-
-  const onPointerDown = (e) => {
-    if (e.pointerType === 'mouse' && e.button !== 0) return;
-
-    isPointerDown = true;
-    isDragging = false;
-    pointerId = e.pointerId;
-
-    startX = e.clientX;
-    startScrollLeft = row.scrollLeft;
-  };
-
-  const onPointerMove = (e) => {
-    if (!isPointerDown) return;
-
-    const dx = e.clientX - startX;
-
-    // threshold 넘기기 전엔 클릭으로 보고 아무것도 안 함
-    if (!isDragging) {
-      if (Math.abs(dx) < DRAG_THRESHOLD) return;
-
-      isDragging = true;
-      row.setPointerCapture(pointerId);
-      row.style.cursor = 'grabbing';
-      row.classList.add('is-dragging');
-    }
-
-    row.scrollLeft = startScrollLeft - dx;
-  };
-
-  const endDrag = () => {
-    if (!isPointerDown) return;
-
-    if (isDragging && pointerId !== null) {
-      try {
-        row.releasePointerCapture(pointerId);
-      } catch (_) {}
-    }
-
-    isPointerDown = false;
-    pointerId = null;
-
-    row.style.cursor = 'grab';
-    row.classList.remove('is-dragging');
-  };
-
-  const stopClickWhenDragged = (e) => {
-    if (isDragging) {
-      e.preventDefault();
-      e.stopPropagation();
-
-      // 이번 클릭만 막고 바로 초기화
-      requestAnimationFrame(() => {
-        isDragging = false;
-      });
-    }
-  };
-
-  row.addEventListener('pointerdown', onPointerDown);
-  row.addEventListener('pointermove', onPointerMove);
-  row.addEventListener('pointerup', endDrag);
-  row.addEventListener('pointercancel', endDrag);
-  row.addEventListener('click', stopClickWhenDragged, true);
-
-  return () => {
-    row.removeEventListener('pointerdown', onPointerDown);
-    row.removeEventListener('pointermove', onPointerMove);
-    row.removeEventListener('pointerup', endDrag);
-    row.removeEventListener('pointercancel', endDrag);
-    row.removeEventListener('click', stopClickWhenDragged, true);
-  };
-}
-
 onMounted(async () => {
   await paletteLog.load({ silent: true });
   await loadDailyPlaylist();
   await loadSpectrumPlaylists();
   await nextTick();
 
-  cleanupSpectrumDrag = bindSpectrumDrag(specRowEl.value);
-
   // 스타일 적용 타이밍 보장(2프레임)
   requestAnimationFrame(() => {
     requestAnimationFrame(() => applyLogItemTheme(rootEl.value));
   });
-});
-
-onBeforeUnmount(() => {
-  if (cleanupSpectrumDrag) cleanupSpectrumDrag();
 });
 
 watch(
@@ -557,23 +470,27 @@ watch(
   text-align: center;
 }
 
-.spec-row {
-  display: flex;
+.spec-swiper {
   background: #fff;
-  gap: 14px;
-
-  overflow-x: auto;
-  overflow-y: hidden;
-  -webkit-overflow-scrolling: touch;
-  scroll-snap-type: x mandatory;
-
   padding: 20px 16px;
   margin: -20px -16px;
   border-radius: 18px;
 }
 
-.spec-row.is-dragging {
-  scroll-snap-type: none;
+.spec-swiper,
+.spec-swiper .swiper-wrapper,
+.spec-swiper .swiper-slide {
+  cursor: grab;
+}
+
+.spec-swiper:active,
+.spec-swiper:active .swiper-wrapper,
+.spec-swiper:active .swiper-slide {
+  cursor: grabbing;
+}
+
+.spec-slide {
+  width: 268px;
 }
 
 /* 패널 헤더 */
@@ -582,6 +499,8 @@ watch(
   align-items: center;
   justify-content: space-between;
   margin-bottom: 14px;
+  position: relative;
+  z-index: 2;
 }
 
 .panel h3 {
@@ -600,7 +519,7 @@ watch(
 }
 
 .spec-card {
-  flex: 0 0 268px;
+  display: block;
   border-radius: 17px;
   background: #fff;
   box-shadow: 0px 0px 21.3px -3px rgba(0, 0, 0, 0.25);
@@ -608,6 +527,7 @@ watch(
   overflow: hidden;
   border: 1px solid rgba(0, 0, 0, 0.05);
   color: inherit;
+  cursor: pointer;
 }
 
 .spec-color {
@@ -640,6 +560,7 @@ watch(
   align-items: center;
   justify-content: center;
   padding: 0;
+  cursor: pointer;
 }
 
 .mini-add img {
