@@ -94,6 +94,7 @@ body {
 ---------------------------------------- */
 .app main {
   flex: 1;
+  min-height: 0;
 
   display: flex;
   flex-direction: column;
@@ -248,8 +249,6 @@ body {
 ---------------------------------------- */
 .bottom-nav {
   bottom: 0;
-  width: 100%;
-
   display: flex;
   padding: 25px var(--layout-x);
   justify-content: space-between;

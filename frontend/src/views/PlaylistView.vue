@@ -256,14 +256,9 @@ watch(
 
 <style scoped>
 #playlist {
-  --app-main-bottom-gap: 0px;
   --playlist-main-side-padding: 25px;
-  width: 100%;
   min-height: 0;
-  justify-content: flex-start;
-  align-items: stretch;
-  overflow: hidden;
-  padding-bottom: 0;
+  padding-top: calc(var(--app-header-height) + var(--app-tabs-height));
 }
 
 .playlist-state {
@@ -278,12 +273,15 @@ watch(
 }
 
 #playlist .playlist-hero {
+  position: sticky;
+  top: calc(var(--app-header-height) + var(--app-tabs-height));
+  z-index: 1001;
   display: flex;
   flex: 0 0 auto;
-  width: auto;
   gap: 20px;
   margin-inline: calc(var(--playlist-main-side-padding) * -1);
   padding: 0 var(--playlist-main-side-padding) 25px;
+  background: var(--color-bg-app);
   box-shadow: 0 10px 12px -12px rgba(0, 0, 0, 0.45);
 }
 
@@ -391,17 +389,12 @@ watch(
 
 #playlist .playlist-tracks {
   width: 100%;
-  flex: 1 1 auto;
-  height: 0;
-  min-height: 0;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
+  flex: 0 0 auto;
 }
 
 #playlist .playlist-tracks__list {
   padding-top: 10px;
-  padding-bottom: var(--app-main-bottom);
+  padding-bottom: 0;
 }
 
 #playlist .playlist-track-item {
