@@ -176,19 +176,15 @@ watch(
 
 <style scoped>
 #category-detail-page {
-  width: 100%;
   min-height: 0;
-  overflow: hidden;
+  padding-top: 0;
   padding-left: 0;
   padding-right: 0;
-  padding-top: 0;
-  padding-bottom: 0;
 }
 
 .mood-header {
   position: relative;
   z-index: 1;
-  width: 100%;
   flex: 0 0 auto;
   margin: 0;
   padding: 16px var(--layout-x) 20px;
@@ -196,6 +192,12 @@ watch(
   text-align: center;
   background: #ffffff;
   box-shadow: 0px 2px 6.5px rgba(0, 0, 0, 0.22);
+}
+
+#category-detail-page .mood-header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
 }
 
 .mood-header .cg-grad {
@@ -230,13 +232,6 @@ watch(
 }
 
 .color-list {
-  flex: 1 1 auto;
-  height: 0;
-  min-height: 0;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain;
-
   padding: 25px var(--layout-x) calc(var(--app-main-bottom) + 12px);
   display: flex;
   flex-direction: column;
