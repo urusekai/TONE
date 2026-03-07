@@ -572,10 +572,6 @@ watch(
   border-radius: 18px;
 }
 
-.spec-row::-webkit-scrollbar {
-  height: 0;
-}
-
 .spec-row.is-dragging {
   scroll-snap-type: none;
 }

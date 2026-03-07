@@ -262,10 +262,6 @@ onMounted(async () => {
   padding-bottom: calc(var(--app-main-bottom) + var(--section-gap));
 }
 
-.search-content-scroll::-webkit-scrollbar {
-  display: none;
-}
-
 .search-input-box {
   display: flex;
   width: 100%;
@@ -323,10 +319,6 @@ onMounted(async () => {
   -webkit-overflow-scrolling: touch;
   scroll-snap-type: x mandatory;
   scroll-padding-inline: 18px;
-}
-
-.scroll-container::-webkit-scrollbar {
-  display: none;
 }
 
 /* (선택) 스냅: 아이템이 딱딱 붙게 */

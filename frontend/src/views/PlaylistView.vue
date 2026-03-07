@@ -399,10 +399,6 @@ watch(
   -webkit-overflow-scrolling: touch;
 }
 
-#playlist .playlist-tracks::-webkit-scrollbar {
-  display: none;
-}
-
 #playlist .playlist-tracks__list {
   padding-top: 10px;
   padding-bottom: var(--app-main-bottom);
