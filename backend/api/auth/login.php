@@ -34,7 +34,7 @@ $password = (string) ($payload['password'] ?? '');
 
 // 필수값 검증
 if ($id === '' || $password === '') {
-    http_response_code(422);
+    http_response_code(400);
     echo json_encode(['message' => '아이디와 비밀번호를 입력해주세요.'], JSON_UNESCAPED_UNICODE);
     exit;
 }

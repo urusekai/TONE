@@ -27,7 +27,7 @@ if ($userUuid === '') {
 
 $playlistId = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 if (!$playlistId) {
-    http_response_code(422);
+    http_response_code(400);
     echo json_encode(['message' => '유효한 플레이리스트 id가 필요합니다.'], JSON_UNESCAPED_UNICODE);
     exit;
 }

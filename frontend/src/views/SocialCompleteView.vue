@@ -7,7 +7,12 @@
 
       <div class="form-input-box">
         <span><img src="@/assets/icons/id.svg" alt="이메일" /></span>
-        <input v-model="form.email" type="email" placeholder="이메일을 입력하세요" required />
+        <input
+          v-model="form.email"
+          type="email"
+          placeholder="이메일을 입력하세요"
+          autocomplete="email"
+        />
       </div>
 
       <div class="form-input-box">
@@ -16,7 +21,7 @@
           v-model="form.nickname"
           type="text"
           placeholder="닉네임을 2 ~ 5자 내에 입력하세요"
-          required
+          autocomplete="nickname"
         />
       </div>
 
@@ -44,6 +49,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { completeSocialSignup } from '@/services/authService';
 import { useAuthStore } from '@/stores/auth';
 import ProfileModal from '@/components/ProfileModal.vue';
+import { validateSocialSignupPayload } from '@/utils/authValidation';
 
 const route = useRoute();
 const router = useRouter();
@@ -96,9 +102,10 @@ async function handleSubmit() {
     nickname: form.nickname.trim(),
     profileColor: form.profileColor
   };
+  const validationMessage = validateSocialSignupPayload(payload);
 
-  if (!payload.email || !payload.nickname || !payload.profileColor) {
-    window.alert('이메일, 닉네임, 프로필 색상을 입력해주세요.');
+  if (validationMessage) {
+    window.alert(validationMessage);
     return;
   }
 

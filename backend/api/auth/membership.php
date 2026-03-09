@@ -34,7 +34,7 @@ if (!is_array($payload)) {
 
 $plan = trim((string) ($payload['plan'] ?? ''));
 if (!in_array($plan, ['basic', 'pro'], true)) {
-    http_response_code(422);
+    http_response_code(400);
     echo json_encode(['message' => '이용권 값이 올바르지 않습니다.'], JSON_UNESCAPED_UNICODE);
     exit;
 }
@@ -83,4 +83,3 @@ try {
     http_response_code(500);
     echo json_encode(['message' => '이용권 변경 중 서버 오류가 발생했습니다.'], JSON_UNESCAPED_UNICODE);
 }
-

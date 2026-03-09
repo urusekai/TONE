@@ -22,7 +22,7 @@ $userUuid = Auth::requireAuthenticatedUser();
 
 $mood = trim((string) ($_GET['mood'] ?? ''));
 if ($mood === '') {
-    http_response_code(422);
+    http_response_code(400);
     echo json_encode(['message' => 'mood 값이 필요합니다.'], JSON_UNESCAPED_UNICODE);
     exit;
 }
