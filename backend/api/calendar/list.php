@@ -27,7 +27,7 @@ if ($userUuid === '') {
 
 $month = trim((string) ($_GET['month'] ?? ''));
 if (!preg_match('/^\d{4}-\d{2}$/', $month)) {
-    http_response_code(422);
+    http_response_code(400);
     echo json_encode(['message' => 'month는 YYYY-MM 형식이어야 합니다.'], JSON_UNESCAPED_UNICODE);
     exit;
 }
@@ -38,7 +38,7 @@ if (
     !$monthDate instanceof DateTimeImmutable ||
     ($monthErrors !== false && (($monthErrors['warning_count'] ?? 0) > 0 || ($monthErrors['error_count'] ?? 0) > 0))
 ) {
-    http_response_code(422);
+    http_response_code(400);
     echo json_encode(['message' => '유효한 month 값이 아닙니다.'], JSON_UNESCAPED_UNICODE);
     exit;
 }

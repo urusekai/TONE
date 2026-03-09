@@ -37,28 +37,28 @@ $profileColor = trim((string) ($payload['profileColor'] ?? ''));
 
 // 필수값 검증
 if ($id === '' || $email === '' || $password === '' || $nickname === '') {
-    http_response_code(422);
+    http_response_code(400);
     echo json_encode(['message' => '필수 항목을 모두 입력해주세요.'], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
 // 아이디 형식 검증
 if (!preg_match('/^[a-zA-Z0-9_]{4,20}$/', $id)) {
-    http_response_code(422);
+    http_response_code(400);
     echo json_encode(['message' => '아이디는 4~20자의 영문, 숫자, 언더스코어(_)만 가능합니다.'], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
 // 이메일 형식 검증
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    http_response_code(422);
+    http_response_code(400);
     echo json_encode(['message' => '이메일 형식이 올바르지 않습니다.'], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
 // 비밀번호 길이 검증
 if (strlen($password) < 8) {
-    http_response_code(422);
+    http_response_code(400);
     echo json_encode(['message' => '비밀번호는 8자 이상이어야 합니다.'], JSON_UNESCAPED_UNICODE);
     exit;
 }
@@ -66,20 +66,20 @@ if (strlen($password) < 8) {
 // 닉네임 길이 검증 (2~5자)
 $nicknameLength = function_exists('mb_strlen') ? mb_strlen($nickname) : strlen($nickname);
 if ($nicknameLength < 2 || $nicknameLength > 5) {
-    http_response_code(422);
+    http_response_code(400);
     echo json_encode(['message' => '닉네임은 2~5자로 입력해주세요.'], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
 // 프로필 색상 선택 여부 검증
 if ($profileColor === '') {
-    http_response_code(422);
+    http_response_code(400);
     echo json_encode(['message' => '프로필 색상을 선택해주세요.'], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
 if (!preg_match('/^#[0-9A-Fa-f]{6}$/', $profileColor)) {
-    http_response_code(422);
+    http_response_code(400);
     echo json_encode(['message' => '프로필 색상 형식이 올바르지 않습니다.'], JSON_UNESCAPED_UNICODE);
     exit;
 }

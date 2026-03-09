@@ -39,7 +39,7 @@ $playlistId = filter_var(
 );
 
 if ($playlistId === false) {
-    http_response_code(422);
+    http_response_code(400);
     echo json_encode(['message' => '유효한 playlist_id가 필요합니다.'], JSON_UNESCAPED_UNICODE);
     exit;
 }

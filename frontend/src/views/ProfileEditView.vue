@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router';
 import ProfileModal from '@/components/ProfileModal.vue';
 import { fetchMyProfile, updateMyProfile } from '@/services/userService';
 import { useAuthStore } from '@/stores/auth';
+import { validateProfileUpdatePayload } from '@/utils/authValidation';
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -69,32 +70,30 @@ async function handleSubmit() {
   const password = form.password;
   const passwordConfirm = form.passwordConfirm;
 
-  if (!email || !nickname) {
-    window.alert('이메일과 닉네임을 입력해주세요.');
-    return;
-  }
-
   if (password || passwordConfirm) {
     if (password !== passwordConfirm) {
       window.alert('비밀번호가 일치하지 않습니다.');
       return;
     }
+  }
 
-    if (password.length < 8) {
-      window.alert('비밀번호는 8자 이상이어야 합니다.');
-      return;
-    }
+  const payload = { email, nickname, password, profileColor: form.profileColor };
+  const validationMessage = validateProfileUpdatePayload(payload);
+
+  if (validationMessage) {
+    window.alert(validationMessage);
+    return;
   }
 
   isSubmitting.value = true;
 
   try {
-    const payload = { email, nickname, profileColor: form.profileColor };
+    const requestPayload = { email, nickname, profileColor: form.profileColor };
     if (password) {
-      payload.password = password;
+      requestPayload.password = password;
     }
 
-    const result = await updateMyProfile(payload);
+    const result = await updateMyProfile(requestPayload);
     if (result?.user) {
       authStore.setCurrentUser(result.user);
     }

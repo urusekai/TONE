@@ -5,7 +5,16 @@
     <form class="register-form" @submit.prevent="handleRegister">
       <div class="form-input-box">
         <span><img src="@/assets/icons/id.svg" alt="아이디" /></span>
-        <input v-model="form.id" type="text" placeholder="아이디를 입력하세요" required />
+        <input
+          v-model="form.id"
+          type="text"
+          placeholder="아이디를 입력하세요"
+          minlength="4"
+          maxlength="20"
+          pattern="[A-Za-z0-9_]{4,20}"
+          autocomplete="username"
+          required
+        />
         <button
           type="button"
           class="id-check"
@@ -18,12 +27,25 @@
 
       <div class="form-input-box">
         <span><img src="@/assets/icons/id.svg" alt="이메일" /></span>
-        <input v-model="form.email" type="email" placeholder="이메일을 입력하세요" required />
+        <input
+          v-model="form.email"
+          type="email"
+          placeholder="이메일을 입력하세요"
+          autocomplete="email"
+          required
+        />
       </div>
 
       <div class="form-input-box">
         <span><img src="@/assets/icons/password.svg" alt="비밀번호" /></span>
-        <input v-model="form.pw" type="password" placeholder="비밀번호를 입력하세요" required />
+        <input
+          v-model="form.pw"
+          type="password"
+          placeholder="비밀번호를 입력하세요"
+          minlength="8"
+          autocomplete="new-password"
+          required
+        />
       </div>
 
       <div class="form-input-box">
@@ -32,6 +54,8 @@
           v-model="form.pwConfirm"
           type="password"
           placeholder="비밀번호를 다시 입력하세요"
+          minlength="8"
+          autocomplete="new-password"
           required
         />
       </div>
@@ -42,6 +66,9 @@
           v-model="form.nickname"
           type="text"
           placeholder="닉네임을 2 ~ 5자 내에 입력하세요"
+          minlength="2"
+          maxlength="5"
+          autocomplete="nickname"
           required
         />
       </div>
@@ -61,8 +88,8 @@
     />
     <ProfileModal
       :open="isProfileModalOpen"
+      :initial-color="form.profileColor"
       @close="closeProfileModal"
-      @select-color="handleProfileColorChange"
       @confirm="handleProfileConfirm"
     />
   </main>
@@ -75,6 +102,7 @@ import DuplicateModal from '@/components/DuplicateModal.vue';
 import ProfileModal from '@/components/ProfileModal.vue';
 import { checkDuplicateId, registerUser } from '@/services/authService';
 import { useAuthStore } from '@/stores/auth';
+import { validateRegisterId, validateRegisterPayload } from '@/utils/authValidation';
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -97,9 +125,16 @@ const isIdAvailable = ref(false);
 
 function handleRegister() {
   const currentId = form.id.trim();
+  const payload = {
+    id: currentId,
+    email: form.email.trim(),
+    password: form.pw,
+    nickname: form.nickname.trim()
+  };
+  const validationMessage = validateRegisterPayload(payload, { requireProfileColor: false });
 
-  if (!currentId) {
-    window.alert('아이디를 입력해주세요.');
+  if (validationMessage) {
+    window.alert(validationMessage);
     return;
   }
 
@@ -124,9 +159,10 @@ function handleRegister() {
 
 async function handleDuplicate() {
   const currentId = form.id.trim();
+  const validationMessage = validateRegisterId(currentId);
 
-  if (!currentId) {
-    window.alert('아이디를 먼저 입력해주세요.');
+  if (validationMessage) {
+    window.alert(validationMessage);
     return;
   }
 
@@ -153,31 +189,27 @@ function closeProfileModal() {
   isProfileModalOpen.value = false;
 }
 
-function handleProfileColorChange(color) {
-  form.profileColor = color;
-}
-
 async function handleProfileConfirm(color) {
   if (isRegistering.value) return;
 
   form.profileColor = color;
+  const payload = {
+    id: form.id.trim(),
+    email: form.email.trim(),
+    password: form.pw,
+    nickname: form.nickname.trim(),
+    profileColor: form.profileColor
+  };
+  const validationMessage = validateRegisterPayload(payload);
 
-  if (!form.profileColor) {
-    window.alert('프로필 색상을 선택해주세요.');
+  if (validationMessage) {
+    window.alert(validationMessage);
     return;
   }
 
   isRegistering.value = true;
 
   try {
-    const payload = {
-      id: form.id.trim(),
-      email: form.email.trim(),
-      password: form.pw,
-      nickname: form.nickname.trim(),
-      profileColor: form.profileColor
-    };
-
     const result = await registerUser(payload);
     if (result?.user) {
       authStore.setCurrentUser(result.user);

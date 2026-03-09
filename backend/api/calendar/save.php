@@ -37,7 +37,7 @@ $memo = trim((string) ($payload['memo'] ?? ''));
 $playlistId = isset($payload['playlistId']) ? (int) $payload['playlistId'] : 0;
 
 if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $entryDate)) {
-    http_response_code(422);
+    http_response_code(400);
     echo json_encode(['message' => 'entryDate는 YYYY-MM-DD 형식이어야 합니다.'], JSON_UNESCAPED_UNICODE);
     exit;
 }
@@ -48,13 +48,13 @@ if (
     !$entryDateObj instanceof DateTimeImmutable ||
     ($entryDateErrors !== false && (($entryDateErrors['warning_count'] ?? 0) > 0 || ($entryDateErrors['error_count'] ?? 0) > 0))
 ) {
-    http_response_code(422);
+    http_response_code(400);
     echo json_encode(['message' => '유효한 entryDate 값이 아닙니다.'], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
 if (function_exists('mb_strlen') ? mb_strlen($memo) > 50 : strlen($memo) > 50) {
-    http_response_code(422);
+    http_response_code(400);
     echo json_encode(['message' => '메모는 50자 이하로 입력해주세요.'], JSON_UNESCAPED_UNICODE);
     exit;
 }
@@ -77,7 +77,7 @@ try {
 
     $resolvedPlaylistId = $playlistId > 0 ? $playlistId : (int) ($existingEntry['playlist_id'] ?? 0);
     if ($resolvedPlaylistId < 1) {
-        http_response_code(422);
+        http_response_code(400);
         echo json_encode(['message' => 'playlistId가 필요합니다.'], JSON_UNESCAPED_UNICODE);
         exit;
     }

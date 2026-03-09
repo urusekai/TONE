@@ -32,7 +32,7 @@ if ($id === '') {
 
 // 아이디 형식 검증
 if (!preg_match('/^[a-zA-Z0-9_]{4,20}$/', $id)) {
-    http_response_code(422);
+    http_response_code(400);
     echo json_encode(['message' => '아이디는 4~20자의 영문, 숫자, 언더스코어(_)만 가능합니다.'], JSON_UNESCAPED_UNICODE);
     exit;
 }
