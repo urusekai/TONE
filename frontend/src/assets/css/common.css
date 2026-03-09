@@ -305,25 +305,48 @@ body {
   z-index: 1002;
 }
 
-/* 하단 메뉴 - 아이콘 기본 */
-.bottom-nav .nav-item img {
-  display: none;
+.bottom-nav .nav-item {
+  position: relative;
   width: 25px;
   height: 25px;
 }
 
+/* 하단 메뉴 - 아이콘 기본 */
+.bottom-nav .nav-item img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 25px;
+  height: 25px;
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease;
+}
+
 /* 하단 메뉴 - 기본 아이콘 */
 .bottom-nav .nav-item img:first-child {
-  display: block;
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.bottom-nav .nav-item img:last-child {
+  opacity: 0;
+  transform: translateY(2px);
+  pointer-events: none;
 }
 
 /* 하단 메뉴 - 활성 상태 */
 .bottom-nav .nav-item.is-active img:first-child {
-  display: none;
+  opacity: 0;
+  transform: translateY(-2px);
+  pointer-events: none;
 }
 
 .bottom-nav .nav-item.is-active img:last-child {
-  display: block;
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
 }
 
 /* ----------------------------------------
