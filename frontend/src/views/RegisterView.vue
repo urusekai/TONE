@@ -9,11 +9,7 @@
           v-model="form.id"
           type="text"
           placeholder="아이디를 입력하세요"
-          minlength="4"
-          maxlength="20"
-          pattern="[A-Za-z0-9_]{4,20}"
           autocomplete="username"
-          required
         />
         <button
           type="button"
@@ -32,7 +28,6 @@
           type="email"
           placeholder="이메일을 입력하세요"
           autocomplete="email"
-          required
         />
       </div>
 
@@ -42,9 +37,7 @@
           v-model="form.pw"
           type="password"
           placeholder="비밀번호를 입력하세요"
-          minlength="8"
           autocomplete="new-password"
-          required
         />
       </div>
 
@@ -54,9 +47,7 @@
           v-model="form.pwConfirm"
           type="password"
           placeholder="비밀번호를 다시 입력하세요"
-          minlength="8"
           autocomplete="new-password"
-          required
         />
       </div>
 
@@ -66,10 +57,7 @@
           v-model="form.nickname"
           type="text"
           placeholder="닉네임을 2 ~ 5자 내에 입력하세요"
-          minlength="2"
-          maxlength="5"
           autocomplete="nickname"
-          required
         />
       </div>
 

@@ -12,7 +12,6 @@
           type="email"
           placeholder="이메일을 입력하세요"
           autocomplete="email"
-          required
         />
       </div>
 
@@ -22,10 +21,7 @@
           v-model="form.nickname"
           type="text"
           placeholder="닉네임을 2 ~ 5자 내에 입력하세요"
-          minlength="2"
-          maxlength="5"
           autocomplete="nickname"
-          required
         />
       </div>
 

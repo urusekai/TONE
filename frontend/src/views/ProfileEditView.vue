@@ -133,9 +133,6 @@ async function handleSubmit() {
           type="text"
           placeholder="닉네임을 2 ~ 5자 내에 입력하세요"
           autocomplete="nickname"
-          minlength="2"
-          maxlength="5"
-          required
           v-model="form.nickname"
         />
       </div>
@@ -148,7 +145,6 @@ async function handleSubmit() {
           type="email"
           placeholder="이메일을 입력하세요"
           autocomplete="email"
-          required
           v-model="form.email"
         />
       </div>
