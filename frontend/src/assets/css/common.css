@@ -47,6 +47,8 @@ body {
   --app-header-height: 84px;
   --app-tabs-height: 0px;
   --app-bottom-fixed-height: 75px;
+  --app-route-transition-duration: 220ms;
+  --app-route-transition-easing: ease;
 
   /* 콘텐츠 여유 간격 */
   --app-main-top-gap: 12px;
@@ -118,7 +120,9 @@ body {
 }
 
 .route-view-shell--tab-rise {
-  animation: tab-content-rise-in 220ms ease both;
+  animation:
+    tab-content-rise-in var(--app-route-transition-duration) var(--app-route-transition-easing)
+    both;
 }
 
 @keyframes tab-content-rise-in {
@@ -253,19 +257,39 @@ body {
 
 /* 탭 - 기본 */
 .tabs .tab {
-  border-bottom: 2px solid transparent;
+  position: relative;
   padding: 2px 0px;
+  color: inherit;
+  transition:
+    color var(--app-route-transition-duration) var(--app-route-transition-easing),
+    opacity var(--app-route-transition-duration) var(--app-route-transition-easing);
+}
+
+.tabs .tab::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 2px;
+  background: var(--color-text-primary);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform var(--app-route-transition-duration) var(--app-route-transition-easing);
 }
 
 /* 탭 - 활성 */
 .tabs .tab.is-active {
   color: var(--color-text-primary);
-  border-bottom: 2px solid var(--color-text-primary);
 }
 
 .tabs .tab.router-link-active {
   color: var(--color-text-primary);
-  border-bottom: 2px solid var(--color-text-primary);
+}
+
+.tabs .tab.is-active::after,
+.tabs .tab.router-link-active::after {
+  transform: scaleX(1);
 }
 
 /* ----------------------------------------
