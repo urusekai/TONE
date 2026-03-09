@@ -5,12 +5,22 @@ export function buildApiUrl(path) {
 }
 
 async function parseError(response, fallbackMessage) {
+  const rawText = await response.text();
+  if (!rawText) return fallbackMessage;
+
   try {
-    const data = await response.json();
-    if (data?.message) return data.message;
+    const data = JSON.parse(rawText);
+    if (typeof data?.message === 'string' && data.message.trim()) {
+      return data.message;
+    }
   } catch {
-    // ignore JSON parse error
+    // Fall through to plain-text handling when the server returns non-JSON output.
   }
+
+  if (rawText.trim()) {
+    return rawText.trim();
+  }
+
   return fallbackMessage;
 }
 
