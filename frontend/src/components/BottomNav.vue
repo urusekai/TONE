@@ -1,8 +1,11 @@
 <script setup>
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
 const route = useRoute();
+const historyBottomPath = ref('/main');
+
+const bottomTabPaths = new Set(['/main', '/search', '/calendar', '/my-page']);
 
 const homeTabPaths = new Set([
   '/main',
@@ -12,10 +15,38 @@ const homeTabPaths = new Set([
   '/category-detail'
 ]);
 
-const isMainActive = computed(() => homeTabPaths.has(route.path));
-const isSearchActive = computed(() => route.path === '/search');
-const isCalendarActive = computed(() => route.path === '/calendar');
-const isMyPageActive = computed(() => route.path === '/my-page');
+function normalizeBottomPath(path) {
+  if (homeTabPaths.has(path)) return '/main';
+  if (bottomTabPaths.has(path)) return path;
+  return '';
+}
+
+function readHistoryBottomPath() {
+  if (typeof window === 'undefined') return '/main';
+  const raw = window.history.state?.fromBottomTab || '';
+  const normalized = normalizeBottomPath(String(raw));
+  return normalized || '/main';
+}
+
+watch(
+  () => route.fullPath,
+  () => {
+    if (!normalizeBottomPath(route.path)) {
+      historyBottomPath.value = readHistoryBottomPath();
+    }
+  },
+  { immediate: true }
+);
+
+const activeBottomPath = computed(() => {
+  const normalized = normalizeBottomPath(route.path);
+  return normalized || historyBottomPath.value;
+});
+
+const isMainActive = computed(() => activeBottomPath.value === '/main');
+const isSearchActive = computed(() => activeBottomPath.value === '/search');
+const isCalendarActive = computed(() => activeBottomPath.value === '/calendar');
+const isMyPageActive = computed(() => activeBottomPath.value === '/my-page');
 </script>
 
 <template>

@@ -206,7 +206,16 @@ onBeforeUnmount(() => {
     ></audio>
     <Header />
     <TabMenu v-if="hasTabs" />
-    <RouterView />
+    <RouterView v-slot="{ Component, route: viewRoute }">
+      <div
+        v-if="Component"
+        :key="viewRoute.fullPath"
+        class="route-view-shell"
+        :class="{ 'route-view-shell--tab-rise': hasTabs }"
+      >
+        <component :is="Component" />
+      </div>
+    </RouterView>
 
     <MiniPlayer v-if="player.isMini || player.isHidden" />
     <MainPlayer />

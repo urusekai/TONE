@@ -1,5 +1,5 @@
 <template>
-  <main id="category-detail-page">
+  <main id="category-detail-page" :class="{ 'is-enter-ready': isEnterReady }">
     <section class="mood-header">
       <div class="cg-grad" :style="gradStyle"></div>
 
@@ -16,9 +16,10 @@
       <p v-else-if="!colorCards.length" class="color-state">등록된 플레이리스트가 없습니다.</p>
 
       <article
-        v-for="card in colorCards"
+        v-for="(card, cardIndex) in colorCards"
         :key="card.id"
         class="color-card"
+        :style="{ '--card-delay': `${Math.min(8, cardIndex) * 36}ms` }"
         role="button"
         tabindex="0"
         @click="goPlaylist(card)"
@@ -50,7 +51,7 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue';
+import { computed, nextTick, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import arrowRight from '@/assets/icons/arrow-right.svg';
 import { apiRequest } from '@/services/httpClient';
@@ -73,6 +74,7 @@ const gradStyle = computed(() => ({
 const isLoading = ref(false);
 const errorMessage = ref('');
 const playlists = ref([]);
+const isEnterReady = ref(false);
 let latestRequestId = 0;
 
 function formatMoodLabel(value) {
@@ -132,6 +134,7 @@ async function loadCategoryDetail() {
   isLoading.value = true;
   errorMessage.value = '';
   playlists.value = [];
+  isEnterReady.value = false;
 
   const playlistResult = await fetchPlaylists()
     .then((value) => ({ ok: true, value }))
@@ -143,6 +146,10 @@ async function loadCategoryDetail() {
 
   if (playlistResult.ok) {
     playlists.value = playlistResult.value;
+    await nextTick();
+    requestAnimationFrame(() => {
+      isEnterReady.value = true;
+    });
   } else {
     errorMessage.value =
       playlistResult.error instanceof Error
@@ -161,7 +168,8 @@ function goPlaylist(card) {
 
   router.push({
     path: '/playlist',
-    query: { id: card.id }
+    query: { id: card.id },
+    state: { fromBottomTab: '/main' }
   });
 }
 
@@ -180,6 +188,29 @@ watch(
   padding-top: 0;
   padding-left: 0;
   padding-right: 0;
+}
+
+#category-detail-page .mood-header,
+#category-detail-page .color-card {
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+#category-detail-page .mood-header {
+  transform: translateY(18px) scale(0.985);
+}
+
+#category-detail-page .color-card {
+  transform: translateY(12px);
+}
+
+#category-detail-page.is-enter-ready .mood-header {
+  animation: category-detail-hero-enter 360ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+#category-detail-page.is-enter-ready .color-card {
+  animation: category-detail-card-enter 320ms ease both;
+  animation-delay: calc(110ms + var(--card-delay, 0ms));
 }
 
 .mood-header {
@@ -352,5 +383,29 @@ watch(
   font-size: 10px;
   color: #b7aeac;
   white-space: nowrap;
+}
+
+@keyframes category-detail-hero-enter {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes category-detail-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>

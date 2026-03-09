@@ -123,7 +123,8 @@ function onCardClick(item) {
   window.setTimeout(() => {
     router.push({
       path: '/playlist',
-      query: { id: String(item.playlist_id) }
+      query: { id: String(item.playlist_id) },
+      state: { fromBottomTab: '/main' }
     });
   }, 350);
 }

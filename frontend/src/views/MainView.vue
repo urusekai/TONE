@@ -1,8 +1,13 @@
 <template>
   <!-- 페이지 내용 -->
-  <main ref="rootEl" id="main-page" class="home">
+  <main
+    ref="rootEl"
+    id="main-page"
+    class="home"
+    :class="{ 'is-enter-ready': isEnterReady }"
+  >
     <!-- 1) Daily tone -->
-    <section class="panel daily">
+    <section class="panel daily" style="--panel-delay: 0ms">
       <div class="daily-pill">Daily tone</div>
 
       <p v-if="isDailyLoading" class="daily-state">오늘의 톤을 불러오는 중...</p>
@@ -52,7 +57,7 @@
     </section>
 
     <!-- 2) Daily Spectrum -->
-    <section class="panel spectrum">
+    <section class="panel spectrum" style="--panel-delay: 48ms">
       <div class="panel-head">
         <h3>Daily Spectrum</h3>
         <span class="hint">오늘 톤과 비슷한 색상 추천</span>
@@ -107,7 +112,7 @@
     </section>
 
     <!-- 3) Palette Log -->
-    <section class="panel log">
+    <section class="panel log" style="--panel-delay: 96ms">
       <div class="panel-head">
         <h3>Palette Log</h3>
 
@@ -137,7 +142,7 @@
     </section>
 
     <!-- 4) Echo Notes -->
-    <section class="panel echo">
+    <section class="panel echo" style="--panel-delay: 144ms">
       <div class="panel-head">
         <h3><span class="dot"></span>Echo Notes</h3>
         <span class="hint">다른 사용자들의 한마디</span>
@@ -176,12 +181,17 @@ const dailyErrorMessage = ref('');
 const spectrumPlaylists = ref([]);
 const spectrumErrorMessage = ref('');
 const paletteLogPreview = computed(() => paletteLog.paletteLogs.slice(0, 4));
+const isEnterReady = ref(false);
 
 /* ---------- 라우팅 헬퍼 ---------- */
 // 지금은 임시로 /playlist?id=... 형태
 // 라우터를 /playlist/:id 로 쓰면 return { name:'playlist', params:{ id } } 로 바꾸면 됨.
 function playlistTo(id) {
-  return { path: '/playlist', query: { id } };
+  return {
+    path: '/playlist',
+    query: { id },
+    state: { fromBottomTab: '/main' }
+  };
 }
 
 function goDailyPlaylist() {
@@ -304,6 +314,7 @@ function applyLogItemTheme(root) {
 }
 
 onMounted(async () => {
+  isEnterReady.value = false;
   await paletteLog.load({ silent: true });
   await loadDailyPlaylist();
   await loadSpectrumPlaylists();
@@ -311,7 +322,10 @@ onMounted(async () => {
 
   // 스타일 적용 타이밍 보장(2프레임)
   requestAnimationFrame(() => {
-    requestAnimationFrame(() => applyLogItemTheme(rootEl.value));
+    requestAnimationFrame(() => {
+      applyLogItemTheme(rootEl.value);
+      isEnterReady.value = true;
+    });
   });
 });
 
@@ -331,6 +345,17 @@ watch(
   padding: 0 25px;
   display: grid;
   gap: 35px;
+}
+
+.home .panel {
+  opacity: 0;
+  transform: translateY(12px);
+  will-change: transform, opacity;
+}
+
+.home.is-enter-ready .panel {
+  animation: main-panel-enter 320ms ease both;
+  animation-delay: var(--panel-delay, 0ms);
 }
 
 /* 공통 패널(흰 박스) */
@@ -679,5 +704,17 @@ watch(
   margin: 0;
   font-size: 10px;
   font-weight: 600;
+}
+
+@keyframes main-panel-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>

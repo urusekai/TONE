@@ -1,6 +1,6 @@
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { ref, computed, watch, onMounted, nextTick } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { useCalendarStore, createDefaultEntry } from '@/stores/calendarStore';
 import { useAuthStore } from '@/stores/auth';
 import { updateMyProfileColor } from '@/services/userService';
@@ -27,6 +27,7 @@ function getTodayKey() {
 }
 
 const route = useRoute();
+const router = useRouter();
 const todayKey = getTodayKey();
 
 /* =========================
@@ -43,6 +44,7 @@ const isSavingMemo = ref(false);
 const todayFallbackEntry = ref(null);
 const toastMessage = ref('');
 const isToastOpen = ref(false);
+const isEnterReady = ref(false);
 
 const calendarStore = useCalendarStore();
 
@@ -174,6 +176,7 @@ function nextMonth() {
 
 async function loadMonthEntries() {
   isMonthLoading.value = true;
+  isEnterReady.value = false;
 
   try {
     await calendarStore.loadMonth(currentMonthKey.value);
@@ -182,6 +185,10 @@ async function loadMonthEntries() {
     } else {
       todayFallbackEntry.value = null;
     }
+    await nextTick();
+    requestAnimationFrame(() => {
+      isEnterReady.value = true;
+    });
   } catch (error) {
     todayFallbackEntry.value = null;
     const message =
@@ -226,7 +233,14 @@ function showToast(message) {
 }
 
 function goPlaylist() {
-  window.location.href = './playlist.html';
+  const playlistId = String(selectedData.value?.playlistId || '').trim();
+  if (!playlistId) return;
+
+  router.push({
+    path: '/playlist',
+    query: { id: playlistId },
+    state: { fromBottomTab: '/calendar' }
+  });
 }
 
 const isChangingProfileColor = ref(false);
@@ -277,9 +291,9 @@ watch(
 
 <template>
   <div>
-    <main id="calendar">
+    <main id="calendar" :class="{ 'is-enter-ready': isEnterReady }">
       <!-- 캘린더 카드 -->
-      <section class="calendar-card">
+      <section class="calendar-card" style="--calendar-card-delay: 0ms">
         <div class="calendar-header">
           <button type="button" id="prevMonth" @click="prevMonth">
             <img :src="prevIcon" alt="이전달" />
@@ -323,7 +337,7 @@ watch(
       </section>
 
       <!-- 데일리 팬톤 카드 -->
-      <section class="daily-tone-card">
+      <section class="daily-tone-card" style="--calendar-card-delay: 56ms">
         <div class="tone-main-row">
           <div class="tone-left">
             <div class="date-badge">{{ selectedKey.slice(5).replace('-', '.') }}</div>
@@ -374,7 +388,7 @@ watch(
       </section>
 
       <!-- 메모 영역 -->
-      <section class="memo-card">
+      <section class="memo-card" style="--calendar-card-delay: 112ms">
         <div class="memo-section">
           <div class="memo-header">
             <h4>기록 메모</h4>
@@ -415,6 +429,21 @@ watch(
 #calendar {
   justify-content: flex-start;
   overflow-y: auto;
+}
+
+#calendar .calendar-card,
+#calendar .daily-tone-card,
+#calendar .memo-card {
+  opacity: 0;
+  transform: translateY(12px);
+  will-change: transform, opacity;
+}
+
+#calendar.is-enter-ready .calendar-card,
+#calendar.is-enter-ready .daily-tone-card,
+#calendar.is-enter-ready .memo-card {
+  animation: calendar-card-enter 320ms ease both;
+  animation-delay: var(--calendar-card-delay, 0ms);
 }
 
 /* ------------------ CALENDAR HEADER ------------------ */
@@ -744,6 +773,18 @@ watch(
 
 #calendar #memoInput[readonly] {
   cursor: default;
+}
+
+@keyframes calendar-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 </style>

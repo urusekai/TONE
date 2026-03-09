@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, reactive, ref, watch } from 'vue';
+import { nextTick, onMounted, reactive, ref, watch } from 'vue';
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import { FreeMode } from 'swiper/modules';
 import 'swiper/css';
@@ -32,6 +32,7 @@ const searchData = reactive({
 
 const keyword = ref('');
 const isLoadingColors = ref(false);
+const isEnterReady = ref(false);
 
 // tags가 바뀔 때마다 localStorage 저장
 watch(
@@ -69,7 +70,11 @@ function removeTag(tag) {
 function goToPlaylist(payload) {
   const playlistId = String(payload?.id || '').trim();
   if (!playlistId) return;
-  router.push({ path: '/playlist', query: { id: playlistId } });
+  router.push({
+    path: '/playlist',
+    query: { id: playlistId },
+    state: { fromBottomTab: '/search' }
+  });
 }
 
 function onSubmit(e) {
@@ -103,6 +108,7 @@ function mapRecommendedColor(item) {
 
 async function loadSearchCollections() {
   isLoadingColors.value = true;
+  isEnterReady.value = false;
 
   try {
     const [recentResult, chartResult] = await Promise.all([
@@ -120,6 +126,10 @@ async function loadSearchCollections() {
 
     searchData.recentColors = recentUnique.slice(0, 8).map(mapRecentColor);
     searchData.recommended = chartPlaylists.slice(0, 6).map(mapRecommendedColor);
+    await nextTick();
+    requestAnimationFrame(() => {
+      isEnterReady.value = true;
+    });
   } catch {
     searchData.recentColors = [];
     searchData.recommended = [];
@@ -134,8 +144,8 @@ onMounted(async () => {
 </script>
 
 <template>
-  <main id="search">
-    <section class="search-bar-section">
+  <main id="search" :class="{ 'is-enter-ready': isEnterReady }">
+    <section class="search-bar-section" style="--search-section-delay: 0ms">
       <form class="search-input-box" role="search" @submit="onSubmit">
         <input v-model="keyword" type="text" placeholder="노래, 아티스트, 색상 검색" />
         <button type="submit" class="btn-search" aria-label="검색">
@@ -146,7 +156,7 @@ onMounted(async () => {
 
     <div class="search-content-scroll">
       <!-- 최근 검색어 -->
-      <section class="search-section">
+      <section class="search-section" style="--search-section-delay: 40ms">
         <h3 class="section-title">최근 검색어</h3>
 
         <Swiper
@@ -171,7 +181,7 @@ onMounted(async () => {
       </section>
 
       <!-- 최근 컬러 -->
-      <section class="recent-colors-section">
+      <section class="recent-colors-section" style="--search-section-delay: 80ms">
         <h3 class="section-title">최근 컬러</h3>
 
         <div class="recent-colors-wrapper">
@@ -201,7 +211,7 @@ onMounted(async () => {
       </section>
 
       <!-- 인기 추천 컬러 -->
-      <section class="recommended-colors-section">
+      <section class="recommended-colors-section" style="--search-section-delay: 120ms">
         <h3 class="section-title">인기 추천 컬러</h3>
 
         <p v-if="isLoadingColors" class="section-empty">불러오는 중...</p>
@@ -240,6 +250,23 @@ onMounted(async () => {
   padding-bottom: 0;
   background-color: #f2f2ee;
   box-sizing: border-box;
+}
+
+#search .search-bar-section,
+#search .search-section,
+#search .recent-colors-section,
+#search .recommended-colors-section {
+  opacity: 0;
+  transform: translateY(12px);
+  will-change: transform, opacity;
+}
+
+#search.is-enter-ready .search-bar-section,
+#search.is-enter-ready .search-section,
+#search.is-enter-ready .recent-colors-section,
+#search.is-enter-ready .recommended-colors-section {
+  animation: search-section-enter 320ms ease both;
+  animation-delay: var(--search-section-delay, 0ms);
 }
 
 /* 섹션 타이틀 */
@@ -465,5 +492,17 @@ onMounted(async () => {
   font-weight: 600;
   margin-bottom: 6px;
   line-height: 1.2;
+}
+
+@keyframes search-section-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>

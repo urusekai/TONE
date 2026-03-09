@@ -1,12 +1,21 @@
 <template>
-  <main id="category-page" aria-label="Categories">
+  <main
+    id="category-page"
+    :class="{ 'is-enter-ready': isEnterReady }"
+    aria-label="Categories"
+  >
     <h1 class="cg-title">Categories</h1>
 
     <p v-if="isLoading" class="cg-state">카테고리를 불러오는 중...</p>
     <p v-else-if="errorMessage" class="cg-state cg-state-error">{{ errorMessage }}</p>
 
     <ul v-else class="cg-list">
-      <li v-for="item in categories" :key="item.mood" class="cg-item">
+      <li
+        v-for="(item, index) in categories"
+        :key="item.mood"
+        class="cg-item"
+        :style="{ '--card-delay': `${Math.min(10, index) * 38}ms` }"
+      >
         <RouterLink
           class="cg-link"
           :to="{
@@ -46,17 +55,19 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { nextTick, onMounted, ref } from 'vue';
 import arrowRight from '@/assets/icons/arrow-right.svg';
 import { apiRequest } from '@/services/httpClient';
 
 const categories = ref([]);
 const isLoading = ref(false);
 const errorMessage = ref('');
+const isEnterReady = ref(false);
 
 async function loadCategories() {
   isLoading.value = true;
   errorMessage.value = '';
+  isEnterReady.value = false;
 
   try {
     const result = await apiRequest('/api/categories/list.php', {}, '카테고리 목록을 불러오지 못했습니다.');
@@ -75,6 +86,10 @@ async function loadCategories() {
         c3: String(item.grad_c3 || '#b7aea6')
       }
     }));
+    await nextTick();
+    requestAnimationFrame(() => {
+      isEnterReady.value = true;
+    });
   } catch (error) {
     categories.value = [];
     errorMessage.value =
@@ -101,6 +116,22 @@ onMounted(async () => {
   align-items: stretch;
   justify-content: flex-start;
   gap: 14px;
+}
+
+#category-page .cg-title,
+#category-page .cg-item {
+  opacity: 0;
+  transform: translateY(12px);
+  will-change: transform, opacity;
+}
+
+#category-page.is-enter-ready .cg-title {
+  animation: category-page-title-enter 320ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+#category-page.is-enter-ready .cg-item {
+  animation: category-page-card-enter 320ms ease both;
+  animation-delay: var(--card-delay, 0ms);
 }
 
 /* 타이틀 */
@@ -260,5 +291,29 @@ onMounted(async () => {
 /* 보조: 카드 전체가 너무 빡빡하면 아래 여유 */
 .cg-list {
   padding-bottom: 6px;
+}
+
+@keyframes category-page-title-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes category-page-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>

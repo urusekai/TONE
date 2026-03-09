@@ -1,5 +1,5 @@
 <template>
-  <main class="cc-page" aria-label="Color Charts">
+  <main class="cc-page" :class="{ 'is-enter-ready': isEnterReady }" aria-label="Color Charts">
     <h1 class="cc-title">Color Charts</h1>
 
     <p v-if="isLoading" class="cc-state">컬러차트를 불러오는 중...</p>
@@ -11,7 +11,7 @@
         :key="item.id"
         class="cc-item"
         :class="{ 'is-active': activePid === String(item.id) }"
-        :style="{ '--color': item.color_hex }"
+        :style="{ '--color': item.color_hex, '--card-delay': `${Math.min(10, index) * 38}ms` }"
       >
         <a
           class="cc-link"
@@ -81,7 +81,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { nextTick, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { usePaletteLogStore } from '@/stores/paletteLog';
 import { apiRequest } from '@/services/httpClient';
@@ -104,6 +104,7 @@ const isLoading = ref(false);
 const errorMessage = ref('');
 const pendingLikeMap = ref({});
 const chartItems = ref([]);
+const isEnterReady = ref(false);
 
 const colors = {
   darkText: '#3f5f73',
@@ -114,7 +115,11 @@ function onCardClick(id) {
   activePid.value = String(id);
 
   window.setTimeout(() => {
-    router.push({ path: '/playlist', query: { id } });
+    router.push({
+      path: '/playlist',
+      query: { id },
+      state: { fromBottomTab: '/main' }
+    });
   }, 350);
 }
 
@@ -163,6 +168,7 @@ async function handleToggleLike(item) {
 async function loadChartItems() {
   isLoading.value = true;
   errorMessage.value = '';
+  isEnterReady.value = false;
 
   try {
     const result = await apiRequest(
@@ -171,6 +177,10 @@ async function loadChartItems() {
       '컬러차트를 불러오지 못했습니다.'
     );
     chartItems.value = Array.isArray(result?.playlists) ? result.playlists : [];
+    await nextTick();
+    requestAnimationFrame(() => {
+      isEnterReady.value = true;
+    });
   } catch (error) {
     chartItems.value = [];
     errorMessage.value =
@@ -243,6 +253,17 @@ onMounted(async () => {
 .cc-list {
   display: grid;
   gap: 10px;
+}
+
+.cc-item {
+  opacity: 0;
+  transform: translateY(12px);
+  will-change: transform, opacity;
+}
+
+.cc-page.is-enter-ready .cc-item {
+  animation: color-chart-card-enter 320ms ease both;
+  animation-delay: var(--card-delay, 0ms);
 }
 
 .cc-state {
@@ -450,5 +471,17 @@ onMounted(async () => {
 /* ✅ active 카드만 회전 */
 .cc-item.is-active .cc-vinyl {
   animation: lpSpin 1.05s linear infinite;
+}
+
+@keyframes color-chart-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>

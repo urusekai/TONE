@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, watch } from 'vue';
+import { computed, nextTick, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { usePlayerStore } from '@/stores/player';
 import { usePaletteLogStore } from '@/stores/paletteLog';
@@ -20,6 +20,7 @@ const isLikeSubmitting = ref(false);
 const errorMessage = ref('');
 const playlist = ref(null);
 const tracks = ref([]);
+const isEnterReady = ref(false);
 
 function formatLikes(value) {
   return Number(value || 0).toLocaleString('en-US');
@@ -70,6 +71,7 @@ async function loadPlaylistDetail() {
   if (!playlistId.value) {
     playlist.value = null;
     tracks.value = [];
+    isEnterReady.value = false;
     player.clearCurrentPlaylist();
     errorMessage.value = '플레이리스트 정보가 없습니다.';
     return;
@@ -79,6 +81,7 @@ async function loadPlaylistDetail() {
   errorMessage.value = '';
   playlist.value = null;
   tracks.value = [];
+  isEnterReady.value = false;
 
   try {
     await paletteLog.load({ silent: true });
@@ -94,6 +97,10 @@ async function loadPlaylistDetail() {
 
     if (playlist.value) {
       player.setCurrentPlaylist(toPlayerPlaylist(playlist.value));
+      await nextTick();
+      requestAnimationFrame(() => {
+        isEnterReady.value = true;
+      });
     }
   } catch (error) {
     player.clearCurrentPlaylist();
@@ -183,7 +190,7 @@ watch(
 </script>
 
 <template>
-  <main id="playlist">
+  <main id="playlist" :class="{ 'is-enter-ready': isEnterReady }">
     <p v-if="isLoading" class="playlist-state">플레이리스트를 불러오는 중...</p>
     <p v-else-if="errorMessage" class="playlist-state playlist-state-error">{{ errorMessage }}</p>
 
@@ -230,9 +237,10 @@ watch(
     <section class="playlist-tracks">
       <ul class="playlist-tracks__list">
         <li
-          v-for="track in tracks"
+          v-for="(track, trackIndex) in tracks"
           :key="track.id"
           class="playlist-track-item"
+          :style="{ '--track-delay': `${Math.min(8, trackIndex) * 36}ms` }"
           role="button"
           tabindex="0"
           @click="handleOpenMainPlayer(track)"
@@ -259,6 +267,29 @@ watch(
   --playlist-main-side-padding: 25px;
   min-height: 0;
   padding-top: calc(var(--app-header-height) + var(--app-tabs-height));
+}
+
+#playlist .playlist-hero,
+#playlist .playlist-track-item {
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+#playlist .playlist-hero {
+  transform: translateY(18px) scale(0.985);
+}
+
+#playlist .playlist-track-item {
+  transform: translateY(12px);
+}
+
+#playlist.is-enter-ready .playlist-hero {
+  animation: playlist-hero-enter 360ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+#playlist.is-enter-ready .playlist-track-item {
+  animation: playlist-track-enter 320ms ease both;
+  animation-delay: calc(110ms + var(--track-delay, 0ms));
 }
 
 .playlist-state {
@@ -424,5 +455,29 @@ watch(
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+
+@keyframes playlist-hero-enter {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes playlist-track-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>
