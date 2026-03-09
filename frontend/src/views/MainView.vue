@@ -187,7 +187,11 @@ const isEnterReady = ref(false);
 // 지금은 임시로 /playlist?id=... 형태
 // 라우터를 /playlist/:id 로 쓰면 return { name:'playlist', params:{ id } } 로 바꾸면 됨.
 function playlistTo(id) {
-  return { path: '/playlist', query: { id } };
+  return {
+    path: '/playlist',
+    query: { id },
+    state: { fromBottomTab: '/main' }
+  };
 }
 
 function goDailyPlaylist() {

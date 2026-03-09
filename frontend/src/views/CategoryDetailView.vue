@@ -168,7 +168,8 @@ function goPlaylist(card) {
 
   router.push({
     path: '/playlist',
-    query: { id: card.id }
+    query: { id: card.id },
+    state: { fromBottomTab: '/main' }
   });
 }
 

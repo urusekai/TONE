@@ -115,7 +115,11 @@ function onCardClick(id) {
   activePid.value = String(id);
 
   window.setTimeout(() => {
-    router.push({ path: '/playlist', query: { id } });
+    router.push({
+      path: '/playlist',
+      query: { id },
+      state: { fromBottomTab: '/main' }
+    });
   }, 350);
 }
 
