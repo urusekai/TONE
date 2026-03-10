@@ -1,5 +1,6 @@
 <script setup>
 import { computed, nextTick, ref, watch } from 'vue';
+import MarqueeText from '@/components/MarqueeText.vue';
 import { usePlayerStore } from '@/stores/player';
 import { usePaletteLogStore } from '@/stores/paletteLog';
 import { apiRequest } from '@/services/httpClient';
@@ -316,7 +317,15 @@ async function handleToggleSave() {
     </div>
 
     <div class="main-player__info">
-      <p class="main-player__title" :class="{ 'is-empty': !player.has_track }">{{ displayTitle }}</p>
+      <MarqueeText
+        tag="p"
+        class="main-player__title"
+        :class="{ 'is-empty': !player.has_track }"
+        :text="displayTitle"
+        align="center"
+        :speed="52"
+        :gap="40"
+      />
       <p class="main-player__artist" :class="{ 'is-empty': !player.has_track }">{{ displayArtist }}</p>
     </div>
 
@@ -719,13 +728,16 @@ async function handleToggleSave() {
 .main-player__info {
   text-align: center;
   margin-top: 26px;
+  overflow: hidden;
 }
 
 .main-player__title {
+  width: 100%;
   font-size: 36px;
   font-weight: 700;
   margin: 0;
   color: #3f5f73;
+  line-height: 1.1;
 }
 
 .main-player__artist {
