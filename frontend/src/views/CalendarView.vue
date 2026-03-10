@@ -1,19 +1,23 @@
 <script setup>
 import { ref, computed, watch, onMounted, nextTick } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { useRoute } from 'vue-router';
 import { useCalendarStore, createDefaultEntry } from '@/stores/calendarStore';
 import { useAuthStore } from '@/stores/auth';
+import { usePlayerStore } from '@/stores/player';
+import { usePaletteLogStore } from '@/stores/paletteLog';
 import { updateMyProfileColor } from '@/services/userService';
 import { fetchTodayCalendarPlaylist } from '@/services/calendarService';
+import { playPlaylistFirstTrack } from '@/services/playlistService';
+import PlaylistActionControls from '@/components/PlaylistActionControls.vue';
 import ToastMessage from '@/components/ToastMessage.vue';
 
 const authStore = useAuthStore();
+const player = usePlayerStore();
+const paletteLog = usePaletteLogStore();
 
 // 아이콘/이미지
 import prevIcon from '@/assets/icons/prev.svg';
 import nextIcon from '@/assets/icons/arrow-right.svg';
-import playCircleIcon from '@/assets/icons/play-circle.svg';
-import addIcon from '@/assets/icons/add.svg';
 import thumbTrack from '@/assets/images/thumb-track.png';
 
 function formatKey(year, month, day) {
@@ -27,7 +31,6 @@ function getTodayKey() {
 }
 
 const route = useRoute();
-const router = useRouter();
 const todayKey = getTodayKey();
 
 /* =========================
@@ -60,6 +63,14 @@ onMounted(() => {
     if (/^\d{4}-\d{2}-\d{2}$/.test(dateFromQuery)) {
       selectedKey.value = dateFromQuery;
     }
+  }
+});
+
+onMounted(async () => {
+  try {
+    await paletteLog.load({ silent: true });
+  } catch {
+    // 팔레트 로그 로드 실패는 캘린더 진입을 막지 않음
   }
 });
 
@@ -232,15 +243,36 @@ function showToast(message) {
   });
 }
 
-function goPlaylist() {
+async function handlePlayPlaylist() {
   const playlistId = String(selectedData.value?.playlistId || '').trim();
   if (!playlistId) return;
 
-  router.push({
-    path: '/playlist',
-    query: { id: playlistId },
-    state: { fromBottomTab: '/calendar' }
-  });
+  try {
+    await playPlaylistFirstTrack(player, playlistId, { autoplay: true, openMode: 'main' });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : '플레이리스트 재생에 실패했습니다.';
+    window.alert(message);
+  }
+}
+
+async function handleTogglePaletteLog() {
+  const playlistId = String(selectedData.value?.playlistId || '').trim();
+  if (!playlistId) return;
+
+  try {
+    const result = await paletteLog.toggle(playlistId);
+    if (!result) return;
+
+    if (String(player.current_playlist.id || '') === playlistId) {
+      player.patchCurrentPlaylist({
+        saved: Boolean(result?.saved)
+      });
+    }
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : '팔레트 로그 저장 처리에 실패했습니다.';
+    window.alert(message);
+  }
 }
 
 const isChangingProfileColor = ref(false);
@@ -354,12 +386,17 @@ watch(
             </div>
 
             <div class="tone-controls">
-              <button type="button" class="btn-play-pause" @click="goPlaylist">
-                <img :src="playCircleIcon" alt="재생" />
-              </button>
-              <button type="button" class="btn-add-list">
-                <img :src="addIcon" alt="추가" />
-              </button>
+              <PlaylistActionControls
+                :saved="paletteLog.has(selectedData.playlistId)"
+                :play-disabled="!hasSelectedEntry || !selectedData.playlistId"
+                :save-disabled="
+                  !hasSelectedEntry ||
+                  !selectedData.playlistId ||
+                  paletteLog.isPending(selectedData.playlistId)
+                "
+                @play="handlePlayPlaylist"
+                @save="handleTogglePaletteLog"
+              />
             </div>
           </div>
 
@@ -596,42 +633,7 @@ watch(
 }
 
 #calendar .tone-controls {
-  display: flex;
-  align-items: center;
-  background: #f2f2ee;
-  border-radius: 25px;
-  width: fit-content;
-  padding: 4px;
   margin-top: 15px;
-  box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.25);
-}
-
-#calendar .btn-play-pause {
-  border: none;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0;
-  cursor: pointer;
-}
-
-#calendar .btn-play-pause img {
-  width: 40px;
-  height: 40px;
-}
-
-#calendar .btn-add-list {
-  background: transparent;
-  border: none;
-  padding: 0 12px;
-  cursor: pointer;
-}
-
-#calendar .btn-add-list img {
-  width: 14px;
-  height: 14px;
 }
 
 #calendar .tone-right {
