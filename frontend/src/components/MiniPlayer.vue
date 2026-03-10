@@ -257,7 +257,7 @@ async function handleToggleLike() {
             :text="displayTitle"
             align="left"
             :speed="42"
-            :gap="24"
+            :gap="67"
           />
           <div class="mini-actions">
             <button

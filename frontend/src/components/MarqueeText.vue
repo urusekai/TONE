@@ -21,28 +21,35 @@ const props = defineProps({
   gap: {
     type: Number,
     default: 32
+  },
+  pause: {
+    type: Number,
+    default: 1
   }
 });
 
 const viewportRef = ref(null);
+const trackRef = ref(null);
 const textRef = ref(null);
 const viewportWidth = ref(0);
 const textWidth = ref(0);
 
 let resizeObserver = null;
+let marqueeAnimation = null;
 
 const normalizedText = computed(() => String(props.text || ''));
 const isOverflowing = computed(
   () => Boolean(normalizedText.value) && textWidth.value > viewportWidth.value + 1
 );
 const distance = computed(() => textWidth.value + props.gap);
+const moveDuration = computed(() =>
+  isOverflowing.value ? Math.max(0, distance.value / Math.max(props.speed, 1)) : 0
+);
 const duration = computed(() =>
-  isOverflowing.value ? Math.max(8, distance.value / Math.max(props.speed, 1)) : 0
+  isOverflowing.value ? Math.max(moveDuration.value + props.pause, props.pause) : 0
 );
 const marqueeStyle = computed(() => ({
-  '--marquee-gap': `${props.gap}px`,
-  '--marquee-distance': `${distance.value}px`,
-  '--marquee-duration': `${duration.value}s`
+  '--marquee-gap': `${props.gap}px`
 }));
 
 async function measure() {
@@ -50,6 +57,32 @@ async function measure() {
 
   viewportWidth.value = viewportRef.value?.clientWidth || 0;
   textWidth.value = textRef.value?.scrollWidth || 0;
+}
+
+function stopAnimation() {
+  marqueeAnimation?.cancel();
+  marqueeAnimation = null;
+}
+
+function restartAnimation() {
+  stopAnimation();
+
+  if (!isOverflowing.value || !trackRef.value) return;
+
+  const holdRatio = duration.value > 0 ? props.pause / duration.value : 0;
+
+  marqueeAnimation = trackRef.value.animate(
+    [
+      { transform: 'translateX(0)', offset: 0 },
+      { transform: 'translateX(0)', offset: holdRatio },
+      { transform: `translateX(${distance.value * -1}px)`, offset: 1 }
+    ],
+    {
+      duration: duration.value * 1000,
+      iterations: Number.POSITIVE_INFINITY,
+      easing: 'linear'
+    }
+  );
 }
 
 onMounted(() => {
@@ -69,11 +102,13 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
+  stopAnimation();
   resizeObserver?.disconnect();
   resizeObserver = null;
 });
 
 watch(() => props.text, measure);
+watch([isOverflowing, distance, duration, () => props.pause], restartAnimation);
 </script>
 
 <template>
@@ -83,7 +118,7 @@ watch(() => props.text, measure);
     class="marquee-text"
     :class="[`is-${align}`, { 'is-overflowing': isOverflowing }]"
   >
-    <span class="marquee-text__track" :style="marqueeStyle">
+    <span ref="trackRef" class="marquee-text__track" :style="marqueeStyle">
       <span ref="textRef" class="marquee-text__item">{{ normalizedText }}</span>
       <template v-if="isOverflowing">
         <span class="marquee-text__gap" aria-hidden="true"></span>
@@ -120,7 +155,6 @@ watch(() => props.text, measure);
 
 .marquee-text.is-overflowing .marquee-text__track {
   min-width: max-content;
-  animation: marquee-scroll var(--marquee-duration) linear infinite;
   will-change: transform;
 }
 
@@ -136,16 +170,5 @@ watch(() => props.text, measure);
 
 .marquee-text__gap {
   width: var(--marquee-gap);
-}
-
-@keyframes marquee-scroll {
-  0%,
-  12% {
-    transform: translateX(0);
-  }
-  88%,
-  100% {
-    transform: translateX(calc(var(--marquee-distance) * -1));
-  }
 }
 </style>

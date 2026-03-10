@@ -324,7 +324,7 @@ async function handleToggleSave() {
         :text="displayTitle"
         align="center"
         :speed="52"
-        :gap="40"
+        :gap="106"
       />
       <p class="main-player__artist" :class="{ 'is-empty': !player.has_track }">{{ displayArtist }}</p>
     </div>
