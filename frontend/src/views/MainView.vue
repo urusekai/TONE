@@ -598,10 +598,33 @@ watch(
   width: 60px;
   height: 100px;
   margin-left: auto;
+  position: relative;
+  overflow: hidden;
   border-radius: 29.5px;
   background: #615694;
   border: 3px solid #ffffff;
   box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.25);
+}
+
+.daily-swatch::after {
+  content: '';
+  position: absolute;
+  inset: -10% auto -10% -90%;
+  width: 72%;
+  background: linear-gradient(
+    102deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.015) 18%,
+    rgba(255, 255, 255, 0.08) 38%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.08) 62%,
+    rgba(255, 255, 255, 0.015) 82%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: skewX(-40deg);
+  filter: blur(2px);
+  pointer-events: none;
+  animation: daily-swatch-glass-sheen 4s ease infinite;
 }
 
 .mini-add:disabled {
@@ -881,6 +904,29 @@ watch(
 
   30% {
     transform: scale(1);
+  }
+}
+
+@keyframes daily-swatch-glass-sheen {
+  0%,
+  18%,
+  100% {
+    transform: translateX(-18%) skewX(-40deg);
+    opacity: 0;
+  }
+
+  24% {
+    opacity: 0.72;
+  }
+
+  48% {
+    transform: translateX(310%) skewX(-40deg);
+    opacity: 0.76;
+  }
+
+  56% {
+    transform: translateX(345%) skewX(-40deg);
+    opacity: 0;
   }
 }
 </style>
