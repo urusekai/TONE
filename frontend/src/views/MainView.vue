@@ -197,6 +197,7 @@ const currentEchoNote = ref(echoNotes[0]);
 
 let echoRotationTimer = null;
 let dailyTypingTimer = null;
+let dailyTypingDelayTimer = null;
 
 /* ---------- 라우팅 헬퍼 ---------- */
 // 지금은 임시로 /playlist?id=... 형태
@@ -333,6 +334,11 @@ function startEchoRotation() {
 }
 
 function stopDailyTyping() {
+  if (dailyTypingDelayTimer) {
+    window.clearTimeout(dailyTypingDelayTimer);
+    dailyTypingDelayTimer = null;
+  }
+
   if (!dailyTypingTimer) return;
   window.clearInterval(dailyTypingTimer);
   dailyTypingTimer = null;
@@ -344,14 +350,17 @@ function startDailyTyping() {
 
   if (dailyIntroSource.value.totalLength < 1) return;
 
-  dailyTypingTimer = window.setInterval(() => {
-    typedDailyCount.value += 1;
+  dailyTypingDelayTimer = window.setTimeout(() => {
+    dailyTypingDelayTimer = null;
+    dailyTypingTimer = window.setInterval(() => {
+      typedDailyCount.value += 1;
 
-    if (typedDailyCount.value >= dailyIntroSource.value.totalLength) {
-      typedDailyCount.value = dailyIntroSource.value.totalLength;
-      stopDailyTyping();
-    }
-  }, 48);
+      if (typedDailyCount.value >= dailyIntroSource.value.totalLength) {
+        typedDailyCount.value = dailyIntroSource.value.totalLength;
+        stopDailyTyping();
+      }
+    }, 48);
+  }, 320);
 }
 
 const echoDotStyle = computed(() => ({
