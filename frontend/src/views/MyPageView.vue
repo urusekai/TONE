@@ -155,8 +155,6 @@ const confirmWithdraw = async () => {
       <!-- 프로필 카드 -->
       <section class="profile-card">
         <div class="profile-main">
-          <div class="avatar-circle" :style="{ backgroundColor: user.profileColor || '' }"></div>
-
           <div>
             <div class="name-badge">
               <span class="username">{{ user.name }}</span>
@@ -255,14 +253,6 @@ const confirmWithdraw = async () => {
   align-items: center;
 }
 
-#mypage .avatar-circle {
-  width: 44px;
-  height: 44px;
-  background: var(--color-pantone-primary);
-  border-radius: 999px;
-  margin-right: 12px;
-}
-
 #mypage .name-badge {
   display: flex;
   align-items: center;
@@ -275,6 +265,7 @@ const confirmWithdraw = async () => {
   padding: 3px 10px;
   border-radius: 999px;
 }
+
 #mypage .username {
   font-size: 18px;
   font-weight: 700;
