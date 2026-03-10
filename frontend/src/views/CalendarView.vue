@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, watch, onMounted, nextTick } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useCalendarStore, createDefaultEntry } from '@/stores/calendarStore';
 import { useAuthStore } from '@/stores/auth';
 import { usePlayerStore } from '@/stores/player';
@@ -31,6 +31,7 @@ function getTodayKey() {
 }
 
 const route = useRoute();
+const router = useRouter();
 const todayKey = getTodayKey();
 
 /* =========================
@@ -255,6 +256,17 @@ async function handlePlayPlaylist() {
   }
 }
 
+function openPlaylistDetail() {
+  const playlistId = String(selectedData.value?.playlistId || '').trim();
+  if (!playlistId) return;
+
+  router.push({
+    path: '/playlist',
+    query: { id: playlistId },
+    state: { fromBottomTab: '/calendar' }
+  });
+}
+
 async function handleTogglePaletteLog() {
   const playlistId = String(selectedData.value?.playlistId || '').trim();
   if (!playlistId) return;
@@ -401,7 +413,13 @@ watch(
           </div>
 
           <div class="tone-right">
-            <div class="tone-color-preview" :style="{ background: selectedData.color }"></div>
+            <button
+              type="button"
+              class="tone-color-preview"
+              :style="{ background: selectedData.color }"
+              :disabled="!hasSelectedEntry || !selectedData.playlistId"
+              @click="openPlaylistDetail"
+            ></button>
             <button
               type="button"
               class="btn-profile-set"
@@ -646,10 +664,17 @@ watch(
 #calendar .tone-color-preview {
   width: 59px;
   height: 110px;
+  padding: 0;
   border-radius: 30px;
   background: #6b6aa8;
+  border: none;
   border: 3px solid #fff;
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+}
+
+#calendar .tone-color-preview:disabled {
+  cursor: default;
 }
 
 #calendar .btn-profile-set {
