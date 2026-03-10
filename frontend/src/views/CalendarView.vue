@@ -3,17 +3,21 @@ import { ref, computed, watch, onMounted, nextTick } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useCalendarStore, createDefaultEntry } from '@/stores/calendarStore';
 import { useAuthStore } from '@/stores/auth';
+import { usePlayerStore } from '@/stores/player';
+import { usePaletteLogStore } from '@/stores/paletteLog';
 import { updateMyProfileColor } from '@/services/userService';
 import { fetchTodayCalendarPlaylist } from '@/services/calendarService';
+import { playPlaylistFirstTrack } from '@/services/playlistService';
+import PlaylistActionControls from '@/components/PlaylistActionControls.vue';
 import ToastMessage from '@/components/ToastMessage.vue';
 
 const authStore = useAuthStore();
+const player = usePlayerStore();
+const paletteLog = usePaletteLogStore();
 
 // 아이콘/이미지
 import prevIcon from '@/assets/icons/prev.svg';
 import nextIcon from '@/assets/icons/arrow-right.svg';
-import pauseIcon from '@/assets/icons/pause.svg';
-import addIcon from '@/assets/icons/add.svg';
 import thumbTrack from '@/assets/images/thumb-track.png';
 
 function formatKey(year, month, day) {
@@ -60,6 +64,14 @@ onMounted(() => {
     if (/^\d{4}-\d{2}-\d{2}$/.test(dateFromQuery)) {
       selectedKey.value = dateFromQuery;
     }
+  }
+});
+
+onMounted(async () => {
+  try {
+    await paletteLog.load({ silent: true });
+  } catch {
+    // 팔레트 로그 로드 실패는 캘린더 진입을 막지 않음
   }
 });
 
@@ -232,7 +244,19 @@ function showToast(message) {
   });
 }
 
-function goPlaylist() {
+async function handlePlayPlaylist() {
+  const playlistId = String(selectedData.value?.playlistId || '').trim();
+  if (!playlistId) return;
+
+  try {
+    await playPlaylistFirstTrack(player, playlistId, { autoplay: true, openMode: 'main' });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : '플레이리스트 재생에 실패했습니다.';
+    window.alert(message);
+  }
+}
+
+function openPlaylistDetail() {
   const playlistId = String(selectedData.value?.playlistId || '').trim();
   if (!playlistId) return;
 
@@ -241,6 +265,26 @@ function goPlaylist() {
     query: { id: playlistId },
     state: { fromBottomTab: '/calendar' }
   });
+}
+
+async function handleTogglePaletteLog() {
+  const playlistId = String(selectedData.value?.playlistId || '').trim();
+  if (!playlistId) return;
+
+  try {
+    const result = await paletteLog.toggle(playlistId);
+    if (!result) return;
+
+    if (String(player.current_playlist.id || '') === playlistId) {
+      player.patchCurrentPlaylist({
+        saved: Boolean(result?.saved)
+      });
+    }
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : '팔레트 로그 저장 처리에 실패했습니다.';
+    window.alert(message);
+  }
 }
 
 const isChangingProfileColor = ref(false);
@@ -354,17 +398,28 @@ watch(
             </div>
 
             <div class="tone-controls">
-              <button type="button" class="btn-play-pause" @click="goPlaylist">
-                <img :src="pauseIcon" alt="재생/일시정지" />
-              </button>
-              <button type="button" class="btn-add-list">
-                <img :src="addIcon" alt="추가" />
-              </button>
+              <PlaylistActionControls
+                :saved="paletteLog.has(selectedData.playlistId)"
+                :play-disabled="!hasSelectedEntry || !selectedData.playlistId"
+                :save-disabled="
+                  !hasSelectedEntry ||
+                  !selectedData.playlistId ||
+                  paletteLog.isPending(selectedData.playlistId)
+                "
+                @play="handlePlayPlaylist"
+                @save="handleTogglePaletteLog"
+              />
             </div>
           </div>
 
           <div class="tone-right">
-            <div class="tone-color-preview" :style="{ background: selectedData.color }"></div>
+            <button
+              type="button"
+              class="tone-color-preview"
+              :style="{ background: selectedData.color }"
+              :disabled="!hasSelectedEntry || !selectedData.playlistId"
+              @click="openPlaylistDetail"
+            ></button>
             <button
               type="button"
               class="btn-profile-set"
@@ -596,43 +651,7 @@ watch(
 }
 
 #calendar .tone-controls {
-  display: flex;
-  align-items: center;
-  background: #f2f2ee;
-  border-radius: 25px;
-  width: fit-content;
-  padding: 4px;
   margin-top: 15px;
-  box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.25);
-}
-
-#calendar .btn-play-pause {
-  background: #3f5f73;
-  border: none;
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-}
-
-#calendar .btn-play-pause img {
-  width: 14px;
-  filter: brightness(0) invert(1);
-}
-
-#calendar .btn-add-list {
-  background: transparent;
-  border: none;
-  padding: 0 12px;
-  cursor: pointer;
-}
-
-#calendar .btn-add-list img {
-  width: 14px;
-  height: 14px;
 }
 
 #calendar .tone-right {
@@ -645,10 +664,17 @@ watch(
 #calendar .tone-color-preview {
   width: 59px;
   height: 110px;
+  padding: 0;
   border-radius: 30px;
   background: #6b6aa8;
+  border: none;
   border: 3px solid #fff;
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+}
+
+#calendar .tone-color-preview:disabled {
+  cursor: default;
 }
 
 #calendar .btn-profile-set {

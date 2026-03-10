@@ -61,11 +61,14 @@
         />
       </div>
 
-      <RouterLink class="form-login-box" to="/login">로그인</RouterLink>
-
       <button type="submit" class="form-submit-box" :disabled="isRegistering">
         {{ isRegistering ? '가입중...' : '회원가입' }}
       </button>
+
+      <p class="login-guide">
+        이미 계정이 있으신가요?
+        <RouterLink to="/login">로그인</RouterLink>
+      </p>
     </form>
 
     <DuplicateModal
@@ -252,22 +255,17 @@ async function handleProfileConfirm(color) {
   margin-top: 50px;
 }
 
-#register-page .register-form .form-login-box {
-  margin-top: 50px;
-  width: 100%;
-  padding: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #ffffff;
-  color: var(--color-primary);
-  border-radius: 15px;
-  font-size: 16px;
-  font-weight: 700;
+#register-page .register-form .login-guide {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 14px;
+  color: #5f7280;
 }
 
-#register-page .register-form .form-login-box + .form-submit-box {
-  margin-top: 10px;
+#register-page .register-form .login-guide a {
+  margin-left: 4px;
+  color: var(--color-primary);
+  font-weight: 700;
 }
 
 #register-page .register-form button[type='submit']:disabled {

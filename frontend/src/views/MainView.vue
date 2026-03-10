@@ -1,11 +1,6 @@
 <template>
   <!-- 페이지 내용 -->
-  <main
-    ref="rootEl"
-    id="main-page"
-    class="home"
-    :class="{ 'is-enter-ready': isEnterReady }"
-  >
+  <main ref="rootEl" id="main-page" class="home" :class="{ 'is-enter-ready': isEnterReady }">
     <!-- 1) Daily tone -->
     <section class="panel daily" style="--panel-delay: 0ms">
       <div class="daily-pill">Daily tone</div>
@@ -17,35 +12,27 @@
 
       <div v-else-if="dailyPlaylist" class="daily-inner">
         <div class="daily-text">
-          <h2>{{ dailyPlaylist.color_name }}</h2>
-          <p>
-            오늘의 톤은 <b>{{ dailyPlaylist.color_name }}</b> 입니다.<br />
-            오늘의 톤에 맞는 플레이리스트입니다.
+          <h2 :style="dailyToneAccentStyle">{{ dailyPlaylist.color_name }}</h2>
+          <p class="daily-description" aria-live="polite">
+            <span>{{ typedDailyIntro.prefix }}</span>
+            <b v-if="typedDailyIntro.name" :style="dailyToneAccentStyle">{{
+              typedDailyIntro.name
+            }}</b>
+            <span>{{ typedDailyIntro.suffix }}</span>
+            <br v-if="typedDailyIntro.secondLine" />
+            <span>{{ typedDailyIntro.secondLine }}</span>
           </p>
 
-          <div class="daily-actions">
-            <button
-              class="icon-btn big"
-              type="button"
-              aria-label="play"
-              @click="goDailyPlaylist"
-            >
-              <img src="@/assets/icons/play.svg" alt="play" />
-            </button>
-
-            <button
-              class="icon-btn daily-btn"
-              type="button"
-              aria-label="팔레트 로그 저장"
-              :disabled="paletteLog.isPending(dailyPlaylist.id)"
-              @click="handleTogglePalette(dailyPlaylist)"
-            >
-              <img
-                :src="paletteLog.has(dailyPlaylist.id) ? addCompleteIcon : addIcon"
-                alt="저장"
-              />
-            </button>
-          </div>
+          <PlaylistActionControls
+            class="daily-actions"
+            surface="white"
+            :play-color="dailyPlaylist.color_hex"
+            :saved="paletteLog.has(dailyPlaylist.id)"
+            :play-disabled="!dailyPlaylist?.id"
+            :save-disabled="!dailyPlaylist?.id || paletteLog.isPending(dailyPlaylist.id)"
+            @play="handlePlayDailyPlaylist"
+            @save="handleTogglePalette(dailyPlaylist)"
+          />
         </div>
 
         <div
@@ -121,7 +108,9 @@
       </div>
 
       <div class="log-list">
-        <p v-if="!paletteLogPreview.length" class="log-empty">아직 저장한 팔레트 로그가 없습니다.</p>
+        <p v-if="!paletteLogPreview.length" class="log-empty">
+          아직 저장한 팔레트 로그가 없습니다.
+        </p>
         <RouterLink
           v-for="log in paletteLogPreview"
           :key="`${log.playlist_id}-${log.created_at}`"
@@ -144,33 +133,37 @@
     <!-- 4) Echo Notes -->
     <section class="panel echo" style="--panel-delay: 144ms">
       <div class="panel-head">
-        <h3><span class="dot"></span>Echo Notes</h3>
+        <h3>Echo Notes<span class="dot" :style="echoDotStyle"></span></h3>
         <span class="hint">다른 사용자들의 한마디</span>
       </div>
 
       <div class="echo-card">
-        <p class="echo-text">오늘은 이 톤이 잘 맞는다</p>
+        <Transition name="echo-fade" mode="out-in">
+          <p :key="currentEchoNote" class="echo-text">{{ currentEchoNote }}</p>
+        </Transition>
         <div class="echo-line"></div>
-        <p class="echo-date">02.26</p>
+        <p class="echo-date">{{ echoDateLabel }}</p>
       </div>
     </section>
   </main>
 </template>
 
 <script setup>
-import { computed, onMounted, nextTick, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, nextTick, ref, watch } from 'vue';
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import { FreeMode } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/free-mode';
-import { useRouter } from 'vue-router';
 import { usePaletteLogStore } from '@/stores/paletteLog';
+import { usePlayerStore } from '@/stores/player';
 import { apiRequest } from '@/services/httpClient';
+import { playPlaylistFirstTrack } from '@/services/playlistService';
+import PlaylistActionControls from '@/components/PlaylistActionControls.vue';
 import addIcon from '@/assets/icons/add.svg';
 import addCompleteIcon from '@/assets/icons/addComplete.svg';
 
-const router = useRouter();
 const paletteLog = usePaletteLogStore();
+const player = usePlayerStore();
 const swiperModules = [FreeMode];
 
 const rootEl = ref(null);
@@ -182,6 +175,29 @@ const spectrumPlaylists = ref([]);
 const spectrumErrorMessage = ref('');
 const paletteLogPreview = computed(() => paletteLog.paletteLogs.slice(0, 4));
 const isEnterReady = ref(false);
+const typedDailyCount = ref(0);
+const echoNotes = [
+  '오늘은 좀 울적하다..ㅜㅜ',
+  '오늘은 괜히 기분 좋음 ㅎㅎ',
+  '아무 일 없는데 괜히 마음이 축 처짐...',
+  '생각보다 평온해서 마음이 놓였다..',
+  '오늘따라 말하기도 귀찮네 ㅋㅋ',
+  '별거 없었는데 괜히 행복한 날!',
+  '괜찮은 줄 알았는데 좀 지쳤나봐..',
+  '그냥 오늘은 조용히 있고 싶다!!!!',
+  '오늘은 마음이 좀 가벼워서 좋다',
+  '별말 아닌데 괜히 계속 생각남..',
+  '기분이 왔다갔다해서 더 피곤함 ㅜ',
+  '소소한데 은근 웃을 일이 많았다 ㅋㅋ',
+  '하루가 왜 이렇게 길지..',
+  '괜히 센치해서 기록 남겨둠 ㅎㅎ',
+  '오늘의 나는 좀 천천히 가고 싶음...'
+];
+const currentEchoNote = ref(echoNotes[0]);
+
+let echoRotationTimer = null;
+let dailyTypingTimer = null;
+let dailyTypingDelayTimer = null;
 
 /* ---------- 라우팅 헬퍼 ---------- */
 // 지금은 임시로 /playlist?id=... 형태
@@ -194,9 +210,18 @@ function playlistTo(id) {
   };
 }
 
-function goDailyPlaylist() {
+async function handlePlayDailyPlaylist() {
   if (!dailyPlaylist.value?.id) return;
-  router.push(playlistTo(dailyPlaylist.value.id));
+
+  try {
+    await playPlaylistFirstTrack(player, dailyPlaylist.value.id, {
+      autoplay: true,
+      openMode: 'main'
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : '플레이리스트 재생에 실패했습니다.';
+    window.alert(message);
+  }
 }
 
 async function handleTogglePalette(item) {
@@ -287,6 +312,110 @@ function getBrightness(color) {
   return (r * 299 + g * 587 + b * 114) / 1000;
 }
 
+function pickNextEchoNote() {
+  if (echoNotes.length <= 1) {
+    currentEchoNote.value = echoNotes[0] || '';
+    return;
+  }
+
+  let nextNote = currentEchoNote.value;
+  while (nextNote === currentEchoNote.value) {
+    nextNote = echoNotes[Math.floor(Math.random() * echoNotes.length)];
+  }
+
+  currentEchoNote.value = nextNote;
+}
+
+function startEchoRotation() {
+  pickNextEchoNote();
+  echoRotationTimer = window.setInterval(() => {
+    pickNextEchoNote();
+  }, 4000);
+}
+
+function stopDailyTyping() {
+  if (dailyTypingDelayTimer) {
+    window.clearTimeout(dailyTypingDelayTimer);
+    dailyTypingDelayTimer = null;
+  }
+
+  if (!dailyTypingTimer) return;
+  window.clearInterval(dailyTypingTimer);
+  dailyTypingTimer = null;
+}
+
+function startDailyTyping() {
+  stopDailyTyping();
+  typedDailyCount.value = 0;
+
+  if (dailyIntroSource.value.totalLength < 1) return;
+
+  dailyTypingDelayTimer = window.setTimeout(() => {
+    dailyTypingDelayTimer = null;
+    dailyTypingTimer = window.setInterval(() => {
+      typedDailyCount.value += 1;
+
+      if (typedDailyCount.value >= dailyIntroSource.value.totalLength) {
+        typedDailyCount.value = dailyIntroSource.value.totalLength;
+        stopDailyTyping();
+      }
+    }, 48);
+  }, 320);
+}
+
+const echoDotStyle = computed(() => ({
+  backgroundColor: dailyPlaylist.value?.color_hex || '#7b56d7'
+}));
+
+const echoDateLabel = computed(() => {
+  const today = new Date();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  return `${month}.${day}`;
+});
+
+const dailyToneAccentStyle = computed(() => ({
+  color: dailyPlaylist.value?.color_hex || '#615694'
+}));
+
+const dailyIntroSource = computed(() => {
+  const prefix = '오늘의 톤은 ';
+  const name = dailyPlaylist.value?.color_name || '';
+  const suffix = ' 입니다.';
+  const secondLine = '오늘의 톤에 맞는 플레이리스트를 감상해보세요!';
+
+  return {
+    prefix,
+    name,
+    suffix,
+    secondLine,
+    totalLength: prefix.length + name.length + suffix.length + secondLine.length
+  };
+});
+
+const typedDailyIntro = computed(() => {
+  const source = dailyIntroSource.value;
+  let remaining = typedDailyCount.value;
+
+  const prefix = source.prefix.slice(0, Math.max(remaining, 0));
+  remaining -= source.prefix.length;
+
+  const name = source.name.slice(0, Math.max(remaining, 0));
+  remaining -= source.name.length;
+
+  const suffix = source.suffix.slice(0, Math.max(remaining, 0));
+  remaining -= source.suffix.length;
+
+  const secondLine = source.secondLine.slice(0, Math.max(remaining, 0));
+
+  return {
+    prefix,
+    name,
+    suffix,
+    secondLine
+  };
+});
+
 /* ---------- Palette Log: 배경명도에 따라 글자색 자동 ---------- */
 function applyLogItemTheme(root) {
   if (!root) return;
@@ -315,6 +444,7 @@ function applyLogItemTheme(root) {
 
 onMounted(async () => {
   isEnterReady.value = false;
+  startEchoRotation();
   await paletteLog.load({ silent: true });
   await loadDailyPlaylist();
   await loadSpectrumPlaylists();
@@ -329,6 +459,14 @@ onMounted(async () => {
   });
 });
 
+onBeforeUnmount(() => {
+  stopDailyTyping();
+  if (echoRotationTimer) {
+    window.clearInterval(echoRotationTimer);
+    echoRotationTimer = null;
+  }
+});
+
 watch(
   paletteLogPreview,
   async () => {
@@ -336,6 +474,19 @@ watch(
     applyLogItemTheme(rootEl.value);
   },
   { deep: true }
+);
+
+watch(
+  () => dailyPlaylist.value?.id,
+  (playlistId) => {
+    if (!playlistId) {
+      stopDailyTyping();
+      typedDailyCount.value = 0;
+      return;
+    }
+
+    startDailyTyping();
+  }
 );
 </script>
 
@@ -412,10 +563,14 @@ watch(
 }
 
 .daily-text p {
-  margin: 0 0 16px;
+  margin: 0 0 12px;
   font-size: 12px;
   line-height: 1.45;
   font-weight: 500;
+}
+
+.daily-description {
+  min-height: calc(12px * 1.45 * 2);
 }
 
 .daily-text b {
@@ -424,61 +579,56 @@ watch(
 }
 
 .daily-actions {
-  width: 85px;
-  height: 41px;
-  background-color: #ffffff;
-  box-shadow: inset 0px 0px 4px 0px rgba(0, 0, 0, 0.25);
-  border-radius: 50px;
-  display: flex;
-  gap: 10px;
-  align-items: center;
+  margin-top: 2px;
 }
 
-.icon-btn {
-  width: 34px;
-  height: 34px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
+.daily-actions .playlist-action-controls__play {
+  width: 44px;
+  height: 44px;
+  animation: daily-soft-heartbeat 2.6s ease-in-out infinite;
+  transform-origin: center;
 }
 
-.icon-btn.big {
-  width: 41px;
-  height: 41px;
-  padding-left: 3px;
-  border-radius: 999px;
-  background: rgba(95, 96, 170, 0.95);
-  box-shadow: inset 0 0 10px 1px rgba(0, 0, 0, 0.25);
-}
-
-.daily-btn {
-  padding-right: 15px;
-}
-
-.daily-btn:disabled,
-.mini-add:disabled {
-  opacity: 0.7;
-}
-
-.icon-btn img {
-  width: 18px;
-  height: 18px;
-}
-
-.icon-btn.big img {
-  filter: brightness(10);
-  opacity: 0.95;
+.daily-actions .playlist-action-controls__play-icon {
+  width: 44px;
+  height: 44px;
 }
 
 .daily-swatch {
   width: 60px;
-  height: 105px;
-  margin-left: 15px;
+  height: 100px;
+  margin-left: auto;
+  position: relative;
+  overflow: hidden;
   border-radius: 29.5px;
   background: #615694;
   border: 3px solid #ffffff;
   box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.25);
+}
+
+.daily-swatch::after {
+  content: '';
+  position: absolute;
+  inset: -10% auto -10% -90%;
+  width: 72%;
+  background: linear-gradient(
+    102deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.015) 18%,
+    rgba(255, 255, 255, 0.08) 38%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.08) 62%,
+    rgba(255, 255, 255, 0.015) 82%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: skewX(-40deg);
+  filter: blur(2px);
+  pointer-events: none;
+  animation: daily-swatch-glass-sheen 4s ease infinite;
+}
+
+.mini-add:disabled {
+  opacity: 0.7;
 }
 
 /* ===== Spectrum ===== */
@@ -681,29 +831,45 @@ watch(
   border-radius: 999px;
   background: #7b56d7;
   display: inline-block;
-  margin-right: 8px;
+  margin-left: 8px;
 }
 
 .echo-card {
-  padding: 26px 8px 10px;
   text-align: center;
 }
 
 .echo-text {
-  margin: 0 0 18px;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 600;
+  line-height: 1.4;
+  min-height: calc(18px * 1.4 * 2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .echo-line {
   height: 1px;
-  margin: 0 12px 12px;
+  margin: 0 12px 10px;
 }
 
 .echo-date {
   margin: 0;
   font-size: 10px;
   font-weight: 600;
+}
+
+.echo-fade-enter-active,
+.echo-fade-leave-active {
+  transition:
+    opacity 0.35s ease,
+    transform 0.35s ease;
+}
+
+.echo-fade-enter-from,
+.echo-fade-leave-to {
+  opacity: 0;
+  transform: translateY(4px);
 }
 
 @keyframes main-panel-enter {
@@ -715,6 +881,52 @@ watch(
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes daily-soft-heartbeat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  8% {
+    transform: scale(1.06);
+  }
+
+  15% {
+    transform: scale(1);
+  }
+
+  22% {
+    transform: scale(1.04);
+  }
+
+  30% {
+    transform: scale(1);
+  }
+}
+
+@keyframes daily-swatch-glass-sheen {
+  0%,
+  18%,
+  100% {
+    transform: translateX(-18%) skewX(-40deg);
+    opacity: 0;
+  }
+
+  24% {
+    opacity: 0.72;
+  }
+
+  48% {
+    transform: translateX(310%) skewX(-40deg);
+    opacity: 0.76;
+  }
+
+  56% {
+    transform: translateX(345%) skewX(-40deg);
+    opacity: 0;
   }
 }
 </style>

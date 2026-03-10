@@ -24,19 +24,19 @@ const appVersion = '1.2.0';
 /* -----------------------
    메뉴 데이터
 ------------------------ */
-const menuSections = [
+const menuSections = reactive([
   {
     title: '앱 설정',
     items: [
-      { label: '비밀번호 잠금', value: 'OFF' },
-      { label: '알림 설정', value: 'ON' },
+      { label: '비밀번호 잠금', value: 'OFF', toggle: true },
+      { label: '알림 설정', value: 'ON', toggle: true },
       { label: '재생 환경 설정', route: '/play-setting' }
     ]
   },
   {
     title: '서비스',
     items: [
-      { label: '결제내역', route: '/payment' },
+      { label: '결제내역', route: '/payment/detail' },
       { label: '적립내역', route: '/points' },
       { label: '보관함 관리', route: '/library' }
     ]
@@ -51,13 +51,18 @@ const menuSections = [
       { label: '버전 정보', value: `v ${appVersion}` }
     ]
   }
-];
+]);
 
 /* -----------------------
    네비게이션
 ------------------------ */
 const goTo = (route) => {
   if (route) router.push(route);
+};
+
+const toggleMenuItem = (item) => {
+  if (!item?.toggle) return;
+  item.value = item.value === 'ON' ? 'OFF' : 'ON';
 };
 
 function formatMembershipPlan(plan) {
@@ -150,8 +155,6 @@ const confirmWithdraw = async () => {
       <!-- 프로필 카드 -->
       <section class="profile-card">
         <div class="profile-main">
-          <div class="avatar-circle" :style="{ backgroundColor: user.profileColor || '' }"></div>
-
           <div>
             <div class="name-badge">
               <span class="username">{{ user.name }}</span>
@@ -176,22 +179,27 @@ const confirmWithdraw = async () => {
       <section v-for="section in menuSections" :key="section.title" class="menu-group">
         <h2 class="group-title">{{ section.title }}</h2>
 
-        <div
-          v-for="item in section.items"
-          :key="item.label"
-          class="menu-item"
-          @click="goTo(item.route)"
-        >
-          <span>{{ item.label }}</span>
+        <template v-for="item in section.items" :key="item.label">
+          <div v-if="item.route" class="menu-item">
+            <span>{{ item.label }}</span>
+            <button type="button" class="menu-arrow-button" @click="goTo(item.route)">
+              <img class="menu-arrow" src="@/assets/icons/arrow-right.svg" alt="" />
+            </button>
+          </div>
 
-          <template v-if="item.route">
-            <img class="menu-arrow" src="@/assets/icons/arrow-right.svg" alt="" />
-          </template>
-
-          <template v-else>
-            <span>{{ item.value }}</span>
-          </template>
-        </div>
+          <div v-else class="menu-item">
+            <span>{{ item.label }}</span>
+            <button
+              v-if="item.toggle"
+              type="button"
+              class="menu-value-button"
+              @click="toggleMenuItem(item)"
+            >
+              {{ item.value }}
+            </button>
+            <span v-else>{{ item.value }}</span>
+          </div>
+        </template>
       </section>
 
       <button class="withdraw-btn" @click="openWithdraw">회원 탈퇴</button>
@@ -245,14 +253,6 @@ const confirmWithdraw = async () => {
   align-items: center;
 }
 
-#mypage .avatar-circle {
-  width: 44px;
-  height: 44px;
-  background: var(--color-pantone-primary);
-  border-radius: 999px;
-  margin-right: 12px;
-}
-
 #mypage .name-badge {
   display: flex;
   align-items: center;
@@ -265,6 +265,7 @@ const confirmWithdraw = async () => {
   padding: 3px 10px;
   border-radius: 999px;
 }
+
 #mypage .username {
   font-size: 18px;
   font-weight: 700;
@@ -322,15 +323,38 @@ const confirmWithdraw = async () => {
 #mypage .menu-item {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  width: 100%;
   padding: 12px 0;
   border-bottom: 1px solid #e5e5e5;
   font-size: 14px;
+  text-align: left;
+  color: var(--color-text-primary);
 }
 
 #mypage .menu-arrow {
   width: 16px;
   height: 16px;
   flex-shrink: 0;
+}
+
+#mypage .menu-arrow-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+#mypage .menu-value-button {
+  padding: 0;
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
 }
 
 #mypage .withdraw-btn {

@@ -1,5 +1,6 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import MarqueeText from '@/components/MarqueeText.vue';
 import { usePlayerStore } from '@/stores/player';
 import { apiRequest } from '@/services/httpClient';
 import handleIcon from '@/assets/icons/handle.svg';
@@ -171,7 +172,9 @@ const progressStyle = computed(() => ({
 }));
 
 const displayTitle = computed(() => player.current_track.title || '곡을 선택해 재생하세요');
-const displayArtist = computed(() => player.current_track.artist || '플레이리스트에서 트랙을 선택하세요');
+const displayArtist = computed(
+  () => player.current_track.artist || '플레이리스트에서 트랙을 선택하세요'
+);
 const playlistId = computed(() => String(player.current_playlist.id || '').trim());
 const isLikeSubmitting = ref(false);
 const isLiked = computed(() => Boolean(player.current_playlist.liked));
@@ -244,12 +247,25 @@ async function handleToggleLike() {
     </div>
 
     <div class="mini-content">
-      <button type="button" class="mini-thumb" :disabled="!player.has_track" @click="handleOpenMain">
+      <button
+        type="button"
+        class="mini-thumb"
+        :disabled="!player.has_track"
+        @click="handleOpenMain"
+      >
         <img :src="player.current_track.cover_url" alt="앨범 커버" />
       </button>
       <div class="mini-body">
         <div class="mini-top">
-          <p class="mini-title" :class="{ 'is-empty': !player.has_track }">{{ displayTitle }}</p>
+          <MarqueeText
+            tag="p"
+            class="mini-title"
+            :class="{ 'is-empty': !player.has_track }"
+            :text="displayTitle"
+            align="left"
+            :speed="42"
+            :gap="67"
+          />
           <div class="mini-actions">
             <button
               type="button"
@@ -358,6 +374,7 @@ async function handleToggleLike() {
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .mini-top {
@@ -365,12 +382,17 @@ async function handleToggleLike() {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
 }
 
 .mini-title {
+  flex: 1;
+  min-width: 0;
   font-size: 20px;
   font-weight: 700;
   line-height: 1;
+  margin: 0;
 }
 
 .mini-artist.is-empty {
@@ -380,6 +402,7 @@ async function handleToggleLike() {
 .mini-actions {
   display: flex;
   gap: 15px;
+  flex-shrink: 0;
 }
 
 .icon-like {
@@ -394,7 +417,7 @@ async function handleToggleLike() {
 
 .icon-pause {
   width: 20px;
-  height: 20px;
+  height: 18px;
 }
 
 .icon-pause {
