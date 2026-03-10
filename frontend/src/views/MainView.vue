@@ -524,8 +524,8 @@ watch(
 
 .daily-swatch {
   width: 60px;
-  height: 105px;
-  margin-left: 15px;
+  height: 100px;
+  margin-left: auto;
   border-radius: 29.5px;
   background: #615694;
   border: 3px solid #ffffff;
