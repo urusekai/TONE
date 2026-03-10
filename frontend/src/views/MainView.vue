@@ -582,8 +582,16 @@ watch(
   margin-top: 2px;
 }
 
-.mini-add:disabled {
-  opacity: 0.7;
+.daily-actions .playlist-action-controls__play {
+  width: 44px;
+  height: 44px;
+  animation: daily-soft-heartbeat 2.6s ease-in-out infinite;
+  transform-origin: center;
+}
+
+.daily-actions .playlist-action-controls__play-icon {
+  width: 44px;
+  height: 44px;
 }
 
 .daily-swatch {
@@ -594,6 +602,10 @@ watch(
   background: #615694;
   border: 3px solid #ffffff;
   box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.25);
+}
+
+.mini-add:disabled {
+  opacity: 0.7;
 }
 
 /* ===== Spectrum ===== */
@@ -846,6 +858,29 @@ watch(
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes daily-soft-heartbeat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  8% {
+    transform: scale(1.06);
+  }
+
+  15% {
+    transform: scale(1);
+  }
+
+  22% {
+    transform: scale(1.04);
+  }
+
+  30% {
+    transform: scale(1);
   }
 }
 </style>
