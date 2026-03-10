@@ -13,10 +13,14 @@
       <div v-else-if="dailyPlaylist" class="daily-inner">
         <div class="daily-text">
           <h2 :style="dailyToneAccentStyle">{{ dailyPlaylist.color_name }}</h2>
-          <p>
-            오늘의 톤은
-            <b :style="dailyToneAccentStyle">{{ dailyPlaylist.color_name }}</b> 입니다.<br />
-            오늘의 톤에 맞는 플레이리스트입니다.
+          <p class="daily-description" aria-live="polite">
+            <span>{{ typedDailyIntro.prefix }}</span>
+            <b v-if="typedDailyIntro.name" :style="dailyToneAccentStyle">{{
+              typedDailyIntro.name
+            }}</b>
+            <span>{{ typedDailyIntro.suffix }}</span>
+            <br v-if="typedDailyIntro.secondLine" />
+            <span>{{ typedDailyIntro.secondLine }}</span>
           </p>
 
           <PlaylistActionControls
@@ -171,6 +175,7 @@ const spectrumPlaylists = ref([]);
 const spectrumErrorMessage = ref('');
 const paletteLogPreview = computed(() => paletteLog.paletteLogs.slice(0, 4));
 const isEnterReady = ref(false);
+const typedDailyCount = ref(0);
 const echoNotes = [
   '오늘은 좀 울적하다..ㅜㅜ',
   '오늘은 괜히 기분 좋음 ㅎㅎ',
@@ -191,6 +196,7 @@ const echoNotes = [
 const currentEchoNote = ref(echoNotes[0]);
 
 let echoRotationTimer = null;
+let dailyTypingTimer = null;
 
 /* ---------- 라우팅 헬퍼 ---------- */
 // 지금은 임시로 /playlist?id=... 형태
@@ -326,6 +332,28 @@ function startEchoRotation() {
   }, 4000);
 }
 
+function stopDailyTyping() {
+  if (!dailyTypingTimer) return;
+  window.clearInterval(dailyTypingTimer);
+  dailyTypingTimer = null;
+}
+
+function startDailyTyping() {
+  stopDailyTyping();
+  typedDailyCount.value = 0;
+
+  if (dailyIntroSource.value.totalLength < 1) return;
+
+  dailyTypingTimer = window.setInterval(() => {
+    typedDailyCount.value += 1;
+
+    if (typedDailyCount.value >= dailyIntroSource.value.totalLength) {
+      typedDailyCount.value = dailyIntroSource.value.totalLength;
+      stopDailyTyping();
+    }
+  }, 48);
+}
+
 const echoDotStyle = computed(() => ({
   backgroundColor: dailyPlaylist.value?.color_hex || '#7b56d7'
 }));
@@ -340,6 +368,44 @@ const echoDateLabel = computed(() => {
 const dailyToneAccentStyle = computed(() => ({
   color: dailyPlaylist.value?.color_hex || '#615694'
 }));
+
+const dailyIntroSource = computed(() => {
+  const prefix = '오늘의 톤은 ';
+  const name = dailyPlaylist.value?.color_name || '';
+  const suffix = ' 입니다.';
+  const secondLine = '오늘의 톤에 맞는 플레이리스트를 감상해보세요!';
+
+  return {
+    prefix,
+    name,
+    suffix,
+    secondLine,
+    totalLength: prefix.length + name.length + suffix.length + secondLine.length
+  };
+});
+
+const typedDailyIntro = computed(() => {
+  const source = dailyIntroSource.value;
+  let remaining = typedDailyCount.value;
+
+  const prefix = source.prefix.slice(0, Math.max(remaining, 0));
+  remaining -= source.prefix.length;
+
+  const name = source.name.slice(0, Math.max(remaining, 0));
+  remaining -= source.name.length;
+
+  const suffix = source.suffix.slice(0, Math.max(remaining, 0));
+  remaining -= source.suffix.length;
+
+  const secondLine = source.secondLine.slice(0, Math.max(remaining, 0));
+
+  return {
+    prefix,
+    name,
+    suffix,
+    secondLine
+  };
+});
 
 /* ---------- Palette Log: 배경명도에 따라 글자색 자동 ---------- */
 function applyLogItemTheme(root) {
@@ -385,6 +451,7 @@ onMounted(async () => {
 });
 
 onBeforeUnmount(() => {
+  stopDailyTyping();
   if (echoRotationTimer) {
     window.clearInterval(echoRotationTimer);
     echoRotationTimer = null;
@@ -398,6 +465,19 @@ watch(
     applyLogItemTheme(rootEl.value);
   },
   { deep: true }
+);
+
+watch(
+  () => dailyPlaylist.value?.id,
+  (playlistId) => {
+    if (!playlistId) {
+      stopDailyTyping();
+      typedDailyCount.value = 0;
+      return;
+    }
+
+    startDailyTyping();
+  }
 );
 </script>
 
@@ -478,6 +558,10 @@ watch(
   font-size: 12px;
   line-height: 1.45;
   font-weight: 500;
+}
+
+.daily-description {
+  min-height: calc(12px * 1.45 * 2);
 }
 
 .daily-text b {
