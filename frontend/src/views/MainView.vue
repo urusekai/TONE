@@ -541,7 +541,15 @@ watch(
 
 .daily-inner {
   display: grid;
-  grid-template-columns: 1fr 92px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 12px;
+  align-items: end;
+}
+
+.daily-text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .daily-state {
@@ -571,6 +579,11 @@ watch(
 
 .daily-description {
   min-height: calc(12px * 1.45 * 2);
+  word-break: keep-all;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .daily-text b {
@@ -579,7 +592,8 @@ watch(
 }
 
 .daily-actions {
-  margin-top: 2px;
+  margin-top: auto;
+  padding-top: 2px;
 }
 
 .daily-actions .playlist-action-controls__play {
@@ -600,6 +614,7 @@ watch(
   margin-left: auto;
   position: relative;
   overflow: hidden;
+  align-self: flex-start;
   border-radius: 29.5px;
   background: #615694;
   border: 3px solid #ffffff;
