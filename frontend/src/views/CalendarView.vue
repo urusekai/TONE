@@ -12,7 +12,7 @@ const authStore = useAuthStore();
 // 아이콘/이미지
 import prevIcon from '@/assets/icons/prev.svg';
 import nextIcon from '@/assets/icons/arrow-right.svg';
-import pauseIcon from '@/assets/icons/pause.svg';
+import playCircleIcon from '@/assets/icons/play-circle.svg';
 import addIcon from '@/assets/icons/add.svg';
 import thumbTrack from '@/assets/images/thumb-track.png';
 
@@ -355,7 +355,7 @@ watch(
 
             <div class="tone-controls">
               <button type="button" class="btn-play-pause" @click="goPlaylist">
-                <img :src="pauseIcon" alt="재생/일시정지" />
+                <img :src="playCircleIcon" alt="재생" />
               </button>
               <button type="button" class="btn-add-list">
                 <img :src="addIcon" alt="추가" />
@@ -607,20 +607,19 @@ watch(
 }
 
 #calendar .btn-play-pause {
-  background: #3f5f73;
   border: none;
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 0;
   cursor: pointer;
 }
 
 #calendar .btn-play-pause img {
-  width: 14px;
-  filter: brightness(0) invert(1);
+  width: 40px;
+  height: 40px;
 }
 
 #calendar .btn-add-list {
