@@ -12,27 +12,23 @@
 
       <div v-else-if="dailyPlaylist" class="daily-inner">
         <div class="daily-text">
-          <h2>{{ dailyPlaylist.color_name }}</h2>
+          <h2 :style="dailyToneAccentStyle">{{ dailyPlaylist.color_name }}</h2>
           <p>
-            오늘의 톤은 <b>{{ dailyPlaylist.color_name }}</b> 입니다.<br />
+            오늘의 톤은
+            <b :style="dailyToneAccentStyle">{{ dailyPlaylist.color_name }}</b> 입니다.<br />
             오늘의 톤에 맞는 플레이리스트입니다.
           </p>
 
-          <div class="daily-actions">
-            <button class="icon-btn big" type="button" aria-label="play" @click="goDailyPlaylist">
-              <img src="@/assets/icons/play.svg" alt="play" />
-            </button>
-
-            <button
-              class="icon-btn daily-btn"
-              type="button"
-              aria-label="팔레트 로그 저장"
-              :disabled="paletteLog.isPending(dailyPlaylist.id)"
-              @click="handleTogglePalette(dailyPlaylist)"
-            >
-              <img :src="paletteLog.has(dailyPlaylist.id) ? addCompleteIcon : addIcon" alt="저장" />
-            </button>
-          </div>
+          <PlaylistActionControls
+            class="daily-actions"
+            surface="white"
+            :play-color="dailyPlaylist.color_hex"
+            :saved="paletteLog.has(dailyPlaylist.id)"
+            :play-disabled="!dailyPlaylist?.id"
+            :save-disabled="!dailyPlaylist?.id || paletteLog.isPending(dailyPlaylist.id)"
+            @play="handlePlayDailyPlaylist"
+            @save="handleTogglePalette(dailyPlaylist)"
+          />
         </div>
 
         <div
@@ -154,14 +150,16 @@ import { Swiper, SwiperSlide } from 'swiper/vue';
 import { FreeMode } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/free-mode';
-import { useRouter } from 'vue-router';
 import { usePaletteLogStore } from '@/stores/paletteLog';
+import { usePlayerStore } from '@/stores/player';
 import { apiRequest } from '@/services/httpClient';
+import { playPlaylistFirstTrack } from '@/services/playlistService';
+import PlaylistActionControls from '@/components/PlaylistActionControls.vue';
 import addIcon from '@/assets/icons/add.svg';
 import addCompleteIcon from '@/assets/icons/addComplete.svg';
 
-const router = useRouter();
 const paletteLog = usePaletteLogStore();
+const player = usePlayerStore();
 const swiperModules = [FreeMode];
 
 const rootEl = ref(null);
@@ -205,9 +203,18 @@ function playlistTo(id) {
   };
 }
 
-function goDailyPlaylist() {
+async function handlePlayDailyPlaylist() {
   if (!dailyPlaylist.value?.id) return;
-  router.push(playlistTo(dailyPlaylist.value.id));
+
+  try {
+    await playPlaylistFirstTrack(player, dailyPlaylist.value.id, {
+      autoplay: true,
+      openMode: 'main'
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : '플레이리스트 재생에 실패했습니다.';
+    window.alert(message);
+  }
 }
 
 async function handleTogglePalette(item) {
@@ -329,6 +336,10 @@ const echoDateLabel = computed(() => {
   const day = String(today.getDate()).padStart(2, '0');
   return `${month}.${day}`;
 });
+
+const dailyToneAccentStyle = computed(() => ({
+  color: dailyPlaylist.value?.color_hex || '#615694'
+}));
 
 /* ---------- Palette Log: 배경명도에 따라 글자색 자동 ---------- */
 function applyLogItemTheme(root) {
@@ -463,7 +474,7 @@ watch(
 }
 
 .daily-text p {
-  margin: 0 0 16px;
+  margin: 0 0 12px;
   font-size: 12px;
   line-height: 1.45;
   font-weight: 500;
@@ -475,51 +486,11 @@ watch(
 }
 
 .daily-actions {
-  width: 85px;
-  height: 41px;
-  background-color: #ffffff;
-  box-shadow: inset 0px 0px 4px 0px rgba(0, 0, 0, 0.25);
-  border-radius: 50px;
-  display: flex;
-  gap: 10px;
-  align-items: center;
+  margin-top: 2px;
 }
 
-.icon-btn {
-  width: 34px;
-  height: 34px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-}
-
-.icon-btn.big {
-  width: 41px;
-  height: 41px;
-  padding-left: 3px;
-  border-radius: 999px;
-  background: rgba(95, 96, 170, 0.95);
-  box-shadow: inset 0 0 10px 1px rgba(0, 0, 0, 0.25);
-}
-
-.daily-btn {
-  padding-right: 15px;
-}
-
-.daily-btn:disabled,
 .mini-add:disabled {
   opacity: 0.7;
-}
-
-.icon-btn img {
-  width: 18px;
-  height: 18px;
-}
-
-.icon-btn.big img {
-  filter: brightness(10);
-  opacity: 0.95;
 }
 
 .daily-swatch {
