@@ -153,7 +153,9 @@ async function handleToggleLike() {
 }
 
 function handleOpenMainPlayer(track) {
-  const trackIndex = tracks.value.findIndex((item) => String(item?.id || '') === String(track?.id || ''));
+  const trackIndex = tracks.value.findIndex(
+    (item) => String(item?.id || '') === String(track?.id || '')
+  );
   playTrackAt(trackIndex >= 0 ? trackIndex : 0, 'main');
 }
 
@@ -162,8 +164,7 @@ function handleOpenFirstTrack() {
 
   playPlaylistFirstTrack(player, playlist.value.id, { autoplay: true, openMode: 'main' }).catch(
     (error) => {
-      const message =
-        error instanceof Error ? error.message : '플레이리스트 재생에 실패했습니다.';
+      const message = error instanceof Error ? error.message : '플레이리스트 재생에 실패했습니다.';
       window.alert(message);
     }
   );
@@ -184,7 +185,10 @@ watch(
     <p v-else-if="errorMessage" class="playlist-state playlist-state-error">{{ errorMessage }}</p>
 
     <section v-else-if="playlist" class="playlist-hero">
-      <div class="playlist-hero__thumb" :style="{ backgroundColor: playlist.color_hex || '#b7aea6' }"></div>
+      <div
+        class="playlist-hero__thumb"
+        :style="{ backgroundColor: playlist.color_hex || '#b7aea6' }"
+      ></div>
       <div class="playlist-hero__content">
         <div class="playlist-hero__text">
           <p class="playlist-hero__title">{{ playlist.color_name || '' }}</p>
@@ -329,7 +333,7 @@ watch(
   margin-top: auto;
   padding-bottom: 3px;
   display: flex;
-  gap: 3px;
+  gap: 5px;
   align-items: center;
   background: transparent;
   border: 0;
@@ -338,6 +342,11 @@ watch(
 
 #playlist button.playlist-hero__likes:disabled {
   opacity: 0.7;
+}
+
+#playlist .playlist-hero__likes span {
+  color: var(--color-text-primary);
+  font-size: 14px;
 }
 
 #playlist .playlist-hero__play-actions {
