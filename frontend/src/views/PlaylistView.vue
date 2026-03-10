@@ -291,6 +291,7 @@ watch(
   z-index: 1001;
   display: flex;
   flex: 0 0 auto;
+  align-items: center;
   gap: 20px;
   margin-inline: calc(var(--playlist-main-side-padding) * -1);
   padding: 0 var(--playlist-main-side-padding) 25px;
@@ -299,10 +300,11 @@ watch(
 }
 
 #playlist .playlist-hero__thumb {
-  border-radius: 17px;
-  border: 3px solid white;
-  width: 100px;
+  flex: 0 0 59px;
+  width: 59px;
   height: 100px;
+  border-radius: 30px;
+  border: 3px solid #fff;
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.25);
 }
 
