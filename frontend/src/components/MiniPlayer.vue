@@ -172,7 +172,9 @@ const progressStyle = computed(() => ({
 }));
 
 const displayTitle = computed(() => player.current_track.title || '곡을 선택해 재생하세요');
-const displayArtist = computed(() => player.current_track.artist || '플레이리스트에서 트랙을 선택하세요');
+const displayArtist = computed(
+  () => player.current_track.artist || '플레이리스트에서 트랙을 선택하세요'
+);
 const playlistId = computed(() => String(player.current_playlist.id || '').trim());
 const isLikeSubmitting = ref(false);
 const isLiked = computed(() => Boolean(player.current_playlist.liked));
@@ -245,7 +247,12 @@ async function handleToggleLike() {
     </div>
 
     <div class="mini-content">
-      <button type="button" class="mini-thumb" :disabled="!player.has_track" @click="handleOpenMain">
+      <button
+        type="button"
+        class="mini-thumb"
+        :disabled="!player.has_track"
+        @click="handleOpenMain"
+      >
         <img :src="player.current_track.cover_url" alt="앨범 커버" />
       </button>
       <div class="mini-body">
@@ -410,7 +417,7 @@ async function handleToggleLike() {
 
 .icon-pause {
   width: 20px;
-  height: 20px;
+  height: 18px;
 }
 
 .icon-pause {
