@@ -1,11 +1,6 @@
 <template>
   <!-- 페이지 내용 -->
-  <main
-    ref="rootEl"
-    id="main-page"
-    class="home"
-    :class="{ 'is-enter-ready': isEnterReady }"
-  >
+  <main ref="rootEl" id="main-page" class="home" :class="{ 'is-enter-ready': isEnterReady }">
     <!-- 1) Daily tone -->
     <section class="panel daily" style="--panel-delay: 0ms">
       <div class="daily-pill">Daily tone</div>
@@ -24,12 +19,7 @@
           </p>
 
           <div class="daily-actions">
-            <button
-              class="icon-btn big"
-              type="button"
-              aria-label="play"
-              @click="goDailyPlaylist"
-            >
+            <button class="icon-btn big" type="button" aria-label="play" @click="goDailyPlaylist">
               <img src="@/assets/icons/play.svg" alt="play" />
             </button>
 
@@ -40,10 +30,7 @@
               :disabled="paletteLog.isPending(dailyPlaylist.id)"
               @click="handleTogglePalette(dailyPlaylist)"
             >
-              <img
-                :src="paletteLog.has(dailyPlaylist.id) ? addCompleteIcon : addIcon"
-                alt="저장"
-              />
+              <img :src="paletteLog.has(dailyPlaylist.id) ? addCompleteIcon : addIcon" alt="저장" />
             </button>
           </div>
         </div>
@@ -121,7 +108,9 @@
       </div>
 
       <div class="log-list">
-        <p v-if="!paletteLogPreview.length" class="log-empty">아직 저장한 팔레트 로그가 없습니다.</p>
+        <p v-if="!paletteLogPreview.length" class="log-empty">
+          아직 저장한 팔레트 로그가 없습니다.
+        </p>
         <RouterLink
           v-for="log in paletteLogPreview"
           :key="`${log.playlist_id}-${log.created_at}`"
@@ -144,21 +133,23 @@
     <!-- 4) Echo Notes -->
     <section class="panel echo" style="--panel-delay: 144ms">
       <div class="panel-head">
-        <h3><span class="dot"></span>Echo Notes</h3>
+        <h3>Echo Notes<span class="dot" :style="echoDotStyle"></span></h3>
         <span class="hint">다른 사용자들의 한마디</span>
       </div>
 
       <div class="echo-card">
-        <p class="echo-text">오늘은 이 톤이 잘 맞는다</p>
+        <Transition name="echo-fade" mode="out-in">
+          <p :key="currentEchoNote" class="echo-text">{{ currentEchoNote }}</p>
+        </Transition>
         <div class="echo-line"></div>
-        <p class="echo-date">02.26</p>
+        <p class="echo-date">{{ echoDateLabel }}</p>
       </div>
     </section>
   </main>
 </template>
 
 <script setup>
-import { computed, onMounted, nextTick, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, nextTick, ref, watch } from 'vue';
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import { FreeMode } from 'swiper/modules';
 import 'swiper/css';
@@ -182,6 +173,26 @@ const spectrumPlaylists = ref([]);
 const spectrumErrorMessage = ref('');
 const paletteLogPreview = computed(() => paletteLog.paletteLogs.slice(0, 4));
 const isEnterReady = ref(false);
+const echoNotes = [
+  '오늘은 좀 울적하다..ㅜㅜ',
+  '오늘은 괜히 기분 좋음 ㅎㅎ',
+  '아무 일 없는데 괜히 마음이 축 처짐...',
+  '생각보다 평온해서 마음이 놓였다..',
+  '오늘따라 말하기도 귀찮네 ㅋㅋ',
+  '별거 없었는데 괜히 행복한 날!',
+  '괜찮은 줄 알았는데 좀 지쳤나봐..',
+  '그냥 오늘은 조용히 있고 싶다!!!!',
+  '오늘은 마음이 좀 가벼워서 좋다',
+  '별말 아닌데 괜히 계속 생각남..',
+  '기분이 왔다갔다해서 더 피곤함 ㅜ',
+  '소소한데 은근 웃을 일이 많았다 ㅋㅋ',
+  '하루가 왜 이렇게 길지..',
+  '괜히 센치해서 기록 남겨둠 ㅎㅎ',
+  '오늘의 나는 좀 천천히 가고 싶음...'
+];
+const currentEchoNote = ref(echoNotes[0]);
+
+let echoRotationTimer = null;
 
 /* ---------- 라우팅 헬퍼 ---------- */
 // 지금은 임시로 /playlist?id=... 형태
@@ -287,6 +298,38 @@ function getBrightness(color) {
   return (r * 299 + g * 587 + b * 114) / 1000;
 }
 
+function pickNextEchoNote() {
+  if (echoNotes.length <= 1) {
+    currentEchoNote.value = echoNotes[0] || '';
+    return;
+  }
+
+  let nextNote = currentEchoNote.value;
+  while (nextNote === currentEchoNote.value) {
+    nextNote = echoNotes[Math.floor(Math.random() * echoNotes.length)];
+  }
+
+  currentEchoNote.value = nextNote;
+}
+
+function startEchoRotation() {
+  pickNextEchoNote();
+  echoRotationTimer = window.setInterval(() => {
+    pickNextEchoNote();
+  }, 4000);
+}
+
+const echoDotStyle = computed(() => ({
+  backgroundColor: dailyPlaylist.value?.color_hex || '#7b56d7'
+}));
+
+const echoDateLabel = computed(() => {
+  const today = new Date();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  return `${month}.${day}`;
+});
+
 /* ---------- Palette Log: 배경명도에 따라 글자색 자동 ---------- */
 function applyLogItemTheme(root) {
   if (!root) return;
@@ -315,6 +358,7 @@ function applyLogItemTheme(root) {
 
 onMounted(async () => {
   isEnterReady.value = false;
+  startEchoRotation();
   await paletteLog.load({ silent: true });
   await loadDailyPlaylist();
   await loadSpectrumPlaylists();
@@ -327,6 +371,13 @@ onMounted(async () => {
       isEnterReady.value = true;
     });
   });
+});
+
+onBeforeUnmount(() => {
+  if (echoRotationTimer) {
+    window.clearInterval(echoRotationTimer);
+    echoRotationTimer = null;
+  }
 });
 
 watch(
@@ -681,29 +732,45 @@ watch(
   border-radius: 999px;
   background: #7b56d7;
   display: inline-block;
-  margin-right: 8px;
+  margin-left: 8px;
 }
 
 .echo-card {
-  padding: 26px 8px 10px;
   text-align: center;
 }
 
 .echo-text {
-  margin: 0 0 18px;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 600;
+  line-height: 1.4;
+  min-height: calc(18px * 1.4 * 2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .echo-line {
   height: 1px;
-  margin: 0 12px 12px;
+  margin: 0 12px 10px;
 }
 
 .echo-date {
   margin: 0;
   font-size: 10px;
   font-weight: 600;
+}
+
+.echo-fade-enter-active,
+.echo-fade-leave-active {
+  transition:
+    opacity 0.35s ease,
+    transform 0.35s ease;
+}
+
+.echo-fade-enter-from,
+.echo-fade-leave-to {
+  opacity: 0;
+  transform: translateY(4px);
 }
 
 @keyframes main-panel-enter {
