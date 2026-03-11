@@ -34,7 +34,7 @@ const menuSections = reactive([
     items: [
       { label: '비밀번호 잠금', value: 'OFF', toggle: true },
       { label: '알림 설정', value: 'ON', toggle: true },
-      { label: '재생 환경 설정', route: '/play-setting' }
+      { label: '데이터 절약', value: 'ON', toggle: true }
     ]
   },
   {
@@ -64,9 +64,28 @@ const goTo = (route) => {
   if (route) router.push(route);
 };
 
+const openPendingFeatureAlert = () => {
+  toast.show('준비 중인 기능입니다');
+};
+
 const toggleMenuItem = (item) => {
   if (!item?.toggle) return;
+
   item.value = item.value === 'ON' ? 'OFF' : 'ON';
+
+  if (item.label === '비밀번호 잠금') {
+    toast.show(item.value === 'ON' ? '비밀번호 잠금이 적용되었습니다' : '비밀번호 잠금이 해제되었습니다');
+    return;
+  }
+
+  if (item.label === '알림 설정') {
+    toast.show(item.value === 'ON' ? '알림이 설정되었습니다' : '알림이 해제되었습니다');
+    return;
+  }
+
+  if (item.label === '데이터 절약') {
+    toast.show(item.value === 'ON' ? '데이터 절약이 적용되었습니다' : '데이터 절약이 해제되었습니다');
+  }
 };
 
 function formatMembershipPlan(plan) {
@@ -201,7 +220,7 @@ const confirmWithdraw = async () => {
         <template v-for="item in section.items" :key="item.label">
           <div v-if="item.route" class="menu-item">
             <span>{{ item.label }}</span>
-            <button type="button" class="menu-arrow-button" @click="goTo(item.route)">
+            <button type="button" class="menu-arrow-button" @click="openPendingFeatureAlert">
               <img class="menu-arrow" src="@/assets/icons/arrow-right.svg" alt="" />
             </button>
           </div>
