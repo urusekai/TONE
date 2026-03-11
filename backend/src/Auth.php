@@ -14,8 +14,6 @@ final class Auth
             return $userUuid;
         }
 
-        http_response_code(401);
-        echo json_encode(['message' => '로그인이 필요합니다.'], JSON_UNESCAPED_UNICODE);
-        exit;
+        app_error('로그인이 필요합니다.', 401);
     }
 }

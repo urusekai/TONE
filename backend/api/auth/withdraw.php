@@ -15,17 +15,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 // POST 요청만 허용
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405);
-    echo json_encode(['message' => 'POST 요청만 허용됩니다.'], JSON_UNESCAPED_UNICODE);
-    exit;
+    app_error('POST 요청만 허용됩니다.', 405);
 }
 
 // 로그인 여부 확인
 $userUuid = trim((string) ($_SESSION['user_uuid'] ?? ''));
 if ($userUuid === '') {
-    http_response_code(401);
-    echo json_encode(['message' => '로그인이 필요합니다.'], JSON_UNESCAPED_UNICODE);
-    exit;
+    app_error('로그인이 필요합니다.', 401);
 }
 
 try {
@@ -36,9 +32,7 @@ try {
     $stmt->execute(['user_uuid' => $userUuid]);
 
     if ($stmt->rowCount() < 1) {
-        http_response_code(404);
-        echo json_encode(['message' => '삭제할 회원 정보를 찾을 수 없습니다.'], JSON_UNESCAPED_UNICODE);
-        exit;
+        app_error('삭제할 회원 정보를 찾을 수 없습니다.', 404);
     }
 
     // 세션 데이터 제거
@@ -58,4 +52,3 @@ try {
     http_response_code(500);
     echo json_encode(['message' => '회원 탈퇴 중 서버 오류가 발생했습니다.'], JSON_UNESCAPED_UNICODE);
 }
-

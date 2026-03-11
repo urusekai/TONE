@@ -13,16 +13,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
-    http_response_code(405);
-    echo json_encode(['message' => 'GET 요청만 허용됩니다.'], JSON_UNESCAPED_UNICODE);
-    exit;
+    app_error('GET 요청만 허용됩니다.', 405);
 }
 
 $userUuid = trim((string) ($_SESSION['user_uuid'] ?? ''));
 if ($userUuid === '') {
-    http_response_code(401);
-    echo json_encode(['message' => '로그인이 필요합니다.'], JSON_UNESCAPED_UNICODE);
-    exit;
+    app_error('로그인이 필요합니다.', 401);
 }
 
 try {
@@ -32,9 +28,7 @@ try {
     $playlistCount = (int) $countStmt->fetchColumn();
 
     if ($playlistCount < 1) {
-        http_response_code(404);
-        echo json_encode(['message' => '플레이리스트를 찾을 수 없습니다.'], JSON_UNESCAPED_UNICODE);
-        exit;
+        app_error('플레이리스트를 찾을 수 없습니다.', 404);
     }
 
     $today = new DateTimeImmutable('today');
@@ -78,9 +72,7 @@ try {
     $playlist = $dailyStmt->fetch();
 
     if (!$playlist) {
-        http_response_code(404);
-        echo json_encode(['message' => '오늘의 플레이리스트를 찾을 수 없습니다.'], JSON_UNESCAPED_UNICODE);
-        exit;
+        app_error('오늘의 플레이리스트를 찾을 수 없습니다.', 404);
     }
 
     echo json_encode([

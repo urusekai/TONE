@@ -15,25 +15,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 // POST 요청만 허용
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405);
-    echo json_encode(['message' => 'POST 요청만 허용됩니다.'], JSON_UNESCAPED_UNICODE);
-    exit;
+    app_error('POST 요청만 허용됩니다.', 405);
 }
 
 // 로그인 여부 확인
 $userUuid = trim((string) ($_SESSION['user_uuid'] ?? ''));
 if ($userUuid === '') {
-    http_response_code(401);
-    echo json_encode(['message' => '로그인이 필요합니다.'], JSON_UNESCAPED_UNICODE);
-    exit;
+    app_error('로그인이 필요합니다.', 401);
 }
 
 // JSON 본문 파싱
 $payload = json_decode(file_get_contents('php://input'), true);
 if (!is_array($payload)) {
-    http_response_code(400);
-    echo json_encode(['message' => '잘못된 요청 본문입니다.'], JSON_UNESCAPED_UNICODE);
-    exit;
+    app_error('잘못된 요청 본문입니다.', 400);
 }
 
 // 입력값 정리
@@ -44,37 +38,27 @@ $profileColor = trim((string) ($payload['profileColor'] ?? ''));
 
 // 필수값 검증
 if ($email === '' || $nickname === '') {
-    http_response_code(400);
-    echo json_encode(['message' => '이메일과 닉네임은 필수입니다.'], JSON_UNESCAPED_UNICODE);
-    exit;
+    app_error('이메일과 닉네임은 필수입니다.', 400);
 }
 
 // 이메일 형식 검증
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    http_response_code(400);
-    echo json_encode(['message' => '이메일 형식이 올바르지 않습니다.'], JSON_UNESCAPED_UNICODE);
-    exit;
+    app_error('이메일 형식이 올바르지 않습니다.', 400);
 }
 
 // 닉네임 길이 검증 (2~5자)
 $nicknameLength = function_exists('mb_strlen') ? mb_strlen($nickname) : strlen($nickname);
 if ($nicknameLength < 2 || $nicknameLength > 5) {
-    http_response_code(400);
-    echo json_encode(['message' => '닉네임은 2~5자로 입력해주세요.'], JSON_UNESCAPED_UNICODE);
-    exit;
+    app_error('닉네임은 2~5자로 입력해주세요.', 400);
 }
 
 if ($profileColor !== '' && !preg_match('/^#[0-9A-Fa-f]{6}$/', $profileColor)) {
-    http_response_code(400);
-    echo json_encode(['message' => '프로필 색상 형식이 올바르지 않습니다.'], JSON_UNESCAPED_UNICODE);
-    exit;
+    app_error('프로필 색상 형식이 올바르지 않습니다.', 400);
 }
 
 // 비밀번호가 들어온 경우만 검증
 if ($password !== '' && strlen($password) < 8) {
-    http_response_code(400);
-    echo json_encode(['message' => '비밀번호는 8자 이상이어야 합니다.'], JSON_UNESCAPED_UNICODE);
-    exit;
+    app_error('비밀번호는 8자 이상이어야 합니다.', 400);
 }
 
 try {
@@ -91,9 +75,7 @@ try {
     $currentUser = $userStmt->fetch();
 
     if (!$currentUser) {
-        http_response_code(404);
-        echo json_encode(['message' => '사용자 정보를 찾을 수 없습니다.'], JSON_UNESCAPED_UNICODE);
-        exit;
+        app_error('사용자 정보를 찾을 수 없습니다.', 404);
     }
 
     // 이메일 중복 확인(본인 제외)
@@ -108,9 +90,7 @@ try {
         'user_uuid' => $userUuid
     ]);
     if ($emailStmt->fetch()) {
-        http_response_code(409);
-        echo json_encode(['message' => '이미 가입된 이메일입니다.'], JSON_UNESCAPED_UNICODE);
-        exit;
+        app_error('이미 가입된 이메일입니다.', 409);
     }
 
     // 비밀번호 포함/미포함 분기 업데이트
