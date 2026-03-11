@@ -3,8 +3,8 @@ import { apiClient } from '@/services/httpClient';
 
 async function hasServerSession() {
   try {
-    await apiClient.get('/api/auth/me.php');
-    return true;
+    const response = await apiClient.get('/api/auth/me.php');
+    return response?.data?.success === true;
   } catch {
     return false;
   }
