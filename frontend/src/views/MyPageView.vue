@@ -74,7 +74,9 @@ const toggleMenuItem = (item) => {
   item.value = item.value === 'ON' ? 'OFF' : 'ON';
 
   if (item.label === '비밀번호 잠금') {
-    toast.show(item.value === 'ON' ? '비밀번호 잠금이 적용되었습니다' : '비밀번호 잠금이 해제되었습니다');
+    toast.show(
+      item.value === 'ON' ? '비밀번호 잠금이 적용되었습니다' : '비밀번호 잠금이 해제되었습니다'
+    );
     return;
   }
 
@@ -84,7 +86,9 @@ const toggleMenuItem = (item) => {
   }
 
   if (item.label === '데이터 절약') {
-    toast.show(item.value === 'ON' ? '데이터 절약이 적용되었습니다' : '데이터 절약이 해제되었습니다');
+    toast.show(
+      item.value === 'ON' ? '데이터 절약이 적용되었습니다' : '데이터 절약이 해제되었습니다'
+    );
   }
 };
 
@@ -218,24 +222,33 @@ const confirmWithdraw = async () => {
         <h2 class="group-title">{{ section.title }}</h2>
 
         <template v-for="item in section.items" :key="item.label">
-          <div v-if="item.route" class="menu-item">
+          <button
+            v-if="item.route"
+            type="button"
+            class="menu-item menu-item-button"
+            @click="openPendingFeatureAlert"
+          >
             <span>{{ item.label }}</span>
-            <button type="button" class="menu-arrow-button" @click="openPendingFeatureAlert">
+            <span class="menu-arrow-button" aria-hidden="true">
               <img class="menu-arrow" src="@/assets/icons/arrow-right.svg" alt="" />
-            </button>
-          </div>
+            </span>
+          </button>
+
+          <button
+            v-else-if="item.toggle"
+            type="button"
+            class="menu-item menu-item-button"
+            @click="toggleMenuItem(item)"
+          >
+            <span>{{ item.label }}</span>
+            <span class="menu-value-button">
+              {{ item.value }}
+            </span>
+          </button>
 
           <div v-else class="menu-item">
             <span>{{ item.label }}</span>
-            <button
-              v-if="item.toggle"
-              type="button"
-              class="menu-value-button"
-              @click="toggleMenuItem(item)"
-            >
-              {{ item.value }}
-            </button>
-            <span v-else>{{ item.value }}</span>
+            <span>{{ item.value }}</span>
           </div>
         </template>
       </section>
@@ -380,6 +393,22 @@ const confirmWithdraw = async () => {
   color: var(--color-text-primary);
 }
 
+#mypage .menu-item-button {
+  background: none;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  border-bottom: 1px solid #e5e5e5;
+  color: inherit;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.2;
+  text-align: inherit;
+  appearance: none;
+  cursor: pointer;
+}
+
 #mypage .menu-arrow {
   width: 16px;
   height: 16px;
@@ -391,18 +420,12 @@ const confirmWithdraw = async () => {
   align-items: center;
   justify-content: center;
   padding: 0;
-  background: none;
-  border: none;
-  cursor: pointer;
 }
 
 #mypage .menu-value-button {
   padding: 0;
-  background: none;
-  border: none;
   color: inherit;
   font: inherit;
-  cursor: pointer;
 }
 
 #mypage .withdraw-btn {
@@ -411,7 +434,11 @@ const confirmWithdraw = async () => {
   background: none;
   border: none;
   color: red;
-  text-align: left;
+  text-align: right;
+  display: block;
+  margin-left: auto;
+  margin-right: 0;
   margin-bottom: 20px;
+  text-decoration: underline;
 }
 </style>
