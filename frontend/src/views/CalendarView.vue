@@ -10,7 +10,6 @@ import { updateMyProfileColor } from '@/services/userService';
 import { fetchTodayCalendarPlaylist } from '@/services/calendarService';
 import { playPlaylistFirstTrack } from '@/services/playlistService';
 import PlaylistActionControls from '@/components/PlaylistActionControls.vue';
-import ToastMessage from '@/components/ToastMessage.vue';
 
 const authStore = useAuthStore();
 const player = usePlayerStore();
@@ -48,8 +47,6 @@ const memoText = ref('');
 const isMonthLoading = ref(false);
 const isSavingMemo = ref(false);
 const todayFallbackEntry = ref(null);
-const toastMessage = ref('');
-const isToastOpen = ref(false);
 const isEnterReady = ref(false);
 
 const calendarStore = useCalendarStore();
@@ -94,9 +91,10 @@ const selectedData = computed(() => {
   return calendarStore.calendarData[selectedKey.value] || createDefaultEntry();
 });
 
-const hasSelectedEntry = computed(() =>
-  Boolean(calendarStore.calendarData[selectedKey.value]) ||
-  (selectedKey.value === todayKey && Boolean(todayFallbackEntry.value))
+const hasSelectedEntry = computed(
+  () =>
+    Boolean(calendarStore.calendarData[selectedKey.value]) ||
+    (selectedKey.value === todayKey && Boolean(todayFallbackEntry.value))
 );
 
 /* =========================
@@ -205,8 +203,7 @@ async function loadMonthEntries() {
     });
   } catch (error) {
     todayFallbackEntry.value = null;
-    const message =
-      error instanceof Error ? error.message : '캘린더 기록을 불러오지 못했습니다.';
+    const message = error instanceof Error ? error.message : '캘린더 기록을 불러오지 못했습니다.';
     window.alert(message);
   } finally {
     isMonthLoading.value = false;
@@ -223,10 +220,9 @@ async function saveMemo() {
     if (selectedKey.value === todayKey) {
       todayFallbackEntry.value = null;
     }
-    showToast('저장되었습니다!');
+    toast.show('캘린더에 저장되었습니다');
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : '메모 저장 중 오류가 발생했습니다.';
+    const message = error instanceof Error ? error.message : '메모 저장 중 오류가 발생했습니다.';
     window.alert(message);
   } finally {
     isSavingMemo.value = false;
@@ -235,15 +231,6 @@ async function saveMemo() {
 
 function handleMemoInput(event) {
   memoText.value = event.target.value;
-}
-
-function showToast(message) {
-  toastMessage.value = message;
-  isToastOpen.value = false;
-
-  window.requestAnimationFrame(() => {
-    isToastOpen.value = true;
-  });
 }
 
 async function handlePlayPlaylist() {
@@ -282,10 +269,6 @@ async function handleTogglePaletteLog() {
         saved: Boolean(result?.saved)
       });
     }
-
-    toast.show(
-      Boolean(result?.saved) ? '팔레트로그에 저장되었습니다' : '팔레트로그에서 삭제되었습니다'
-    );
   } catch (error) {
     const message =
       error instanceof Error ? error.message : '팔레트 로그 저장 처리에 실패했습니다.';
@@ -310,7 +293,7 @@ async function setProfileColor() {
     const result = await updateMyProfileColor(color);
     const nextColor = result?.profileColor || color;
     authStore.setProfileColor(nextColor);
-    showToast('프로필이 설정되었습니다.');
+    toast.show('프로필이 설정되었습니다');
   } catch (error) {
     const message =
       error instanceof Error ? error.message : '프로필 색상 변경 중 오류가 발생했습니다.';
@@ -320,9 +303,13 @@ async function setProfileColor() {
   }
 }
 
-watch(currentMonthKey, () => {
-  loadMonthEntries();
-}, { immediate: true });
+watch(
+  currentMonthKey,
+  () => {
+    loadMonthEntries();
+  },
+  { immediate: true }
+);
 
 watch(
   () => calendarStore.calendarData,
@@ -452,7 +439,7 @@ watch(
       <section class="memo-card" style="--calendar-card-delay: 112ms">
         <div class="memo-section">
           <div class="memo-header">
-            <h4>기록 메모</h4>
+            <h4>오늘의 한마디</h4>
             <div class="memo-buttons">
               <button
                 type="button"
@@ -482,7 +469,6 @@ watch(
         </div>
       </section>
     </main>
-    <ToastMessage :open="isToastOpen" :message="toastMessage" @close="isToastOpen = false" />
   </div>
 </template>
 
@@ -818,5 +804,4 @@ watch(
     transform: translateY(0);
   }
 }
-
 </style>

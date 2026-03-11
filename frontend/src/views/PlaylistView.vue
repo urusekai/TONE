@@ -3,7 +3,6 @@ import { computed, nextTick, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { usePlayerStore } from '@/stores/player';
 import { usePaletteLogStore } from '@/stores/paletteLog';
-import { useToastStore } from '@/stores/toast';
 import PlaylistActionControls from '@/components/PlaylistActionControls.vue';
 import trackThumbImage from '@/assets/images/thumb.png';
 import likeIcon from '@/assets/icons/like.svg';
@@ -19,7 +18,6 @@ import {
 const route = useRoute();
 const player = usePlayerStore();
 const paletteLog = usePaletteLogStore();
-const toast = useToastStore();
 const playlistId = computed(() => String(route.query.id || '').trim());
 const isLoading = ref(false);
 const isLikeSubmitting = ref(false);
@@ -106,10 +104,6 @@ async function handleToggleSave() {
         saved: Boolean(result?.saved)
       });
     }
-
-    toast.show(
-      Boolean(result?.saved) ? '팔레트로그에 저장되었습니다' : '팔레트로그에서 삭제되었습니다'
-    );
   } catch (error) {
     const message =
       error instanceof Error ? error.message : '팔레트 로그 저장 처리에 실패했습니다.';

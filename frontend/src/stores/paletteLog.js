@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { apiRequest } from '@/services/httpClient';
+import { useToastStore } from '@/stores/toast';
 
 function isLoginRequiredError(error) {
   return error instanceof Error && error.message.includes('로그인이 필요합니다.');
@@ -69,6 +70,7 @@ export const usePaletteLogStore = defineStore('paletteLog', {
         return null;
       }
 
+      const toast = useToastStore();
       this.setPending(normalizedPlaylistId, true);
 
       try {
@@ -87,6 +89,9 @@ export const usePaletteLogStore = defineStore('paletteLog', {
         );
 
         await this.load({ force: true, silent: true });
+        toast.show(
+          Boolean(result?.saved) ? '팔레트로그에 저장되었습니다' : '팔레트로그에서 삭제되었습니다'
+        );
 
         return result;
       } finally {

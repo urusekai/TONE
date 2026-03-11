@@ -84,7 +84,6 @@
 import { nextTick, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { usePaletteLogStore } from '@/stores/paletteLog';
-import { useToastStore } from '@/stores/toast';
 import { apiRequest } from '@/services/httpClient';
 
 /**
@@ -99,7 +98,6 @@ import likeFullIcon from '@/assets/icons/like_full.svg';
 
 const router = useRouter();
 const paletteLog = usePaletteLogStore();
-const toast = useToastStore();
 
 const activePid = ref('');
 const isLoading = ref(false);
@@ -218,9 +216,6 @@ async function handleToggleSave(item) {
     if (!result) return;
 
     item.saved = Boolean(result?.saved);
-    toast.show(
-      Boolean(result?.saved) ? '팔레트로그에 저장되었습니다' : '팔레트로그에서 삭제되었습니다'
-    );
   } catch (error) {
     const message =
       error instanceof Error ? error.message : '팔레트 로그 저장 처리에 실패했습니다.';

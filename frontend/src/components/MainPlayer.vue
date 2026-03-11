@@ -3,7 +3,6 @@ import { computed, nextTick, ref, watch } from 'vue';
 import MarqueeText from '@/components/MarqueeText.vue';
 import { usePlayerStore } from '@/stores/player';
 import { usePaletteLogStore } from '@/stores/paletteLog';
-import { useToastStore } from '@/stores/toast';
 import { apiRequest } from '@/services/httpClient';
 
 import arrowDown from '@/assets/icons/arrow-down.svg';
@@ -18,7 +17,6 @@ import repeatOneIcon from '@/assets/icons/repeat-one.svg';
 
 const player = usePlayerStore();
 const paletteLog = usePaletteLogStore();
-const toast = useToastStore();
 const isMV = ref(false);
 const videoRef = ref(null);
 const isLikeSubmitting = ref(false);
@@ -234,10 +232,6 @@ async function handleToggleSave() {
     player.patchCurrentPlaylist({
       saved: Boolean(result?.saved)
     });
-
-    toast.show(
-      Boolean(result?.saved) ? '팔레트로그에 저장되었습니다' : '팔레트로그에서 삭제되었습니다'
-    );
   } catch (error) {
     const message = error instanceof Error ? error.message : '팔레트 로그 저장 처리에 실패했습니다.';
     window.alert(message);

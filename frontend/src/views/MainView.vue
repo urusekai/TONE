@@ -158,7 +158,6 @@ import 'swiper/css';
 import 'swiper/css/free-mode';
 import { usePaletteLogStore } from '@/stores/paletteLog';
 import { usePlayerStore } from '@/stores/player';
-import { useToastStore } from '@/stores/toast';
 import { apiRequest } from '@/services/httpClient';
 import { playPlaylistFirstTrack } from '@/services/playlistService';
 import PlaylistActionControls from '@/components/PlaylistActionControls.vue';
@@ -167,7 +166,6 @@ import addCompleteIcon from '@/assets/icons/addComplete.svg';
 
 const paletteLog = usePaletteLogStore();
 const player = usePlayerStore();
-const toast = useToastStore();
 const swiperModules = [FreeMode];
 
 const rootEl = ref(null);
@@ -230,12 +228,7 @@ async function handlePlayDailyPlaylist() {
 
 async function handleTogglePalette(item) {
   try {
-    const result = await paletteLog.toggle(item?.id);
-    if (!result) return;
-
-    toast.show(
-      Boolean(result?.saved) ? '팔레트로그에 저장되었습니다' : '팔레트로그에서 삭제되었습니다'
-    );
+    await paletteLog.toggle(item?.id);
   } catch (error) {
     const message =
       error instanceof Error ? error.message : '팔레트 로그 저장 처리에 실패했습니다.';
