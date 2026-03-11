@@ -1,0 +1,79 @@
+name: Deploy To Dothome
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: deploy-dothome-main
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer:v2
+          coverage: none
+
+      - name: Install frontend dependencies
+        run: npm ci
+        working-directory: frontend
+
+      - name: Install backend dependencies
+        run: composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction
+        working-directory: backend
+
+      - name: Build frontend
+        run: npm run build
+        working-directory: frontend
+        env:
+          VITE_API_BASE_URL: /backend
+
+      - name: Prepare deploy package
+        run: |
+          mkdir -p deploy/html
+          mkdir -p deploy/html/backend
+
+          rsync -a --delete frontend/dist/ deploy/html/
+          rsync -a --delete --exclude-from=.github/deploy-exclude.txt backend/ deploy/html/backend/
+
+      - name: Install lftp
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y lftp
+
+      - name: Upload to Dothome via FTP
+        env:
+          DOTHOME_FTP_HOST: ${{ secrets.DOTHOME_FTP_HOST }}
+          DOTHOME_FTP_PORT: ${{ secrets.DOTHOME_FTP_PORT }}
+          DOTHOME_FTP_USERNAME: ${{ secrets.DOTHOME_FTP_USERNAME }}
+          DOTHOME_FTP_PASSWORD: ${{ secrets.DOTHOME_FTP_PASSWORD }}
+        run: |
+          FTP_PORT="${DOTHOME_FTP_PORT:-21}"
+
+          lftp -u "${DOTHOME_FTP_USERNAME},${DOTHOME_FTP_PASSWORD}" -p "${FTP_PORT}" "${DOTHOME_FTP_HOST}" <<'EOF'
+          set ftp:ssl-allow no
+          set ssl:verify-certificate no
+          set xfer:clobber on
+          mirror --reverse --delete --verbose \
+            --exclude-glob backend/.env \
+            --exclude-glob backend/.env.* \
+            deploy/html/ html/
+          bye
+          EOF
