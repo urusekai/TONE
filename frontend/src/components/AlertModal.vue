@@ -64,5 +64,7 @@ onBeforeUnmount(() => {
 <style scoped>
 .modal-body-text {
   white-space: pre-line;
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 </style>

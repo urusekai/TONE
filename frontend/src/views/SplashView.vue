@@ -7,18 +7,15 @@
 <script setup>
 import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { buildApiUrl } from '@/services/httpClient';
+import { apiClient } from '@/services/httpClient';
 
 const router = useRouter();
 
 onMounted(() => {
   setTimeout(async () => {
     try {
-      const response = await fetch(buildApiUrl('/api/auth/me.php'), {
-        credentials: 'include'
-      });
-
-      router.replace(response.ok ? '/main' : '/login');
+      await apiClient.get('/api/auth/me.php');
+      router.replace('/main');
     } catch {
       router.replace('/login');
     }
