@@ -15,9 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 // GET 요청만 허용
 if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
-    http_response_code(405);
-    echo json_encode(['message' => 'GET 요청만 허용됩니다.'], JSON_UNESCAPED_UNICODE);
-    exit;
+    app_error('GET 요청만 허용됩니다.', 405);
 }
 
 // 쿼리 파라미터에서 아이디 가져오기
@@ -25,16 +23,12 @@ $id = isset($_GET['id']) ? trim((string) $_GET['id']) : '';
 
 // 필수값 검증
 if ($id === '') {
-    http_response_code(400);
-    echo json_encode(['message' => '아이디를 입력해주세요.'], JSON_UNESCAPED_UNICODE);
-    exit;
+    app_error('아이디를 입력해주세요.', 400);
 }
 
 // 아이디 형식 검증
 if (!preg_match('/^[a-zA-Z0-9_]{4,20}$/', $id)) {
-    http_response_code(400);
-    echo json_encode(['message' => '아이디는 4~20자의 영문, 숫자, 언더스코어(_)만 가능합니다.'], JSON_UNESCAPED_UNICODE);
-    exit;
+    app_error('아이디는 4~20자의 영문, 숫자, 언더스코어(_)만 가능합니다.', 400);
 }
 
 try {

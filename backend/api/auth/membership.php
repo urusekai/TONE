@@ -13,30 +13,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405);
-    echo json_encode(['message' => 'POST 요청만 허용됩니다.'], JSON_UNESCAPED_UNICODE);
-    exit;
+    app_error('POST 요청만 허용됩니다.', 405);
 }
 
 $userUuid = trim((string) ($_SESSION['user_uuid'] ?? ''));
 if ($userUuid === '') {
-    http_response_code(401);
-    echo json_encode(['message' => '로그인이 필요합니다.'], JSON_UNESCAPED_UNICODE);
-    exit;
+    app_error('로그인이 필요합니다.', 401);
 }
 
 $payload = json_decode(file_get_contents('php://input'), true);
 if (!is_array($payload)) {
-    http_response_code(400);
-    echo json_encode(['message' => '잘못된 요청 본문입니다.'], JSON_UNESCAPED_UNICODE);
-    exit;
+    app_error('잘못된 요청 본문입니다.', 400);
 }
 
 $plan = trim((string) ($payload['plan'] ?? ''));
 if (!in_array($plan, ['basic', 'pro'], true)) {
-    http_response_code(400);
-    echo json_encode(['message' => '이용권 값이 올바르지 않습니다.'], JSON_UNESCAPED_UNICODE);
-    exit;
+    app_error('이용권 값이 올바르지 않습니다.', 400);
 }
 
 try {
@@ -62,9 +54,7 @@ try {
     $user = $userStmt->fetch();
 
     if (!$user) {
-        http_response_code(404);
-        echo json_encode(['message' => '사용자 정보를 찾을 수 없습니다.'], JSON_UNESCAPED_UNICODE);
-        exit;
+        app_error('사용자 정보를 찾을 수 없습니다.', 404);
     }
 
     echo json_encode([

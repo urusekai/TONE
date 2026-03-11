@@ -23,9 +23,7 @@ function redirectFrontend(string $path, array $query = []): void
 
 // GET 요청만 허용
 if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
-    http_response_code(405);
-    echo json_encode(['message' => 'GET 요청만 허용됩니다.'], JSON_UNESCAPED_UNICODE);
-    exit;
+    app_error('GET 요청만 허용됩니다.', 405);
 }
 
 // 콜백 파라미터 확인

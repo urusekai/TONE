@@ -13,18 +13,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
-    http_response_code(405);
-    echo json_encode(['message' => 'GET 요청만 허용됩니다.'], JSON_UNESCAPED_UNICODE);
-    exit;
+    app_error('GET 요청만 허용됩니다.', 405);
 }
 
 $userUuid = Auth::requireAuthenticatedUser();
 
 $mood = trim((string) ($_GET['mood'] ?? ''));
 if ($mood === '') {
-    http_response_code(400);
-    echo json_encode(['message' => 'mood 값이 필요합니다.'], JSON_UNESCAPED_UNICODE);
-    exit;
+    app_error('mood 값이 필요합니다.', 400);
 }
 
 try {
@@ -40,9 +36,7 @@ try {
     $category = $categoryStmt->fetch();
 
     if (!$category) {
-        http_response_code(404);
-        echo json_encode(['message' => '카테고리를 찾을 수 없습니다.'], JSON_UNESCAPED_UNICODE);
-        exit;
+        app_error('카테고리를 찾을 수 없습니다.', 404);
     }
 
     $playlistsStmt = $pdo->prepare(

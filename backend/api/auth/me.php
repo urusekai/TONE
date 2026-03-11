@@ -15,17 +15,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 // GET 요청만 허용
 if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
-    http_response_code(405);
-    echo json_encode(['message' => 'GET 요청만 허용됩니다.'], JSON_UNESCAPED_UNICODE);
-    exit;
+    app_error('GET 요청만 허용됩니다.', 405);
 }
 
 // 로그인 여부 확인
 $userUuid = trim((string) ($_SESSION['user_uuid'] ?? ''));
 if ($userUuid === '') {
-    http_response_code(401);
-    echo json_encode(['message' => '로그인이 필요합니다.'], JSON_UNESCAPED_UNICODE);
-    exit;
+    app_error('로그인이 필요합니다.', 401);
 }
 
 try {
@@ -41,9 +37,7 @@ try {
 
     $user = $stmt->fetch();
     if (!$user) {
-        http_response_code(404);
-        echo json_encode(['message' => '사용자 정보를 찾을 수 없습니다.'], JSON_UNESCAPED_UNICODE);
-        exit;
+        app_error('사용자 정보를 찾을 수 없습니다.', 404);
     }
 
     echo json_encode([

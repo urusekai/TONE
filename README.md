@@ -9,6 +9,11 @@
 TONE은 사용자에게 매일 팬톤컬러 기반의 색상과 그에 맞는 플레이리스트를 제공하여<br/>
 하루의 감정을 색과 음악으로 기록할 수 있는 뮤직 플랫폼입니다.
 </p>
+<p align="center">
+  <a href="http://toneapp.dothome.co.kr" target="_blank">
+    <img alt="Live Demo" src="https://img.shields.io/badge/Live%20Demo-toneapp.dothome.co.kr-3F5F73?style=for-the-badge&logo=googlechrome&logoColor=white" />
+  </a>
+</p>
 
 <br>
 
@@ -21,10 +26,13 @@ TONE은 사용자에게 매일 팬톤컬러 기반의 색상과 그에 맞는 �
   <img alt="Vue.js" hspace="3" src="https://img.shields.io/badge/vuejs-%2335495e.svg?style=for-the-badge&logo=vuedotjs&logoColor=%234FC08D" />
   <img alt="Vite" hspace="3" src="https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white" />
   <img alt="Pinia" hspace="3" src="https://img.shields.io/badge/Pinia-FFD859?style=for-the-badge&logo=pinia&logoColor=black" />
+  <img alt="Axios" hspace="3" src="https://img.shields.io/badge/Axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white" />
+  <img alt="Figma" hspace="3" src="https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white" />
   <br>
   <img alt="PHP" hspace="3" src="https://img.shields.io/badge/php-%23777BB4.svg?style=for-the-badge&logo=php&logoColor=white" />
   <img alt="MySQL" hspace="3" src="https://img.shields.io/badge/mysql-4479A1.svg?style=for-the-badge&logo=mysql&logoColor=white" />
   <img alt="Composer" hspace="3" src="https://img.shields.io/badge/composer-885630?style=for-the-badge&logo=composer&logoColor=white" />
+  <img alt="GitHub Actions" hspace="3" src="https://img.shields.io/badge/GitHub%20Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white" />
 </p>
 
 <br>
@@ -38,6 +46,18 @@ TONE은 사용자에게 매일 팬톤컬러 기반의 색상과 그에 맞는 �
 - `셔플 / 반복 재생` : 셔플, 전체 반복, 한 곡 반복 재생을 지원합니다.
 - `캘린더` : 하루의 메모와 플레이리스트를 기록하고 캘린더에서 확인할 수 있습니다.
 - `팔레트 로그` : 마음에 드는 플레이리스트를 저장해 기록으로 남길 수 있습니다.
+
+<br>
+
+## 🛠 개발 포인트
+
+- `GitHub Actions 자동배포` : `main` 머지 시 빌드와 의존성 설치 후 닷홈 서버로 자동 배포되도록 구성했습니다.
+- `GitHub 협업 프로세스` : 브랜치 전략, 커밋 컨벤션, Pull Request 템플릿으로 협업 흐름을 관리했습니다.
+- `소셜 로그인 연동` : 카카오, 구글, 네이버 OAuth 로그인 흐름과 리다이렉트를 구현했습니다.
+- `프론트-백엔드 전면 연동` : 주요 화면을 PHP API와 MySQL에 연결해 실제 데이터 기반으로 구현했습니다.
+- `Cloudflare R2 미디어 관리` : 커버, 음원, 영상 파일을 Cloudflare R2 공개 URL 기반으로 관리했습니다.
+- `Figma 기반 화면 설계` : Figma로 화면 구조와 UI를 설계하고 구현 단계에서 실제 화면에 맞게 조정했습니다.
+- `닷홈 배포 환경 구성` : Vue history 모드와 PHP 백엔드 구조를 닷홈 환경에 맞게 배포했습니다.
 
 <br>
 

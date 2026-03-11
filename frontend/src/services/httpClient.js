@@ -24,6 +24,15 @@ function parseError(error, fallbackMessage) {
   return fallbackMessage;
 }
 
+function parseAppError(data, fallbackMessage) {
+  const message = data?.message;
+  if (typeof message === 'string' && message.trim()) {
+    return message;
+  }
+
+  return fallbackMessage;
+}
+
 export async function apiRequest(
   path,
   options = {},
@@ -38,8 +47,20 @@ export async function apiRequest(
       ...restOptions
     });
 
+    if (
+      response.data &&
+      typeof response.data === 'object' &&
+      response.data.success === false
+    ) {
+      throw new Error(parseAppError(response.data, fallbackMessage));
+    }
+
     return response.data;
   } catch (error) {
+    if (error instanceof Error && !error?.response) {
+      throw error;
+    }
+
     throw new Error(parseError(error, fallbackMessage), { cause: error });
   }
 }

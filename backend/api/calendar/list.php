@@ -13,23 +13,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
-    http_response_code(405);
-    echo json_encode(['message' => 'GET 요청만 허용됩니다.'], JSON_UNESCAPED_UNICODE);
-    exit;
+    app_error('GET 요청만 허용됩니다.', 405);
 }
 
 $userUuid = trim((string) ($_SESSION['user_uuid'] ?? ''));
 if ($userUuid === '') {
-    http_response_code(401);
-    echo json_encode(['message' => '로그인이 필요합니다.'], JSON_UNESCAPED_UNICODE);
-    exit;
+    app_error('로그인이 필요합니다.', 401);
 }
 
 $month = trim((string) ($_GET['month'] ?? ''));
 if (!preg_match('/^\d{4}-\d{2}$/', $month)) {
-    http_response_code(400);
-    echo json_encode(['message' => 'month는 YYYY-MM 형식이어야 합니다.'], JSON_UNESCAPED_UNICODE);
-    exit;
+    app_error('month는 YYYY-MM 형식이어야 합니다.', 400);
 }
 
 $monthDate = DateTimeImmutable::createFromFormat('Y-m', $month);
@@ -38,9 +32,7 @@ if (
     !$monthDate instanceof DateTimeImmutable ||
     ($monthErrors !== false && (($monthErrors['warning_count'] ?? 0) > 0 || ($monthErrors['error_count'] ?? 0) > 0))
 ) {
-    http_response_code(400);
-    echo json_encode(['message' => '유효한 month 값이 아닙니다.'], JSON_UNESCAPED_UNICODE);
-    exit;
+    app_error('유효한 month 값이 아닙니다.', 400);
 }
 
 $monthStart = $monthDate->setDate((int) $monthDate->format('Y'), (int) $monthDate->format('m'), 1);
