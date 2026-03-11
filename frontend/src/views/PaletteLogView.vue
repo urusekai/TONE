@@ -335,13 +335,13 @@ watch(
 
 .pl-arrow img {
   display: block;
-  width: 6px;
-  height: 10px;
+  width: 18px;
+  height: 18px;
   filter: brightness(0) invert(1);
 }
 
 .pl-card:first-child .pl-arrow {
-  top: 40px;
+  top: 35px;
 }
 
 /* 제목 */
