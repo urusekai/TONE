@@ -263,7 +263,7 @@ watch(
 }
 
 .color-list {
-  padding: 25px var(--layout-x) calc(var(--app-main-bottom) + 12px);
+  padding: 25px var(--layout-x) 0;
   display: flex;
   flex-direction: column;
   gap: 22px;
