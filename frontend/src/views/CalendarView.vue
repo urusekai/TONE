@@ -670,6 +670,9 @@ watch(
 }
 
 #calendar .btn-profile-set {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: #fff;
   border: 1px solid #3f5f73;
   color: #3f5f73;
@@ -677,6 +680,7 @@ watch(
   border-radius: 20px;
   font-size: 10px;
   font-weight: 700;
+  line-height: 1;
   margin-top: 5px;
 }
 
