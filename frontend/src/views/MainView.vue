@@ -35,11 +35,12 @@
           />
         </div>
 
-        <div
+        <RouterLink
           class="daily-swatch"
+          :to="playlistTo(dailyPlaylist.id)"
           :style="{ backgroundColor: dailyPlaylist.color_hex }"
-          aria-hidden="true"
-        ></div>
+          :aria-label="`${dailyPlaylist.color_name} 플레이리스트로 이동`"
+        ></RouterLink>
       </div>
     </section>
 
