@@ -825,6 +825,7 @@ async function handleToggleSave() {
   display: none;
   width: 50px;
   height: 50px;
+  filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.18));
 }
 
 .main-player__play-toggle-btn img:last-child {
