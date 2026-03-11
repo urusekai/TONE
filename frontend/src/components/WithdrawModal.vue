@@ -83,6 +83,8 @@ watch(open, (v) => console.log('[WithdrawModal] prop open changed:', v));
   font-size: 16px;
   line-height: 1.5;
   font-weight: 600;
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
 .highlight {

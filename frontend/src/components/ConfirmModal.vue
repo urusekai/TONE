@@ -84,6 +84,8 @@ const emit = defineEmits(['close', 'confirm']);
   color: #333;
   margin: 0;
   white-space: pre-line;
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
 .modal-actions {
