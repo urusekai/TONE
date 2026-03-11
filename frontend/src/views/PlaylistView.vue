@@ -371,6 +371,19 @@ watch(
   gap: 10px;
   padding: 10px 5px;
   cursor: pointer;
+  border-radius: 14px;
+  transition:
+    transform 100ms ease,
+    box-shadow 100ms ease,
+    background-color 100ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  #playlist .playlist-track-item:hover {
+    transform: scale(1.015);
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+  }
 }
 
 #playlist .playlist-track-item__thumb {
