@@ -21,10 +21,13 @@ TONE은 사용자에게 매일 팬톤컬러 기반의 색상과 그에 맞는 �
   <img alt="Vue.js" hspace="3" src="https://img.shields.io/badge/vuejs-%2335495e.svg?style=for-the-badge&logo=vuedotjs&logoColor=%234FC08D" />
   <img alt="Vite" hspace="3" src="https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white" />
   <img alt="Pinia" hspace="3" src="https://img.shields.io/badge/Pinia-FFD859?style=for-the-badge&logo=pinia&logoColor=black" />
+  <img alt="Axios" hspace="3" src="https://img.shields.io/badge/Axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white" />
+  <img alt="Figma" hspace="3" src="https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white" />
   <br>
   <img alt="PHP" hspace="3" src="https://img.shields.io/badge/php-%23777BB4.svg?style=for-the-badge&logo=php&logoColor=white" />
   <img alt="MySQL" hspace="3" src="https://img.shields.io/badge/mysql-4479A1.svg?style=for-the-badge&logo=mysql&logoColor=white" />
   <img alt="Composer" hspace="3" src="https://img.shields.io/badge/composer-885630?style=for-the-badge&logo=composer&logoColor=white" />
+  <img alt="GitHub Actions" hspace="3" src="https://img.shields.io/badge/GitHub%20Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white" />
 </p>
 
 <br>
@@ -38,6 +41,18 @@ TONE은 사용자에게 매일 팬톤컬러 기반의 색상과 그에 맞는 �
 - `셔플 / 반복 재생` : 셔플, 전체 반복, 한 곡 반복 재생을 지원합니다.
 - `캘린더` : 하루의 메모와 플레이리스트를 기록하고 캘린더에서 확인할 수 있습니다.
 - `팔레트 로그` : 마음에 드는 플레이리스트를 저장해 기록으로 남길 수 있습니다.
+
+<br>
+
+## 🛠 개발 포인트
+
+- `GitHub Actions 자동배포` : `main` 브랜치 머지 시 프론트엔드 빌드와 백엔드 의존성 설치를 거쳐 닷홈 서버로 자동 배포되도록 구성했습니다.
+- `GitHub 협업 프로세스` : 브랜치 전략, 커밋 컨벤션, Pull Request 템플릿을 적용해 기능 개발과 병합 흐름을 일관되게 관리했습니다.
+- `소셜 로그인 연동` : 카카오, 구글, 네이버 OAuth 로그인 플로우를 구현하고, 회원가입/로그인 분기와 프론트 리다이렉트 흐름까지 연결했습니다.
+- `프론트-백엔드 전면 연동` : 메인, 플레이리스트, 캘린더, 팔레트 로그, 마이페이지 등 주요 화면을 PHP API와 MySQL 데이터베이스에 연결해 실제 데이터 기반으로 동작하도록 구현했습니다.
+- `Cloudflare R2 미디어 관리` : 커버 이미지, 음원, 영상 파일 경로를 Cloudflare R2 공개 URL 기반으로 관리해 미디어 자산을 서비스 구조에 맞게 분리했습니다.
+- `Figma 기반 화면 설계` : 서비스 구조와 사용자 흐름을 기준으로 화면 레이아웃과 UI를 Figma에서 설계하고, 구현 단계에서 디자인과 인터랙션을 실제 화면에 맞게 조정했습니다.
+- `닷홈 배포 환경 구성` : Vue history 모드 대응, 백엔드 환경변수 분리, PHP 런타임 파일 배치 등을 포함해 닷홈 웹호스팅에서 프론트/백엔드가 함께 동작하는 배포 구조를 구성했습니다.
 
 <br>
 
