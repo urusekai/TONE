@@ -49,6 +49,7 @@ import { reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { loginUser, startSocialLogin } from '@/services/authService';
 import { useAuthStore } from '@/stores/auth';
+import { showAlert } from '@/utils/alert';
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -67,7 +68,7 @@ async function handleLogin() {
   const password = form.pw;
 
   if (!id || !password) {
-    window.alert('아이디와 비밀번호를 입력해주세요.');
+    showAlert('아이디와 비밀번호를 입력해주세요.');
     return;
   }
 
@@ -83,7 +84,7 @@ async function handleLogin() {
     router.push('/main');
   } catch (error) {
     const message = error instanceof Error ? error.message : '로그인 중 오류가 발생했습니다.';
-    window.alert(message);
+    showAlert(message);
   } finally {
     isLoggingIn.value = false;
   }
@@ -95,7 +96,7 @@ function handleSocialLogin(provider) {
     return;
   }
 
-  window.alert('해당 소셜 로그인은 준비 중입니다.');
+  showAlert('해당 소셜 로그인은 준비 중입니다.');
 }
 </script>
 

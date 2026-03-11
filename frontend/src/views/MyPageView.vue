@@ -1,13 +1,17 @@
 <script setup>
 import { onMounted, ref, reactive } from 'vue';
 import { useRouter } from 'vue-router';
+import ConfirmModal from '@/components/ConfirmModal.vue';
 import WithdrawModal from '@/components/WithdrawModal.vue';
 import { logoutUser } from '@/services/authService';
 import { fetchMyProfile, withdrawMyAccount } from '@/services/userService';
 import { useAuthStore } from '@/stores/auth';
+import { useToastStore } from '@/stores/toast';
+import { showAlert } from '@/utils/alert';
 
 const router = useRouter();
 const authStore = useAuthStore();
+const toast = useToastStore();
 
 /* -----------------------
    사용자 데이터
@@ -30,7 +34,7 @@ const menuSections = reactive([
     items: [
       { label: '비밀번호 잠금', value: 'OFF', toggle: true },
       { label: '알림 설정', value: 'ON', toggle: true },
-      { label: '재생 환경 설정', route: '/play-setting' }
+      { label: '데이터 절약', value: 'ON', toggle: true }
     ]
   },
   {
@@ -60,9 +64,32 @@ const goTo = (route) => {
   if (route) router.push(route);
 };
 
+const openPendingFeatureAlert = () => {
+  toast.show('준비 중인 기능입니다');
+};
+
 const toggleMenuItem = (item) => {
   if (!item?.toggle) return;
+
   item.value = item.value === 'ON' ? 'OFF' : 'ON';
+
+  if (item.label === '비밀번호 잠금') {
+    toast.show(
+      item.value === 'ON' ? '비밀번호 잠금이 적용되었습니다' : '비밀번호 잠금이 해제되었습니다'
+    );
+    return;
+  }
+
+  if (item.label === '알림 설정') {
+    toast.show(item.value === 'ON' ? '알림이 설정되었습니다' : '알림이 해제되었습니다');
+    return;
+  }
+
+  if (item.label === '데이터 절약') {
+    toast.show(
+      item.value === 'ON' ? '데이터 절약이 적용되었습니다' : '데이터 절약이 해제되었습니다'
+    );
+  }
 };
 
 function formatMembershipPlan(plan) {
@@ -106,12 +133,27 @@ const clearAuthAndGoLogin = () => {
   router.replace('/login'); // 뒤로가기 방지
 };
 
-const logout = async () => {
+const isLogoutOpen = ref(false);
+const isLoggingOut = ref(false);
+
+const openLogout = () => {
+  isLogoutOpen.value = true;
+};
+
+const closeLogout = () => {
+  if (isLoggingOut.value) return;
+  isLogoutOpen.value = false;
+};
+
+const confirmLogout = async () => {
   try {
+    isLoggingOut.value = true;
     await logoutUser();
   } catch {
     // 서버 로그아웃 실패 시에도 프론트 상태는 정리
   } finally {
+    isLogoutOpen.value = false;
+    isLoggingOut.value = false;
     clearAuthAndGoLogin();
   }
 };
@@ -138,11 +180,11 @@ const confirmWithdraw = async () => {
     await withdrawMyAccount();
 
     isWithdrawOpen.value = false;
-    window.alert('회원 탈퇴가 완료되었습니다.');
+    toast.show('회원 탈퇴가 완료되었습니다');
     clearAuthAndGoLogin();
   } catch (error) {
     const message = error instanceof Error ? error.message : '회원 탈퇴 중 오류가 발생했습니다.';
-    window.alert(message);
+    showAlert(message);
   } finally {
     isWithdrawing.value = false;
   }
@@ -172,7 +214,7 @@ const confirmWithdraw = async () => {
 
       <!-- 로그아웃 -->
       <div class="logout-row">
-        <button class="logout-btn" @click="logout">로그아웃</button>
+        <button class="logout-btn" @click="openLogout">로그아웃</button>
       </div>
 
       <!-- 메뉴 -->
@@ -180,24 +222,33 @@ const confirmWithdraw = async () => {
         <h2 class="group-title">{{ section.title }}</h2>
 
         <template v-for="item in section.items" :key="item.label">
-          <div v-if="item.route" class="menu-item">
+          <button
+            v-if="item.route"
+            type="button"
+            class="menu-item menu-item-button"
+            @click="openPendingFeatureAlert"
+          >
             <span>{{ item.label }}</span>
-            <button type="button" class="menu-arrow-button" @click="goTo(item.route)">
+            <span class="menu-arrow-button" aria-hidden="true">
               <img class="menu-arrow" src="@/assets/icons/arrow-right.svg" alt="" />
-            </button>
-          </div>
+            </span>
+          </button>
+
+          <button
+            v-else-if="item.toggle"
+            type="button"
+            class="menu-item menu-item-button"
+            @click="toggleMenuItem(item)"
+          >
+            <span>{{ item.label }}</span>
+            <span class="menu-value-button">
+              {{ item.value }}
+            </span>
+          </button>
 
           <div v-else class="menu-item">
             <span>{{ item.label }}</span>
-            <button
-              v-if="item.toggle"
-              type="button"
-              class="menu-value-button"
-              @click="toggleMenuItem(item)"
-            >
-              {{ item.value }}
-            </button>
-            <span v-else>{{ item.value }}</span>
+            <span>{{ item.value }}</span>
           </div>
         </template>
       </section>
@@ -211,6 +262,16 @@ const confirmWithdraw = async () => {
       :loading="isWithdrawing"
       @close="closeWithdraw"
       @confirm="confirmWithdraw"
+    />
+    <ConfirmModal
+      :open="isLogoutOpen"
+      :loading="isLoggingOut"
+      title="로그아웃"
+      message="정말 로그아웃하시겠어요?"
+      confirm-text="로그아웃"
+      danger
+      @close="closeLogout"
+      @confirm="confirmLogout"
     />
   </main>
 </template>
@@ -332,6 +393,22 @@ const confirmWithdraw = async () => {
   color: var(--color-text-primary);
 }
 
+#mypage .menu-item-button {
+  background: none;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  border-bottom: 1px solid #e5e5e5;
+  color: inherit;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.2;
+  text-align: inherit;
+  appearance: none;
+  cursor: pointer;
+}
+
 #mypage .menu-arrow {
   width: 16px;
   height: 16px;
@@ -343,18 +420,12 @@ const confirmWithdraw = async () => {
   align-items: center;
   justify-content: center;
   padding: 0;
-  background: none;
-  border: none;
-  cursor: pointer;
 }
 
 #mypage .menu-value-button {
   padding: 0;
-  background: none;
-  border: none;
   color: inherit;
   font: inherit;
-  cursor: pointer;
 }
 
 #mypage .withdraw-btn {
@@ -363,7 +434,11 @@ const confirmWithdraw = async () => {
   background: none;
   border: none;
   color: red;
-  text-align: left;
+  text-align: right;
+  display: block;
+  margin-left: auto;
+  margin-right: 0;
   margin-bottom: 20px;
+  text-decoration: underline;
 }
 </style>

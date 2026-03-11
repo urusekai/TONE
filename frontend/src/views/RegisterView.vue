@@ -93,6 +93,7 @@ import DuplicateModal from '@/components/DuplicateModal.vue';
 import ProfileModal from '@/components/ProfileModal.vue';
 import { checkDuplicateId, registerUser } from '@/services/authService';
 import { useAuthStore } from '@/stores/auth';
+import { showAlert } from '@/utils/alert';
 import { validateRegisterId, validateRegisterPayload } from '@/utils/authValidation';
 
 const router = useRouter();
@@ -125,22 +126,22 @@ function handleRegister() {
   const validationMessage = validateRegisterPayload(payload, { requireProfileColor: false });
 
   if (validationMessage) {
-    window.alert(validationMessage);
+    showAlert(validationMessage);
     return;
   }
 
   if (!lastCheckedId.value || lastCheckedId.value !== currentId) {
-    window.alert('아이디 중복확인을 먼저 해주세요.');
+    showAlert('아이디 중복확인을 먼저 해주세요.');
     return;
   }
 
   if (!isIdAvailable.value) {
-    window.alert('사용할 수 없는 아이디입니다. 다른 아이디를 입력해주세요.');
+    showAlert('사용할 수 없는 아이디입니다. 다른 아이디를 입력해주세요.');
     return;
   }
 
   if (form.pw !== form.pwConfirm) {
-    window.alert('비밀번호가 일치하지 않습니다.');
+    showAlert('비밀번호가 일치하지 않습니다.');
     return;
   }
 
@@ -153,7 +154,7 @@ async function handleDuplicate() {
   const validationMessage = validateRegisterId(currentId);
 
   if (validationMessage) {
-    window.alert(validationMessage);
+    showAlert(validationMessage);
     return;
   }
 
@@ -165,7 +166,7 @@ async function handleDuplicate() {
     isIdAvailable.value = result.available;
     isDuplicateModalOpen.value = true;
   } catch {
-    window.alert('중복확인 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+    showAlert('중복확인 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
   } finally {
     isCheckingDuplicate.value = false;
   }
@@ -194,7 +195,7 @@ async function handleProfileConfirm(color) {
   const validationMessage = validateRegisterPayload(payload);
 
   if (validationMessage) {
-    window.alert(validationMessage);
+    showAlert(validationMessage);
     return;
   }
 
@@ -212,7 +213,7 @@ async function handleProfileConfirm(color) {
       error instanceof Error
         ? error.message
         : '회원가입 중 오류가 발생했습니다. 다시 시도해주세요.';
-    window.alert(message);
+    showAlert(message);
   } finally {
     isRegistering.value = false;
   }

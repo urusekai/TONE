@@ -85,6 +85,7 @@ import { nextTick, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { usePaletteLogStore } from '@/stores/paletteLog';
 import { apiRequest } from '@/services/httpClient';
+import { showAlert } from '@/utils/alert';
 
 /**
  * ✅ 에셋 경로는 전부 @/assets 로 통일
@@ -159,7 +160,7 @@ async function handleToggleLike(item) {
     item.like_count = Number(result?.like_count || 0);
   } catch (error) {
     const message = error instanceof Error ? error.message : '좋아요 처리에 실패했습니다.';
-    window.alert(message);
+    showAlert(message);
   } finally {
     setLikePending(itemId, false);
   }
@@ -219,7 +220,7 @@ async function handleToggleSave(item) {
   } catch (error) {
     const message =
       error instanceof Error ? error.message : '팔레트 로그 저장 처리에 실패했습니다.';
-    window.alert(message);
+    showAlert(message);
   }
 }
 

@@ -4,6 +4,7 @@ import MarqueeText from '@/components/MarqueeText.vue';
 import { usePlayerStore } from '@/stores/player';
 import { usePaletteLogStore } from '@/stores/paletteLog';
 import { apiRequest } from '@/services/httpClient';
+import { showAlert } from '@/utils/alert';
 
 import arrowDown from '@/assets/icons/arrow-down.svg';
 import arrowDownLight from '@/assets/icons/arrow-down_light.svg';
@@ -216,7 +217,7 @@ async function handleToggleLike() {
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : '좋아요 처리에 실패했습니다.';
-    window.alert(message);
+    showAlert(message);
   } finally {
     isLikeSubmitting.value = false;
   }
@@ -234,7 +235,7 @@ async function handleToggleSave() {
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : '팔레트 로그 저장 처리에 실패했습니다.';
-    window.alert(message);
+    showAlert(message);
   }
 }
 </script>
@@ -825,6 +826,7 @@ async function handleToggleSave() {
   display: none;
   width: 50px;
   height: 50px;
+  filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.18));
 }
 
 .main-player__play-toggle-btn img:last-child {

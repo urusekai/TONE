@@ -8,6 +8,7 @@ import trackThumbImage from '@/assets/images/thumb.png';
 import likeIcon from '@/assets/icons/like.svg';
 import likeFullIcon from '@/assets/icons/like_full.svg';
 import { apiRequest } from '@/services/httpClient';
+import { showAlert } from '@/utils/alert';
 import {
   fetchPlaylistDetail,
   playPlaylistFirstTrack,
@@ -107,7 +108,7 @@ async function handleToggleSave() {
   } catch (error) {
     const message =
       error instanceof Error ? error.message : '팔레트 로그 저장 처리에 실패했습니다.';
-    window.alert(message);
+    showAlert(message);
   }
 }
 
@@ -146,7 +147,7 @@ async function handleToggleLike() {
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : '좋아요 처리에 실패했습니다.';
-    window.alert(message);
+    showAlert(message);
   } finally {
     isLikeSubmitting.value = false;
   }
@@ -165,7 +166,7 @@ function handleOpenFirstTrack() {
   playPlaylistFirstTrack(player, playlist.value.id, { autoplay: true, openMode: 'main' }).catch(
     (error) => {
       const message = error instanceof Error ? error.message : '플레이리스트 재생에 실패했습니다.';
-      window.alert(message);
+      showAlert(message);
     }
   );
 }

@@ -35,11 +35,12 @@
           />
         </div>
 
-        <div
+        <RouterLink
           class="daily-swatch"
+          :to="playlistTo(dailyPlaylist.id)"
           :style="{ backgroundColor: dailyPlaylist.color_hex }"
-          aria-hidden="true"
-        ></div>
+          :aria-label="`${dailyPlaylist.color_name} 플레이리스트로 이동`"
+        ></RouterLink>
       </div>
     </section>
 
@@ -118,14 +119,16 @@
           :to="playlistTo(log.playlist_id)"
           :style="{ '--bg': log.playlist.color_hex }"
         >
-          <div class="log-top">{{ log.playlist.pantone_code }}</div>
-          <div class="log-main">
-            <strong>{{ log.playlist.color_name }}</strong>
-            <span class="chev icon-white">
-              <img src="@/assets/icons/arrow-right.svg" alt=">" />
-            </span>
+          <div class="log-copy">
+            <div class="log-top">{{ log.playlist.pantone_code }}</div>
+            <div class="log-main">
+              <strong>{{ log.playlist.color_name }}</strong>
+            </div>
+            <div class="log-sub">♫ 총 {{ log.playlist.totalTracks }}곡</div>
           </div>
-          <div class="log-sub">♫ 총 {{ log.playlist.totalTracks }}곡</div>
+          <span class="log-arrow" aria-hidden="true">
+              <img src="@/assets/icons/arrow-right.svg" alt=">" />
+          </span>
         </RouterLink>
       </div>
     </section>
@@ -159,6 +162,7 @@ import { usePlayerStore } from '@/stores/player';
 import { apiRequest } from '@/services/httpClient';
 import { playPlaylistFirstTrack } from '@/services/playlistService';
 import PlaylistActionControls from '@/components/PlaylistActionControls.vue';
+import { showAlert } from '@/utils/alert';
 import addIcon from '@/assets/icons/add.svg';
 import addCompleteIcon from '@/assets/icons/addComplete.svg';
 
@@ -220,7 +224,7 @@ async function handlePlayDailyPlaylist() {
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : '플레이리스트 재생에 실패했습니다.';
-    window.alert(message);
+    showAlert(message);
   }
 }
 
@@ -230,7 +234,7 @@ async function handleTogglePalette(item) {
   } catch (error) {
     const message =
       error instanceof Error ? error.message : '팔레트 로그 저장 처리에 실패했습니다.';
-    window.alert(message);
+    showAlert(message);
   }
 }
 
@@ -779,13 +783,18 @@ watch(
 }
 
 .log-item {
+  position: relative;
   display: block;
   border-radius: 18px;
-  padding: 14px 16px;
+  padding: 14px 52px 14px 16px;
   background: var(--bg, #b7cc1a);
   color: #fff;
   text-decoration: none;
   box-shadow: 0 18px 30px rgba(0, 0, 0, 0.18);
+}
+
+.log-copy {
+  min-width: 0;
 }
 
 .log-top {
@@ -795,40 +804,43 @@ watch(
 }
 
 .log-main {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   margin-top: 4px;
-  text-decoration: underline;
-  text-underline-offset: 5px;
 }
 
 .log-main strong {
+  display: inline-block;
   font-size: 26px;
   font-weight: 700;
   letter-spacing: -0.6px;
   line-height: 1;
+  text-decoration: underline;
+  text-underline-offset: 5px;
 }
 
-.chev {
-  width: 10px;
-  height: 10px;
-  opacity: 0.9;
-  display: inline-flex;
+.log-arrow {
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  opacity: 0.55;
+  display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.chev img {
-  width: 10px;
-  height: 10px;
+.log-arrow img {
+  width: 18px;
+  height: 18px;
+  display: block;
 }
 
-.log-item.is-dark .chev img {
+.log-item.is-dark .log-arrow img {
   filter: brightness(0) invert(1);
 }
 
-.log-item.is-light .chev img {
+.log-item.is-light .log-arrow img {
   filter: none;
 }
 

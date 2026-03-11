@@ -5,15 +5,17 @@ import { useCalendarStore, createDefaultEntry } from '@/stores/calendarStore';
 import { useAuthStore } from '@/stores/auth';
 import { usePlayerStore } from '@/stores/player';
 import { usePaletteLogStore } from '@/stores/paletteLog';
+import { useToastStore } from '@/stores/toast';
 import { updateMyProfileColor } from '@/services/userService';
 import { fetchTodayCalendarPlaylist } from '@/services/calendarService';
 import { playPlaylistFirstTrack } from '@/services/playlistService';
 import PlaylistActionControls from '@/components/PlaylistActionControls.vue';
-import ToastMessage from '@/components/ToastMessage.vue';
+import { showAlert } from '@/utils/alert';
 
 const authStore = useAuthStore();
 const player = usePlayerStore();
 const paletteLog = usePaletteLogStore();
+const toast = useToastStore();
 
 // 아이콘/이미지
 import prevIcon from '@/assets/icons/prev.svg';
@@ -46,8 +48,6 @@ const memoText = ref('');
 const isMonthLoading = ref(false);
 const isSavingMemo = ref(false);
 const todayFallbackEntry = ref(null);
-const toastMessage = ref('');
-const isToastOpen = ref(false);
 const isEnterReady = ref(false);
 
 const calendarStore = useCalendarStore();
@@ -92,9 +92,10 @@ const selectedData = computed(() => {
   return calendarStore.calendarData[selectedKey.value] || createDefaultEntry();
 });
 
-const hasSelectedEntry = computed(() =>
-  Boolean(calendarStore.calendarData[selectedKey.value]) ||
-  (selectedKey.value === todayKey && Boolean(todayFallbackEntry.value))
+const hasSelectedEntry = computed(
+  () =>
+    Boolean(calendarStore.calendarData[selectedKey.value]) ||
+    (selectedKey.value === todayKey && Boolean(todayFallbackEntry.value))
 );
 
 /* =========================
@@ -187,8 +188,8 @@ function nextMonth() {
 }
 
 async function loadMonthEntries() {
+  const shouldAnimateEntrance = !isEnterReady.value;
   isMonthLoading.value = true;
-  isEnterReady.value = false;
 
   try {
     await calendarStore.loadMonth(currentMonthKey.value);
@@ -198,14 +199,15 @@ async function loadMonthEntries() {
       todayFallbackEntry.value = null;
     }
     await nextTick();
-    requestAnimationFrame(() => {
-      isEnterReady.value = true;
-    });
+    if (shouldAnimateEntrance) {
+      requestAnimationFrame(() => {
+        isEnterReady.value = true;
+      });
+    }
   } catch (error) {
     todayFallbackEntry.value = null;
-    const message =
-      error instanceof Error ? error.message : '캘린더 기록을 불러오지 못했습니다.';
-    window.alert(message);
+    const message = error instanceof Error ? error.message : '캘린더 기록을 불러오지 못했습니다.';
+    showAlert(message);
   } finally {
     isMonthLoading.value = false;
   }
@@ -221,11 +223,10 @@ async function saveMemo() {
     if (selectedKey.value === todayKey) {
       todayFallbackEntry.value = null;
     }
-    showToast('저장되었습니다!');
+    toast.show('캘린더에 저장되었습니다');
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : '메모 저장 중 오류가 발생했습니다.';
-    window.alert(message);
+    const message = error instanceof Error ? error.message : '메모 저장 중 오류가 발생했습니다.';
+    showAlert(message);
   } finally {
     isSavingMemo.value = false;
   }
@@ -233,15 +234,6 @@ async function saveMemo() {
 
 function handleMemoInput(event) {
   memoText.value = event.target.value;
-}
-
-function showToast(message) {
-  toastMessage.value = message;
-  isToastOpen.value = false;
-
-  window.requestAnimationFrame(() => {
-    isToastOpen.value = true;
-  });
 }
 
 async function handlePlayPlaylist() {
@@ -252,7 +244,7 @@ async function handlePlayPlaylist() {
     await playPlaylistFirstTrack(player, playlistId, { autoplay: true, openMode: 'main' });
   } catch (error) {
     const message = error instanceof Error ? error.message : '플레이리스트 재생에 실패했습니다.';
-    window.alert(message);
+    showAlert(message);
   }
 }
 
@@ -283,7 +275,7 @@ async function handleTogglePaletteLog() {
   } catch (error) {
     const message =
       error instanceof Error ? error.message : '팔레트 로그 저장 처리에 실패했습니다.';
-    window.alert(message);
+    showAlert(message);
   }
 }
 
@@ -294,7 +286,7 @@ async function setProfileColor() {
 
   const color = selectedData.value?.color || '';
   if (!color) {
-    window.alert('적용할 색상이 없습니다.');
+    showAlert('적용할 색상이 없습니다.');
     return;
   }
 
@@ -304,19 +296,23 @@ async function setProfileColor() {
     const result = await updateMyProfileColor(color);
     const nextColor = result?.profileColor || color;
     authStore.setProfileColor(nextColor);
-    showToast('프로필이 설정되었습니다.');
+    toast.show('프로필이 설정되었습니다');
   } catch (error) {
     const message =
       error instanceof Error ? error.message : '프로필 색상 변경 중 오류가 발생했습니다.';
-    window.alert(message);
+    showAlert(message);
   } finally {
     isChangingProfileColor.value = false;
   }
 }
 
-watch(currentMonthKey, () => {
-  loadMonthEntries();
-}, { immediate: true });
+watch(
+  currentMonthKey,
+  () => {
+    loadMonthEntries();
+  },
+  { immediate: true }
+);
 
 watch(
   () => calendarStore.calendarData,
@@ -350,8 +346,6 @@ watch(
             <img :src="nextIcon" alt="다음달" />
           </button>
         </div>
-
-        <p v-if="isMonthLoading" class="calendar-state">캘린더 기록을 불러오는 중...</p>
 
         <div class="calendar-grid" id="calendarGrid">
           <div
@@ -446,7 +440,7 @@ watch(
       <section class="memo-card" style="--calendar-card-delay: 112ms">
         <div class="memo-section">
           <div class="memo-header">
-            <h4>기록 메모</h4>
+            <h4>오늘의 한마디</h4>
             <div class="memo-buttons">
               <button
                 type="button"
@@ -476,7 +470,6 @@ watch(
         </div>
       </section>
     </main>
-    <ToastMessage :open="isToastOpen" :message="toastMessage" @close="isToastOpen = false" />
   </div>
 </template>
 
@@ -554,13 +547,6 @@ watch(
   grid-template-columns: repeat(7, 1fr);
   gap: 15px;
   text-align: center;
-}
-
-#calendar .calendar-state {
-  margin: 0 0 16px;
-  text-align: center;
-  font-size: 13px;
-  color: #3f5f73;
 }
 
 #calendar .calendar-day {
@@ -678,6 +664,9 @@ watch(
 }
 
 #calendar .btn-profile-set {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: #fff;
   border: 1px solid #3f5f73;
   color: #3f5f73;
@@ -685,6 +674,7 @@ watch(
   border-radius: 20px;
   font-size: 10px;
   font-weight: 700;
+  line-height: 1;
   margin-top: 5px;
 }
 
@@ -812,5 +802,4 @@ watch(
     transform: translateY(0);
   }
 }
-
 </style>

@@ -143,6 +143,7 @@ const selectedPlan = ref('basic');
   border: 2px solid #e3e8ec;
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.06);
   transition: all 0.2s ease-in-out;
+  cursor: pointer;
 }
 
 /* 선택된 카드(프로 선택 시 테두리 강조) */
