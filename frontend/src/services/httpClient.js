@@ -1,28 +1,45 @@
+import axios from 'axios';
+
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '/backend').replace(/\/$/, '');
 
-export function buildApiUrl(path) {
-  return `${API_BASE_URL}${path}`;
+function normalizePath(path) {
+  return String(path || '').replace(/^\/+/, '');
 }
 
-async function parseError(response, fallbackMessage) {
-  try {
-    const data = await response.json();
-    if (data?.message) return data.message;
-  } catch {
-    // ignore JSON parse error
+export function buildApiUrl(path) {
+  return `${API_BASE_URL}/${normalizePath(path)}`;
+}
+
+export const apiClient = axios.create({
+  baseURL: API_BASE_URL,
+  withCredentials: true
+});
+
+function parseError(error, fallbackMessage) {
+  const message = error?.response?.data?.message;
+  if (typeof message === 'string' && message.trim()) {
+    return message;
   }
+
   return fallbackMessage;
 }
 
-export async function apiRequest(path, options = {}, fallbackMessage = '요청 처리에 실패했습니다.') {
-  const response = await fetch(buildApiUrl(path), {
-    credentials: 'include',
-    ...options
-  });
+export async function apiRequest(
+  path,
+  options = {},
+  fallbackMessage = '요청 처리에 실패했습니다.'
+) {
+  const { body, ...restOptions } = options;
 
-  if (!response.ok) {
-    throw new Error(await parseError(response, fallbackMessage));
+  try {
+    const response = await apiClient.request({
+      url: `/${normalizePath(path)}`,
+      data: body,
+      ...restOptions
+    });
+
+    return response.data;
+  } catch (error) {
+    throw new Error(parseError(error, fallbackMessage), { cause: error });
   }
-
-  return await response.json();
 }

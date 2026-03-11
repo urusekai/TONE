@@ -1,12 +1,13 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import { buildApiUrl } from '@/services/httpClient';
+import { apiClient } from '@/services/httpClient';
 
 async function hasServerSession() {
-  const response = await fetch(buildApiUrl('/api/auth/me.php'), {
-    credentials: 'include'
-  });
-
-  return response.ok;
+  try {
+    await apiClient.get('/api/auth/me.php');
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 const router = createRouter({
