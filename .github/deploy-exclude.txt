@@ -1,0 +1,13 @@
+# Backend runtime should be uploaded, but server-only secrets/config must stay on the host.
+/.env
+/.env.*
+/database/
+/tests/
+/phpunit.xml
+/.gitkeep
+/README.md
+/composer.lock
+
+# Keep local/editor files out of the deploy package if they appear later.
+/.vscode/
+/.idea/

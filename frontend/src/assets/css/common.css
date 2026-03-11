@@ -1,0 +1,395 @@
+/* ==================================================
+   1. 기초 설정
+================================================== */
+
+/* ----------------------------------------
+   변수
+---------------------------------------- */
+:root {
+  --color-bg-outside: rgb(58, 58, 58);
+  --color-bg-app: #f2f2ee;
+  --color-text-primary: #3f5f73;
+  --color-text-secondary: #b7aea6;
+  --color-primary: #3f5f73;
+  --color-pantone-primary: #6969ad;
+  --layout-x: 25px;
+}
+
+/* ----------------------------------------
+   기본 설정
+---------------------------------------- */
+body {
+  background: var(--color-bg-outside);
+  font-family:
+    'Pretendard',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    'Noto Sans KR',
+    'Apple SD Gothic Neo',
+    'Malgun Gothic',
+    sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--color-text-primary);
+}
+
+/* ==================================================
+   2. 레이아웃
+================================================== */
+
+/* ----------------------------------------
+   앱 전체 영역
+---------------------------------------- */
+.app {
+  /* 고정 레이어 높이 */
+  --app-header-height: 84px;
+  --app-tabs-height: 0px;
+  --app-bottom-fixed-height: 75px;
+  --app-route-transition-duration: 220ms;
+  --app-route-transition-easing: ease;
+
+  /* 콘텐츠 여유 간격 */
+  --app-main-top-gap: 12px;
+  --app-main-bottom-gap: 12px;
+
+  /* 페이지별 main padding (fixed 요소에 가리지 않도록) */
+  --app-main-top: calc(var(--app-header-height) + var(--app-tabs-height) + var(--app-main-top-gap));
+  --app-main-bottom: calc(var(--app-bottom-fixed-height) + var(--app-main-bottom-gap));
+
+  max-width: 402px;
+  width: 100%;
+  min-height: 100vh;
+  margin: 0 auto;
+  background: var(--color-bg-app);
+
+  display: flex;
+  flex-direction: column;
+}
+
+/* 인증(스플래시/로그인/회원가입) 레이아웃 */
+.app.layout-auth {
+  --app-header-height: 0px;
+  --app-bottom-fixed-height: 0px;
+  --app-main-top-gap: 0px;
+  --app-main-bottom-gap: 0px;
+}
+
+/* 탭메뉴가 있는 페이지 */
+.app.has-tabs {
+  --app-tabs-height: 34px;
+}
+
+/* 미니플레이어가 열린 페이지 */
+.app.has-mini-open {
+  --app-bottom-fixed-height: 160px;
+}
+
+/* 미니플레이어가 닫힌(핸들만 노출) 페이지 */
+.app.has-mini-hidden {
+  --app-bottom-fixed-height: 97px; /* bottom-nav 75 + visible peek 22 */
+}
+
+/* ----------------------------------------
+   메인 영역
+---------------------------------------- */
+.app main {
+  flex: 1;
+  min-height: 0;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+
+  padding-left: var(--layout-x);
+  padding-right: var(--layout-x);
+
+  /* 페이지별 padding */
+  padding-top: var(--app-main-top);
+  padding-bottom: var(--app-main-bottom);
+}
+
+.route-view-shell {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.route-view-shell--tab-rise {
+  animation:
+    tab-content-rise-in var(--app-route-transition-duration) var(--app-route-transition-easing)
+    both;
+}
+
+@keyframes tab-content-rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==================================================
+   3. 고정(Fixed) 레이어
+================================================== */
+
+/* ----------------------------------------
+   고정 요소 공통(앱 폭 기준 가운데 고정)
+---------------------------------------- */
+.header,
+.tabs,
+.bottom-nav {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 402px;
+  z-index: 1000;
+}
+
+/* ==================================================
+   4. 컴포넌트
+================================================== */
+
+/* ----------------------------------------
+   헤더
+---------------------------------------- */
+
+/* 헤더 - 구조 */
+.header {
+  top: 0;
+  padding: 25px var(--layout-x);
+  display: grid;
+  align-items: center;
+  column-gap: 12px;
+  background: var(--color-bg-app);
+}
+
+.header--logo {
+  grid-template-columns: auto 1fr 34px;
+}
+
+.header--back {
+  grid-template-columns: 34px 1fr 34px;
+}
+
+/* 헤더 - 버튼 공통 */
+.header__left-btn,
+.header__right-btn {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header__left-btn--logo {
+  width: auto;
+  height: 34px;
+}
+
+.header__left-btn--logo img {
+  width: 34px;
+  height: 34px;
+}
+
+.header__left-btn--back {
+  justify-content: flex-start;
+}
+
+.header__left-btn--back img {
+  width: 20px;
+  height: 20px;
+}
+
+/* 헤더 - 제목 */
+.header__title {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.header__title-spacer {
+  width: 100%;
+  height: 1px;
+}
+
+/* 헤더 - 아바타 */
+.header .avatar {
+  width: 34px;
+  height: 34px;
+  background-color: var(--color-pantone-primary);
+  border-radius: 999px;
+}
+
+/* ----------------------------------------
+   탭 메뉴
+---------------------------------------- */
+
+/* 탭 - 컨테이너 */
+.tabs {
+  top: 84px;
+  /* 헤더 실제 높이에 맞춰 조절 */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 0px var(--layout-x) 10px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+
+  background: var(--color-bg-app);
+  z-index: 999;
+}
+
+/* 탭 - 기본 */
+.tabs .tab {
+  position: relative;
+  padding: 2px 0px;
+  color: inherit;
+  transition:
+    color var(--app-route-transition-duration) var(--app-route-transition-easing),
+    opacity var(--app-route-transition-duration) var(--app-route-transition-easing);
+}
+
+.tabs .tab::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 2px;
+  background: var(--color-text-primary);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform var(--app-route-transition-duration) var(--app-route-transition-easing);
+}
+
+/* 탭 - 활성 */
+.tabs .tab.is-active {
+  color: var(--color-text-primary);
+}
+
+.tabs .tab.router-link-active {
+  color: var(--color-text-primary);
+}
+
+.tabs .tab.is-active::after,
+.tabs .tab.router-link-active::after {
+  transform: scaleX(1);
+}
+
+/* ----------------------------------------
+   하단 메뉴
+---------------------------------------- */
+.bottom-nav {
+  bottom: 0;
+  display: flex;
+  padding: 25px var(--layout-x);
+  justify-content: space-between;
+
+  background: #ffffff;
+  z-index: 1002;
+}
+
+.bottom-nav .nav-item {
+  position: relative;
+  width: 25px;
+  height: 25px;
+}
+
+/* 하단 메뉴 - 아이콘 기본 */
+.bottom-nav .nav-item img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 25px;
+  height: 25px;
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease;
+}
+
+/* 하단 메뉴 - 기본 아이콘 */
+.bottom-nav .nav-item img:first-child {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.bottom-nav .nav-item img:last-child {
+  opacity: 0;
+  transform: translateY(2px);
+  pointer-events: none;
+}
+
+/* 하단 메뉴 - 활성 상태 */
+.bottom-nav .nav-item.is-active img:first-child {
+  opacity: 0;
+  transform: translateY(-2px);
+  pointer-events: none;
+}
+
+.bottom-nav .nav-item.is-active img:last-child {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* ----------------------------------------
+   폼
+---------------------------------------- */
+
+/* 폼 - 입력 박스 */
+.form-input-box {
+  width: 100%;
+  height: 50px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  background-color: #ffffff;
+  color: var(--color-text-primary);
+  border-radius: 15px;
+  padding: 0 20px;
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0.25);
+}
+
+/* 폼 - 입력 필드 */
+.form-input-box input {
+  flex: 1;
+  min-width: 0;
+  color: var(--color-text-primary);
+}
+
+/* 폼 - 제출 버튼 */
+.form-submit-box {
+  width: 100%;
+  padding: 20px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background-color: var(--color-primary);
+  color: white;
+  border-radius: 15px;
+
+  font-size: 16px;
+  font-weight: 700;
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0.25);
+}
