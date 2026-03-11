@@ -187,8 +187,8 @@ function nextMonth() {
 }
 
 async function loadMonthEntries() {
+  const shouldAnimateEntrance = !isEnterReady.value;
   isMonthLoading.value = true;
-  isEnterReady.value = false;
 
   try {
     await calendarStore.loadMonth(currentMonthKey.value);
@@ -198,9 +198,11 @@ async function loadMonthEntries() {
       todayFallbackEntry.value = null;
     }
     await nextTick();
-    requestAnimationFrame(() => {
-      isEnterReady.value = true;
-    });
+    if (shouldAnimateEntrance) {
+      requestAnimationFrame(() => {
+        isEnterReady.value = true;
+      });
+    }
   } catch (error) {
     todayFallbackEntry.value = null;
     const message = error instanceof Error ? error.message : '캘린더 기록을 불러오지 못했습니다.';
@@ -343,8 +345,6 @@ watch(
             <img :src="nextIcon" alt="다음달" />
           </button>
         </div>
-
-        <p v-if="isMonthLoading" class="calendar-state">캘린더 기록을 불러오는 중...</p>
 
         <div class="calendar-grid" id="calendarGrid">
           <div
@@ -546,13 +546,6 @@ watch(
   grid-template-columns: repeat(7, 1fr);
   gap: 15px;
   text-align: center;
-}
-
-#calendar .calendar-state {
-  margin: 0 0 16px;
-  text-align: center;
-  font-size: 13px;
-  color: #3f5f73;
 }
 
 #calendar .calendar-day {
