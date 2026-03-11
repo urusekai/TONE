@@ -10,6 +10,7 @@ import { updateMyProfileColor } from '@/services/userService';
 import { fetchTodayCalendarPlaylist } from '@/services/calendarService';
 import { playPlaylistFirstTrack } from '@/services/playlistService';
 import PlaylistActionControls from '@/components/PlaylistActionControls.vue';
+import { showAlert } from '@/utils/alert';
 
 const authStore = useAuthStore();
 const player = usePlayerStore();
@@ -206,7 +207,7 @@ async function loadMonthEntries() {
   } catch (error) {
     todayFallbackEntry.value = null;
     const message = error instanceof Error ? error.message : '캘린더 기록을 불러오지 못했습니다.';
-    window.alert(message);
+    showAlert(message);
   } finally {
     isMonthLoading.value = false;
   }
@@ -225,7 +226,7 @@ async function saveMemo() {
     toast.show('캘린더에 저장되었습니다');
   } catch (error) {
     const message = error instanceof Error ? error.message : '메모 저장 중 오류가 발생했습니다.';
-    window.alert(message);
+    showAlert(message);
   } finally {
     isSavingMemo.value = false;
   }
@@ -243,7 +244,7 @@ async function handlePlayPlaylist() {
     await playPlaylistFirstTrack(player, playlistId, { autoplay: true, openMode: 'main' });
   } catch (error) {
     const message = error instanceof Error ? error.message : '플레이리스트 재생에 실패했습니다.';
-    window.alert(message);
+    showAlert(message);
   }
 }
 
@@ -274,7 +275,7 @@ async function handleTogglePaletteLog() {
   } catch (error) {
     const message =
       error instanceof Error ? error.message : '팔레트 로그 저장 처리에 실패했습니다.';
-    window.alert(message);
+    showAlert(message);
   }
 }
 
@@ -285,7 +286,7 @@ async function setProfileColor() {
 
   const color = selectedData.value?.color || '';
   if (!color) {
-    window.alert('적용할 색상이 없습니다.');
+    showAlert('적용할 색상이 없습니다.');
     return;
   }
 
@@ -299,7 +300,7 @@ async function setProfileColor() {
   } catch (error) {
     const message =
       error instanceof Error ? error.message : '프로필 색상 변경 중 오류가 발생했습니다.';
-    window.alert(message);
+    showAlert(message);
   } finally {
     isChangingProfileColor.value = false;
   }

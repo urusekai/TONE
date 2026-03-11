@@ -49,6 +49,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { completeSocialSignup } from '@/services/authService';
 import { useAuthStore } from '@/stores/auth';
 import ProfileModal from '@/components/ProfileModal.vue';
+import { showAlert } from '@/utils/alert';
 import { validateSocialSignupPayload } from '@/utils/authValidation';
 
 const route = useRoute();
@@ -68,7 +69,7 @@ const isProfileModalOpen = ref(false);
 
 onMounted(() => {
   if (!form.provider || !form.providerId) {
-    window.alert('잘못된 접근입니다. 다시 로그인해주세요.');
+    showAlert('잘못된 접근입니다. 다시 로그인해주세요.');
     router.replace('/login');
   }
 });
@@ -84,7 +85,7 @@ function closeProfileModal() {
 
 function handleProfileConfirm(color) {
   if (!color) {
-    window.alert('프로필 색상을 선택해주세요.');
+    showAlert('프로필 색상을 선택해주세요.');
     return;
   }
 
@@ -105,7 +106,7 @@ async function handleSubmit() {
   const validationMessage = validateSocialSignupPayload(payload);
 
   if (validationMessage) {
-    window.alert(validationMessage);
+    showAlert(validationMessage);
     return;
   }
 
@@ -122,7 +123,7 @@ async function handleSubmit() {
   } catch (error) {
     const message =
       error instanceof Error ? error.message : '소셜 회원가입 처리 중 오류가 발생했습니다.';
-    window.alert(message);
+    showAlert(message);
   } finally {
     isSubmitting.value = false;
   }

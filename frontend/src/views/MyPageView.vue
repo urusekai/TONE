@@ -1,13 +1,17 @@
 <script setup>
 import { onMounted, ref, reactive } from 'vue';
 import { useRouter } from 'vue-router';
+import ConfirmModal from '@/components/ConfirmModal.vue';
 import WithdrawModal from '@/components/WithdrawModal.vue';
 import { logoutUser } from '@/services/authService';
 import { fetchMyProfile, withdrawMyAccount } from '@/services/userService';
 import { useAuthStore } from '@/stores/auth';
+import { useToastStore } from '@/stores/toast';
+import { showAlert } from '@/utils/alert';
 
 const router = useRouter();
 const authStore = useAuthStore();
+const toast = useToastStore();
 
 /* -----------------------
    사용자 데이터
@@ -106,12 +110,27 @@ const clearAuthAndGoLogin = () => {
   router.replace('/login'); // 뒤로가기 방지
 };
 
-const logout = async () => {
+const isLogoutOpen = ref(false);
+const isLoggingOut = ref(false);
+
+const openLogout = () => {
+  isLogoutOpen.value = true;
+};
+
+const closeLogout = () => {
+  if (isLoggingOut.value) return;
+  isLogoutOpen.value = false;
+};
+
+const confirmLogout = async () => {
   try {
+    isLoggingOut.value = true;
     await logoutUser();
   } catch {
     // 서버 로그아웃 실패 시에도 프론트 상태는 정리
   } finally {
+    isLogoutOpen.value = false;
+    isLoggingOut.value = false;
     clearAuthAndGoLogin();
   }
 };
@@ -138,11 +157,11 @@ const confirmWithdraw = async () => {
     await withdrawMyAccount();
 
     isWithdrawOpen.value = false;
-    window.alert('회원 탈퇴가 완료되었습니다.');
+    toast.show('회원 탈퇴가 완료되었습니다');
     clearAuthAndGoLogin();
   } catch (error) {
     const message = error instanceof Error ? error.message : '회원 탈퇴 중 오류가 발생했습니다.';
-    window.alert(message);
+    showAlert(message);
   } finally {
     isWithdrawing.value = false;
   }
@@ -172,7 +191,7 @@ const confirmWithdraw = async () => {
 
       <!-- 로그아웃 -->
       <div class="logout-row">
-        <button class="logout-btn" @click="logout">로그아웃</button>
+        <button class="logout-btn" @click="openLogout">로그아웃</button>
       </div>
 
       <!-- 메뉴 -->
@@ -211,6 +230,16 @@ const confirmWithdraw = async () => {
       :loading="isWithdrawing"
       @close="closeWithdraw"
       @confirm="confirmWithdraw"
+    />
+    <ConfirmModal
+      :open="isLogoutOpen"
+      :loading="isLoggingOut"
+      title="로그아웃"
+      message="정말 로그아웃하시겠어요?"
+      confirm-text="로그아웃"
+      danger
+      @close="closeLogout"
+      @confirm="confirmLogout"
     />
   </main>
 </template>

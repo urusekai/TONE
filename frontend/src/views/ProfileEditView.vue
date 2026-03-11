@@ -4,10 +4,13 @@ import { useRouter } from 'vue-router';
 import ProfileModal from '@/components/ProfileModal.vue';
 import { fetchMyProfile, updateMyProfile } from '@/services/userService';
 import { useAuthStore } from '@/stores/auth';
+import { useToastStore } from '@/stores/toast';
+import { showAlert } from '@/utils/alert';
 import { validateProfileUpdatePayload } from '@/utils/authValidation';
 
 const router = useRouter();
 const authStore = useAuthStore();
+const toast = useToastStore();
 
 const isProfileModalOpen = ref(false);
 const isLoading = ref(false);
@@ -31,7 +34,7 @@ function closeProfileModal() {
 
 function handleProfileConfirm(color) {
   if (!color) {
-    window.alert('프로필 색상을 선택해주세요.');
+    showAlert('프로필 색상을 선택해주세요.');
     return;
   }
 
@@ -55,7 +58,7 @@ onMounted(async () => {
   } catch (error) {
     const message =
       error instanceof Error ? error.message : '사용자 정보를 불러오는 중 오류가 발생했습니다.';
-    window.alert(message);
+    showAlert(message);
     router.replace('/login');
   } finally {
     isLoading.value = false;
@@ -72,7 +75,7 @@ async function handleSubmit() {
 
   if (password || passwordConfirm) {
     if (password !== passwordConfirm) {
-      window.alert('비밀번호가 일치하지 않습니다.');
+      showAlert('비밀번호가 일치하지 않습니다.');
       return;
     }
   }
@@ -81,7 +84,7 @@ async function handleSubmit() {
   const validationMessage = validateProfileUpdatePayload(payload);
 
   if (validationMessage) {
-    window.alert(validationMessage);
+    showAlert(validationMessage);
     return;
   }
 
@@ -98,11 +101,11 @@ async function handleSubmit() {
       authStore.setCurrentUser(result.user);
     }
 
-    window.alert('프로필이 수정되었습니다.');
+    toast.show('프로필이 수정되었습니다');
     router.replace('/my-page');
   } catch (error) {
     const message = error instanceof Error ? error.message : '프로필 수정 중 오류가 발생했습니다.';
-    window.alert(message);
+    showAlert(message);
   } finally {
     isSubmitting.value = false;
   }

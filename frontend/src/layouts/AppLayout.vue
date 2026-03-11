@@ -11,13 +11,10 @@ import TabMenu from '@/components/TabMenu.vue';
 import Header from '@/components/Header.vue';
 import MiniPlayer from '@/components/MiniPlayer.vue';
 import MainPlayer from '@/components/MainPlayer.vue';
-import ToastMessage from '@/components/ToastMessage.vue';
-import { useToastStore } from '@/stores/toast';
 
 const route = useRoute();
 const player = usePlayerStore();
 const authStore = useAuthStore();
-const toast = useToastStore();
 const audioRef = ref(null);
 
 const hasTabs = computed(() => route.meta.hasTabs === true);
@@ -222,7 +219,6 @@ onBeforeUnmount(() => {
 
     <MiniPlayer v-if="player.isMini || player.isHidden" />
     <MainPlayer />
-    <ToastMessage :open="toast.open" :message="toast.message" @close="toast.close" />
     <BottomNav />
   </div>
 </template>

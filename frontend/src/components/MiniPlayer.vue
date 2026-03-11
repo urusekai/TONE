@@ -3,6 +3,7 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import MarqueeText from '@/components/MarqueeText.vue';
 import { usePlayerStore } from '@/stores/player';
 import { apiRequest } from '@/services/httpClient';
+import { showAlert } from '@/utils/alert';
 import handleIcon from '@/assets/icons/handle.svg';
 import likeIcon from '@/assets/icons/like.svg';
 import likeFullIcon from '@/assets/icons/like_full.svg';
@@ -214,7 +215,7 @@ async function handleToggleLike() {
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : '좋아요 처리에 실패했습니다.';
-    window.alert(message);
+    showAlert(message);
   } finally {
     isLikeSubmitting.value = false;
   }

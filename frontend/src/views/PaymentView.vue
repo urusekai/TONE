@@ -3,11 +3,14 @@ import { computed, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
+import { useToastStore } from '@/stores/toast';
 import { updateMyMembershipPlan } from '@/services/userService';
+import { showAlert } from '@/utils/alert';
 
 const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
+const toast = useToastStore();
 const isSubmitting = ref(false);
 
 /** 멤버십에서 넘어온 plan (없거나 이상하면 pro 기본) */
@@ -61,11 +64,11 @@ async function handleSubmitMembership() {
       authStore.setCurrentUser(result.user);
     }
 
-    window.alert('이용권이 변경되었습니다.');
+    toast.show('이용권이 변경되었습니다');
     router.replace('/my-page');
   } catch (error) {
     const message = error instanceof Error ? error.message : '이용권 변경 중 오류가 발생했습니다.';
-    window.alert(message);
+    showAlert(message);
   } finally {
     isSubmitting.value = false;
   }

@@ -161,6 +161,7 @@ import { usePlayerStore } from '@/stores/player';
 import { apiRequest } from '@/services/httpClient';
 import { playPlaylistFirstTrack } from '@/services/playlistService';
 import PlaylistActionControls from '@/components/PlaylistActionControls.vue';
+import { showAlert } from '@/utils/alert';
 import addIcon from '@/assets/icons/add.svg';
 import addCompleteIcon from '@/assets/icons/addComplete.svg';
 
@@ -222,7 +223,7 @@ async function handlePlayDailyPlaylist() {
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : '플레이리스트 재생에 실패했습니다.';
-    window.alert(message);
+    showAlert(message);
   }
 }
 
@@ -232,7 +233,7 @@ async function handleTogglePalette(item) {
   } catch (error) {
     const message =
       error instanceof Error ? error.message : '팔레트 로그 저장 처리에 실패했습니다.';
-    window.alert(message);
+    showAlert(message);
   }
 }
 
