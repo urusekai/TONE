@@ -1,5 +1,5 @@
 <script setup>
-const props = defineProps({
+defineProps({
   open: { type: Boolean, default: false },
   loading: { type: Boolean, default: false },
   title: { type: String, default: '확인' },

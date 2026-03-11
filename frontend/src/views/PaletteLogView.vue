@@ -3,7 +3,12 @@
     <section class="pl">
       <div class="pl-head">
         <h1 class="pl-title">Palette Log</h1>
-        <p class="pl-sub">Current Playlist</p>
+        <button type="button" class="pl-sort-toggle" @click="toggleSortMode">
+          <span class="pl-sort-toggle__content">
+            <span class="pl-sort-label">{{ sortLabel }}</span>
+            <img class="pl-sort-icon" :src="switchIcon" alt="" />
+          </span>
+        </button>
       </div>
 
       <p v-if="isLoading" class="pl-state">팔레트 로그를 불러오는 중...</p>
@@ -13,14 +18,14 @@
       <div v-else class="pl-board">
         <ul class="pl-stack" :class="{ 'is-lock': isLock }">
           <li
-            v-for="(item, i) in items"
+            v-for="(item, i) in displayedItems"
             :key="item.playlist_id"
             class="pl-card"
             :class="{ 'is-in': isAnim, 'is-exit-right': exitId === String(item.playlist_id) }"
             :style="{
               '--card': item.playlist.color_hex,
               '--delay': `${i * 50}ms`,
-              zIndex: items.length - i
+              zIndex: displayedItems.length - i
             }"
           >
             <button
@@ -58,13 +63,14 @@
 </template>
 
 <script setup>
-import { nextTick, onMounted, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { apiRequest } from '@/services/httpClient';
 
 import arrowIcon from '@/assets/icons/arrow-right.svg';
 import likeIcon from '@/assets/icons/like_full.svg';
 import noteIcon from '@/assets/icons/music_note.svg';
+import switchIcon from '@/assets/icons/switch.svg';
 
 const router = useRouter();
 
@@ -75,11 +81,37 @@ const errorMessage = ref('');
 const exitId = ref(null);
 const isTransitioning = ref(false);
 const items = ref([]);
+const sortMode = ref('recentAdd');
 
 const colors = {
   darkText: '#3f5f73',
   lightText: '#F2F2EE'
 };
+
+const displayedItems = computed(() => {
+  const nextItems = [...items.value];
+
+  if (sortMode.value === 'recentPlay') {
+    nextItems.sort((a, b) => {
+      const playGap = Number(b?.playlist?.play_count || 0) - Number(a?.playlist?.play_count || 0);
+      if (playGap !== 0) return playGap;
+      return String(b?.created_at || '').localeCompare(String(a?.created_at || ''));
+    });
+    return nextItems;
+  }
+
+  nextItems.sort((a, b) => {
+    const createdGap = String(b?.created_at || '').localeCompare(String(a?.created_at || ''));
+    if (createdGap !== 0) return createdGap;
+    return Number(b?.playlist_id || 0) - Number(a?.playlist_id || 0);
+  });
+
+  return nextItems;
+});
+
+const sortLabel = computed(() =>
+  sortMode.value === 'recentAdd' ? '최근 추가 순' : '최근 재생 순'
+);
 
 async function loadPaletteLogs() {
   isLoading.value = true;
@@ -127,6 +159,10 @@ function onCardClick(item) {
       state: { fromBottomTab: '/main' }
     });
   }, 350);
+}
+
+function toggleSortMode() {
+  sortMode.value = sortMode.value === 'recentAdd' ? 'recentPlay' : 'recentAdd';
 }
 
 function parseToRGB(color) {
@@ -222,6 +258,10 @@ watch(
 
 /* 헤더 텍스트 */
 .pl-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
   margin: 8px 0 70px;
 }
 
@@ -230,13 +270,39 @@ watch(
   font-weight: 800;
   letter-spacing: -0.02em;
   line-height: 1.15;
+  margin: 0;
 }
 
-.pl-sub {
-  margin-top: 4px;
+.pl-sort-toggle {
+  display: inline-flex;
+  align-items: center;
+  padding: 0;
+  border: none;
+  background: none;
+  color: #3f5f73;
+  cursor: pointer;
   font-size: 14px;
-  font-weight: 800;
-  opacity: 0.75;
+  font-weight: 400;
+  line-height: 1;
+  white-space: nowrap;
+  transform: translateY(-4px);
+}
+
+.pl-sort-toggle__content {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pl-sort-label {
+  opacity: 1;
+}
+
+.pl-sort-icon {
+  width: 14px;
+  height: 14px;
+  display: block;
+  opacity: 0.72;
 }
 
 .pl-state {
