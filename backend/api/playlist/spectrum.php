@@ -13,23 +13,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
-    http_response_code(405);
-    echo json_encode(['message' => 'GET 요청만 허용됩니다.'], JSON_UNESCAPED_UNICODE);
-    exit;
+    app_error('GET 요청만 허용됩니다.', 405);
 }
 
 $userUuid = trim((string) ($_SESSION['user_uuid'] ?? ''));
 if ($userUuid === '') {
-    http_response_code(401);
-    echo json_encode(['message' => '로그인이 필요합니다.'], JSON_UNESCAPED_UNICODE);
-    exit;
+    app_error('로그인이 필요합니다.', 401);
 }
 
 $playlistId = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 if (!$playlistId) {
-    http_response_code(400);
-    echo json_encode(['message' => '유효한 플레이리스트 id가 필요합니다.'], JSON_UNESCAPED_UNICODE);
-    exit;
+    app_error('유효한 플레이리스트 id가 필요합니다.', 400);
 }
 
 try {
@@ -45,9 +39,7 @@ try {
     $currentPlaylist = $currentPlaylistStmt->fetch();
 
     if (!$currentPlaylist) {
-        http_response_code(404);
-        echo json_encode(['message' => '플레이리스트를 찾을 수 없습니다.'], JSON_UNESCAPED_UNICODE);
-        exit;
+        app_error('플레이리스트를 찾을 수 없습니다.', 404);
     }
 
     $spectrumStmt = $pdo->prepare(

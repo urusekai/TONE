@@ -15,17 +15,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 // POST 요청만 허용
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405);
-    echo json_encode(['message' => 'POST 요청만 허용됩니다.'], JSON_UNESCAPED_UNICODE);
-    exit;
+    app_error('POST 요청만 허용됩니다.', 405);
 }
 
 // JSON 본문 파싱
 $payload = json_decode(file_get_contents('php://input'), true);
 if (!is_array($payload)) {
-    http_response_code(400);
-    echo json_encode(['message' => '잘못된 요청 본문입니다.'], JSON_UNESCAPED_UNICODE);
-    exit;
+    app_error('잘못된 요청 본문입니다.', 400);
 }
 
 // 입력값 정리
@@ -37,37 +33,27 @@ $profileColor = trim((string) ($payload['profileColor'] ?? ''));
 
 // provider 검증
 if (!in_array($provider, ['kakao', 'google', 'naver'], true)) {
-    http_response_code(400);
-    echo json_encode(['message' => '지원하지 않는 소셜 로그인 유형입니다.'], JSON_UNESCAPED_UNICODE);
-    exit;
+    app_error('지원하지 않는 소셜 로그인 유형입니다.', 400);
 }
 
 // provider_id 검증
 if ($providerId === '') {
-    http_response_code(400);
-    echo json_encode(['message' => '소셜 사용자 정보가 올바르지 않습니다.'], JSON_UNESCAPED_UNICODE);
-    exit;
+    app_error('소셜 사용자 정보가 올바르지 않습니다.', 400);
 }
 
 // 이메일 형식 검증
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    http_response_code(400);
-    echo json_encode(['message' => '이메일 형식이 올바르지 않습니다.'], JSON_UNESCAPED_UNICODE);
-    exit;
+    app_error('이메일 형식이 올바르지 않습니다.', 400);
 }
 
 // 닉네임 길이 검증 (2~5자)
 $nicknameLength = function_exists('mb_strlen') ? mb_strlen($nickname) : strlen($nickname);
 if ($nicknameLength < 2 || $nicknameLength > 5) {
-    http_response_code(400);
-    echo json_encode(['message' => '닉네임은 2~5자로 입력해주세요.'], JSON_UNESCAPED_UNICODE);
-    exit;
+    app_error('닉네임은 2~5자로 입력해주세요.', 400);
 }
 
 if (!preg_match('/^#[0-9A-Fa-f]{6}$/', $profileColor)) {
-    http_response_code(400);
-    echo json_encode(['message' => '프로필 색상을 선택해주세요.'], JSON_UNESCAPED_UNICODE);
-    exit;
+    app_error('프로필 색상을 선택해주세요.', 400);
 }
 
 // UUID v4 생성 함수
@@ -125,9 +111,7 @@ try {
     $emailStmt = $pdo->prepare('SELECT user_uuid FROM users WHERE email = :email LIMIT 1');
     $emailStmt->execute(['email' => $email]);
     if ($emailStmt->fetch()) {
-        http_response_code(409);
-        echo json_encode(['message' => '이미 가입된 이메일입니다.'], JSON_UNESCAPED_UNICODE);
-        exit;
+        app_error('이미 가입된 이메일입니다.', 409);
     }
 
     // 신규 소셜 계정 생성

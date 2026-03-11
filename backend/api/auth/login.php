@@ -15,17 +15,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 // POST 요청만 허용
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405);
-    echo json_encode(['message' => 'POST 요청만 허용됩니다.'], JSON_UNESCAPED_UNICODE);
-    exit;
+    app_error('POST 요청만 허용됩니다.', 405);
 }
 
 // JSON 본문 파싱
 $payload = json_decode(file_get_contents('php://input'), true);
 if (!is_array($payload)) {
-    http_response_code(400);
-    echo json_encode(['message' => '잘못된 요청 본문입니다.'], JSON_UNESCAPED_UNICODE);
-    exit;
+    app_error('잘못된 요청 본문입니다.', 400);
 }
 
 // 입력값 정리
@@ -34,9 +30,7 @@ $password = (string) ($payload['password'] ?? '');
 
 // 필수값 검증
 if ($id === '' || $password === '') {
-    http_response_code(400);
-    echo json_encode(['message' => '아이디와 비밀번호를 입력해주세요.'], JSON_UNESCAPED_UNICODE);
-    exit;
+    app_error('아이디와 비밀번호를 입력해주세요.', 400);
 }
 
 try {
@@ -59,9 +53,7 @@ try {
 
     // 아이디/비밀번호 검증
     if (!$user || empty($user['password_hash']) || !password_verify($password, $user['password_hash'])) {
-        http_response_code(401);
-        echo json_encode(['message' => '아이디 또는 비밀번호가 올바르지 않습니다.'], JSON_UNESCAPED_UNICODE);
-        exit;
+        app_error('아이디 또는 비밀번호가 올바르지 않습니다.', 401);
     }
 
     // 로그인 성공: 세션에 사용자 식별값 저장

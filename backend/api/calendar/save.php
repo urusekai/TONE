@@ -13,23 +13,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405);
-    echo json_encode(['message' => 'POST 요청만 허용됩니다.'], JSON_UNESCAPED_UNICODE);
-    exit;
+    app_error('POST 요청만 허용됩니다.', 405);
 }
 
 $userUuid = trim((string) ($_SESSION['user_uuid'] ?? ''));
 if ($userUuid === '') {
-    http_response_code(401);
-    echo json_encode(['message' => '로그인이 필요합니다.'], JSON_UNESCAPED_UNICODE);
-    exit;
+    app_error('로그인이 필요합니다.', 401);
 }
 
 $payload = json_decode(file_get_contents('php://input'), true);
 if (!is_array($payload)) {
-    http_response_code(400);
-    echo json_encode(['message' => '잘못된 요청 본문입니다.'], JSON_UNESCAPED_UNICODE);
-    exit;
+    app_error('잘못된 요청 본문입니다.', 400);
 }
 
 $entryDate = trim((string) ($payload['entryDate'] ?? ''));
@@ -37,9 +31,7 @@ $memo = trim((string) ($payload['memo'] ?? ''));
 $playlistId = isset($payload['playlistId']) ? (int) $payload['playlistId'] : 0;
 
 if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $entryDate)) {
-    http_response_code(400);
-    echo json_encode(['message' => 'entryDate는 YYYY-MM-DD 형식이어야 합니다.'], JSON_UNESCAPED_UNICODE);
-    exit;
+    app_error('entryDate는 YYYY-MM-DD 형식이어야 합니다.', 400);
 }
 
 $entryDateObj = DateTimeImmutable::createFromFormat('Y-m-d', $entryDate);
@@ -48,15 +40,11 @@ if (
     !$entryDateObj instanceof DateTimeImmutable ||
     ($entryDateErrors !== false && (($entryDateErrors['warning_count'] ?? 0) > 0 || ($entryDateErrors['error_count'] ?? 0) > 0))
 ) {
-    http_response_code(400);
-    echo json_encode(['message' => '유효한 entryDate 값이 아닙니다.'], JSON_UNESCAPED_UNICODE);
-    exit;
+    app_error('유효한 entryDate 값이 아닙니다.', 400);
 }
 
 if (function_exists('mb_strlen') ? mb_strlen($memo) > 50 : strlen($memo) > 50) {
-    http_response_code(400);
-    echo json_encode(['message' => '메모는 50자 이하로 입력해주세요.'], JSON_UNESCAPED_UNICODE);
-    exit;
+    app_error('메모는 50자 이하로 입력해주세요.', 400);
 }
 
 try {
@@ -77,9 +65,7 @@ try {
 
     $resolvedPlaylistId = $playlistId > 0 ? $playlistId : (int) ($existingEntry['playlist_id'] ?? 0);
     if ($resolvedPlaylistId < 1) {
-        http_response_code(400);
-        echo json_encode(['message' => 'playlistId가 필요합니다.'], JSON_UNESCAPED_UNICODE);
-        exit;
+        app_error('playlistId가 필요합니다.', 400);
     }
 
     $playlistStmt = $pdo->prepare(
@@ -104,9 +90,7 @@ try {
     $playlist = $playlistStmt->fetch();
 
     if (!$playlist) {
-        http_response_code(404);
-        echo json_encode(['message' => '플레이리스트를 찾을 수 없습니다.'], JSON_UNESCAPED_UNICODE);
-        exit;
+        app_error('플레이리스트를 찾을 수 없습니다.', 404);
     }
 
     if ($existingEntry) {
