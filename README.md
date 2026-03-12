@@ -32,12 +32,11 @@ TONE은 사용자에게 매일 팬톤컬러 기반의 색상과 그에 어울리
 
 <br>
 
-## 🛠 프로젝트 특징
+## 🛠 구현 포인트
 
 - **백엔드 API 및 DB 연동** : 모든 주요 기능을 PHP API와 MySQL DB까지 연결해 직접 구현했습니다.
-- **소셜 로그인 연동** : 카카오, 구글, 네이버 OAuth와 세션 로그인 흐름을 연결했습니다.
+- **소셜 로그인 연동** : 카카오, 구글, 네이버 Oauth를 통해 소셜 로그인을 구현했습니다.
 - **배포 자동화** : `main` 머지 시 GitHub Actions를 통해 빌드와 닷홈 서버 배포까지의 자동화를 구현했습니다.
-- **협업 흐름 관리** : 브랜치 전략, 커밋 컨벤션, PR 템플릿으로 작업 흐름을 관리했습니다.
 - **미디어 분리 운영** : Cloudflare R2 기반으로 커버, 음원, 영상 리소스를 분리해서 관리했습니다.
 
 <br>
@@ -47,39 +46,39 @@ TONE은 사용자에게 매일 팬톤컬러 기반의 색상과 그에 어울리
 ### 프론트엔드
 
 <p>
-  <img alt="Vue.js" hspace="3" src="https://img.shields.io/badge/vuejs-%2335495e.svg?style=for-the-badge&logo=vuedotjs&logoColor=%234FC08D" />
-  <img alt="Vue Router" hspace="3" src="https://img.shields.io/badge/Vue%20Router-4FC08D?style=for-the-badge&logo=vuedotjs&logoColor=white" />
-  <img alt="Vite" hspace="3" src="https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white" />
-  <img alt="Pinia" hspace="3" src="https://img.shields.io/badge/Pinia-FFD859?style=for-the-badge&logo=pinia&logoColor=black" />
-  <img alt="Axios" hspace="3" src="https://img.shields.io/badge/Axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white" />
-  <img alt="Swiper" hspace="3" src="https://img.shields.io/badge/Swiper-6332F6?style=for-the-badge&logo=swiper&logoColor=white" />
+  <img alt="Vue.js" hspace="3" src="https://img.shields.io/badge/vuejs-%2335495e.svg?style=flat-square&logo=vuedotjs&logoColor=%234FC08D" />
+  <img alt="Vue Router" hspace="3" src="https://img.shields.io/badge/Vue%20Router-4FC08D?style=flat-square&logo=vuedotjs&logoColor=white" />
+  <img alt="Vite" hspace="3" src="https://img.shields.io/badge/vite-%23646CFF.svg?style=flat-square&logo=vite&logoColor=white" />
+  <img alt="Pinia" hspace="3" src="https://img.shields.io/badge/Pinia-FFD859?style=flat-square&logo=pinia&logoColor=black" />
+  <img alt="Axios" hspace="3" src="https://img.shields.io/badge/Axios-5A29E4?style=flat-square&logo=axios&logoColor=white" />
+  <img alt="Swiper" hspace="3" src="https://img.shields.io/badge/Swiper-6332F6?style=flat-square&logo=swiper&logoColor=white" />
 </p>
 
 ### 백엔드
 
 <p>
-  <img alt="PHP" hspace="3" src="https://img.shields.io/badge/php-%23777BB4.svg?style=for-the-badge&logo=php&logoColor=white" />
-  <img alt="MySQL" hspace="3" src="https://img.shields.io/badge/mysql-4479A1.svg?style=for-the-badge&logo=mysql&logoColor=white" />
-  <img alt="Composer" hspace="3" src="https://img.shields.io/badge/composer-885630?style=for-the-badge&logo=composer&logoColor=white" />
-  <img alt="Guzzle" hspace="3" src="https://img.shields.io/badge/Guzzle-000000?style=for-the-badge&logo=php&logoColor=white" />
-  <img alt="phpdotenv" hspace="3" src="https://img.shields.io/badge/phpdotenv-6C7EB7?style=for-the-badge&logo=php&logoColor=white" />
+  <img alt="PHP" hspace="3" src="https://img.shields.io/badge/php-%23777BB4.svg?style=flat-square&logo=php&logoColor=white" />
+  <img alt="MySQL" hspace="3" src="https://img.shields.io/badge/mysql-4479A1.svg?style=flat-square&logo=mysql&logoColor=white" />
+  <img alt="Composer" hspace="3" src="https://img.shields.io/badge/composer-885630?style=flat-square&logo=composer&logoColor=white" />
+  <img alt="Guzzle" hspace="3" src="https://img.shields.io/badge/Guzzle-000000?style=flat-square&logo=php&logoColor=white" />
+  <img alt="phpdotenv" hspace="3" src="https://img.shields.io/badge/phpdotenv-6C7EB7?style=flat-square&logo=php&logoColor=white" />
 </p>
 
 ### 배포 & 인프라
 
 <p>
-  <img alt="GitHub Actions" hspace="3" src="https://img.shields.io/badge/GitHub%20Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white" />
-  <img alt="Cloudflare R2" hspace="3" src="https://img.shields.io/badge/Cloudflare%20R2-F38020?style=for-the-badge&logo=cloudflare&logoColor=white" />
+  <img alt="GitHub Actions" hspace="3" src="https://img.shields.io/badge/GitHub%20Actions-2088FF?style=flat-square&logo=githubactions&logoColor=white" />
+  <img alt="Cloudflare R2" hspace="3" src="https://img.shields.io/badge/Cloudflare%20R2-F38020?style=flat-square&logo=cloudflare&logoColor=white" />
 </p>
 
 ### 협업
 
 <p>
-  <img alt="GitHub" hspace="3" src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" />
-  <img alt="Figma" hspace="3" src="https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white" />
-  <img alt="Notion" hspace="3" src="https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=notion&logoColor=white" />
-  <img alt="ESLint" hspace="3" src="https://img.shields.io/badge/ESLint-4B32C3?style=for-the-badge&logo=eslint&logoColor=white" />
-  <img alt="Prettier" hspace="3" src="https://img.shields.io/badge/Prettier-F7B93E?style=for-the-badge&logo=prettier&logoColor=black" />
+  <img alt="GitHub" hspace="3" src="https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=github&logoColor=white" />
+  <img alt="Figma" hspace="3" src="https://img.shields.io/badge/Figma-F24E1E?style=flat-square&logo=figma&logoColor=white" />
+  <img alt="Notion" hspace="3" src="https://img.shields.io/badge/Notion-000000?style=flat-square&logo=notion&logoColor=white" />
+  <img alt="ESLint" hspace="3" src="https://img.shields.io/badge/ESLint-4B32C3?style=flat-square&logo=eslint&logoColor=white" />
+  <img alt="Prettier" hspace="3" src="https://img.shields.io/badge/Prettier-F7B93E?style=flat-square&logo=prettier&logoColor=black" />
 </p>
 
 <br>
@@ -129,8 +128,7 @@ TONE/
 - `refactor/작업명` : 구조 정리, 코드 개선
 - `style/작업명` : 스타일 수정
 - `chore/작업명` : 설정, 환경, 파일 정리
-
-예시: `feat/calendar-api`
+- 예시 : `feat/calendar-api`
 
 ### 커밋 메시지
 
@@ -139,5 +137,4 @@ TONE/
 - `refactor: 내용`
 - `style: 내용`
 - `chore: 내용`
-
-예시: `feat: 캘린더 API 연결`
+- 예시 : `feat: 캘린더 API 연결`
