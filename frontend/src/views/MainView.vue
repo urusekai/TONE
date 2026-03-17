@@ -168,6 +168,7 @@ import { apiRequest } from '@/services/httpClient';
 import { playPlaylistFirstTrack } from '@/services/playlistService';
 import PlaylistActionControls from '@/components/PlaylistActionControls.vue';
 import { showAlert } from '@/utils/alert';
+import dailySpectrumQuestionnaire from '@/data/daily-spectrum-questionnaire.json';
 import addIcon from '@/assets/icons/add.svg';
 import addCompleteIcon from '@/assets/icons/addComplete.svg';
 
@@ -294,25 +295,36 @@ async function loadDailyPlaylist() {
   }
 }
 
+function buildRandomDailySpectrumAnswers() {
+  return (dailySpectrumQuestionnaire.questions || []).reduce((answers, question) => {
+    const choices = Array.isArray(question?.choices) ? question.choices : [];
+    const randomChoice = choices[Math.floor(Math.random() * choices.length)];
+
+    if (question?.field && randomChoice?.value) {
+      answers[question.field] = randomChoice.value;
+    }
+
+    return answers;
+  }, {});
+}
+
 async function handleDebugDailySpectrum() {
   try {
+    const answers = buildRandomDailySpectrumAnswers();
+
     const result = await apiRequest(
       '/api/playlist/daily-spectrum.php',
       {
         method: 'POST',
         body: {
-          answers: {
-            energy_level: 'medium',
-            emotion_temperature: 'warm',
-            desired_mood: 'refresh',
-            day_pace: 'steady',
-            record_focus: 'confidence'
-          }
+          daily_playlist_id: dailyPlaylist.value?.id ?? null,
+          answers
         }
       },
       '데일리 스펙트럼 추천 테스트에 실패했습니다.'
     );
 
+    console.log('daily-spectrum answers', answers);
     console.log('daily-spectrum response', result);
   } catch (error) {
     console.error('daily-spectrum error', error);
