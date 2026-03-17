@@ -48,7 +48,12 @@
     <section class="panel spectrum" style="--panel-delay: 48ms">
       <div class="panel-head">
         <h3>Daily Spectrum</h3>
-        <span class="hint">오늘 톤과 비슷한 색상 추천</span>
+        <div class="panel-head-actions">
+          <span class="hint">오늘 톤과 비슷한 색상 추천</span>
+          <button class="debug-trigger" type="button" @click="handleDebugDailySpectrum">
+            추천 테스트
+          </button>
+        </div>
       </div>
 
       <p v-if="isDailyLoading" class="spectrum-state">오늘의 톤을 먼저 불러오는 중...</p>
@@ -286,6 +291,36 @@ async function loadDailyPlaylist() {
       error instanceof Error ? error.message : '오늘의 톤을 불러오지 못했습니다.';
   } finally {
     isDailyLoading.value = false;
+  }
+}
+
+async function handleDebugDailySpectrum() {
+  try {
+    const result = await apiRequest(
+      '/api/playlist/daily-spectrum.php',
+      {
+        method: 'POST',
+        body: {
+          answers: {
+            energy_level: 'medium',
+            emotion_temperature: 'warm',
+            desired_mood: 'refresh',
+            day_pace: 'steady',
+            record_focus: 'confidence'
+          }
+        }
+      },
+      '데일리 스펙트럼 추천 테스트에 실패했습니다.'
+    );
+
+    console.log('daily-spectrum response', result);
+  } catch (error) {
+    console.error('daily-spectrum error', error);
+    showAlert(
+      error instanceof Error
+        ? error.message
+        : '데일리 스펙트럼 추천 테스트에 실패했습니다.'
+    );
   }
 }
 
@@ -697,6 +732,12 @@ watch(
   z-index: 2;
 }
 
+.panel-head-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .panel h3 {
   margin: 0;
   font-size: 16px;
@@ -710,6 +751,16 @@ watch(
   font-weight: 500;
   text-decoration: none;
   color: inherit;
+}
+
+.debug-trigger {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  font-size: 10px;
+  font-weight: 600;
+  color: #3f5f73;
+  cursor: pointer;
 }
 
 .spec-card {
