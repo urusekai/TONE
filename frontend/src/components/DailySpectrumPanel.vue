@@ -4,103 +4,160 @@
       <h3>Daily Spectrum</h3>
     </div>
 
-    <p v-if="isDailyLoading" class="spectrum-state">오늘의 톤을 먼저 불러오는 중...</p>
+    <p v-if="isDailyLoading" class="spectrum-state">오늘의 톤을 먼저 불러오는 중 ...</p>
     <p v-else-if="dailyErrorMessage" class="spectrum-state">
       오늘의 톤을 불러오지 못해 추천을 표시할 수 없습니다.
     </p>
 
-    <div v-else-if="panelStep === 'intro'" class="spectrum-step spectrum-step-intro">
-      <p class="spectrum-intro-copy">오늘의 감정을 색과 음악으로 변환해드릴게요</p>
-      <button class="spectrum-primary-btn" type="button" @click="startSpectrum">시작하기</button>
-    </div>
+    <div v-else class="spectrum-stage">
+      <div
+        class="spectrum-layer"
+        :class="{ 'is-active': panelStep === 'intro' }"
+        :aria-hidden="panelStep !== 'intro'"
+        :inert="panelStep !== 'intro'"
+      >
+        <div class="spectrum-step spectrum-step-intro">
+          <p class="spectrum-intro-copy">오늘의 감정을 색과 음악으로 변환해드릴게요</p>
+          <button class="spectrum-primary-btn" type="button" @click="startSpectrum">
+            시작하기
+          </button>
+        </div>
+      </div>
 
-    <div v-else-if="panelStep === 'question'" class="spectrum-step spectrum-step-question">
-      <div class="spectrum-question-block">
-        <p class="spectrum-question">{{ currentQuestion?.question }}</p>
+      <div
+        class="spectrum-layer"
+        :class="{ 'is-active': panelStep === 'question' }"
+        :aria-hidden="panelStep !== 'question'"
+        :inert="panelStep !== 'question'"
+      >
+        <div class="spectrum-step spectrum-step-question">
+          <div
+            class="spectrum-question-shell"
+            :class="{ 'is-submitting': isSubmittingSpectrum }"
+            :aria-busy="isSubmittingSpectrum"
+          >
+            <div class="spectrum-question-block">
+              <p class="spectrum-question">{{ currentQuestion?.question }}</p>
 
-        <div class="spectrum-choice-row">
-          <div class="spectrum-choice-list">
-            <button
-              v-for="choice in currentQuestionChoices"
-              :key="choice.value"
-              class="spectrum-choice-btn"
-              :class="{ 'is-selected': selectedAnswer === choice.value }"
-              type="button"
-              @click="selectAnswer(choice.value)"
-            >
-              {{ choice.label }}
-            </button>
+              <div class="spectrum-choice-row">
+                <div class="spectrum-choice-list">
+                  <button
+                    v-for="choice in currentQuestionChoices"
+                    :key="choice.value"
+                    class="spectrum-choice-btn"
+                    :class="{ 'is-selected': selectedAnswer === choice.value }"
+                    type="button"
+                    @click="selectAnswer(choice.value)"
+                  >
+                    {{ choice.label }}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="spectrum-nav">
+              <button class="spectrum-ghost-btn" type="button" @click="goPrevQuestion">이전</button>
+              <button
+                class="spectrum-primary-btn"
+                type="button"
+                :disabled="!selectedAnswer"
+                @click="goNextQuestion"
+              >
+                {{ isLastQuestion ? '완료' : '다음' }}
+              </button>
+            </div>
+          </div>
+
+          <div
+            class="spectrum-question-overlay"
+            :class="{ 'is-active': isSubmittingSpectrum }"
+            aria-hidden="true"
+          >
+            <div class="spectrum-loading-orbit">
+              <span class="spectrum-loading-orb spectrum-loading-orb-violet"></span>
+              <span class="spectrum-loading-orb spectrum-loading-orb-orange"></span>
+              <span class="spectrum-loading-orb spectrum-loading-orb-rose"></span>
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="spectrum-nav">
-        <button class="spectrum-ghost-btn" type="button" @click="goPrevQuestion">이전</button>
-        <button
-          class="spectrum-primary-btn"
-          type="button"
-          :disabled="!selectedAnswer"
-          @click="goNextQuestion"
-        >
-          {{ isLastQuestion ? '완료' : '다음' }}
-        </button>
-      </div>
-    </div>
-
-    <div v-else-if="panelStep === 'loading'" class="spectrum-step spectrum-step-loading">
-      <p class="spectrum-loading-copy">감정을 색으로 변환하는 중...</p>
-    </div>
-
-    <div v-else-if="panelStep === 'typing'" class="spectrum-step spectrum-step-typing">
-      <p class="spectrum-typing-copy">
-        <span>{{ typedExplanation }}</span>
-        <span aria-hidden="true" class="spectrum-typing-copy-ghost">{{ remainingExplanation }}</span>
-      </p>
-    </div>
-
-    <div v-else-if="panelStep === 'result'" class="spectrum-step spectrum-step-result">
-      <p v-if="spectrumErrorMessage" class="spectrum-state">{{ spectrumErrorMessage }}</p>
-      <p v-else-if="!spectrumPlaylists.length" class="spectrum-state">추천 결과가 없습니다.</p>
-
-      <template v-else>
-        <div class="spec-track">
-          <Swiper
-            class="spec-swiper"
-            :modules="swiperModules"
-            :slides-per-view="'auto'"
-            :space-between="14"
-            :free-mode="{ enabled: true, momentumBounce: false }"
-            :grab-cursor="true"
-            :resistance-ratio="0"
-            :watch-overflow="true"
+      <div
+        class="spectrum-layer"
+        :class="{ 'is-active': panelStep === 'typing' }"
+        :aria-hidden="panelStep !== 'typing'"
+        :inert="panelStep !== 'typing'"
+      >
+        <div class="spectrum-step spectrum-step-typing">
+          <div class="spectrum-typing-body">
+            <p class="spectrum-typing-copy">
+              <span>{{ typedExplanation }}</span>
+              <span aria-hidden="true" class="spectrum-typing-copy-ghost">{{
+                remainingExplanation
+              }}</span>
+            </p>
+          </div>
+          <button
+            class="spectrum-primary-btn"
+            type="button"
+            @click="openSpectrumResult"
           >
-            <SwiperSlide
-              v-for="playlist in spectrumPlaylists"
-              :key="playlist.id"
-              class="spec-slide"
-            >
-              <RouterLink class="spec-card" :to="playlistTo(playlist.id)">
-                <div class="spec-color" :style="{ '--c': playlist.color_hex }"></div>
-                <div class="spec-body">
-                  <div class="spec-meta">
-                    <span class="spec-code">{{ playlist.pantone_code }}</span>
-                    <button
-                      class="mini-add"
-                      type="button"
-                      aria-label="팔레트 로그 저장"
-                      :disabled="isPalettePending(playlist.id)"
-                      @click.capture.stop.prevent="emit('toggle-palette', playlist)"
-                    >
-                      <img :src="isSaved(playlist.id) ? addCompleteIcon : addIcon" alt="저장" />
-                    </button>
-                  </div>
-                  <div class="spec-name">{{ playlist.color_name }}</div>
-                </div>
-              </RouterLink>
-            </SwiperSlide>
-          </Swiper>
+            확인하기
+          </button>
         </div>
-      </template>
+      </div>
+
+      <div
+        class="spectrum-layer"
+        :class="{ 'is-active': panelStep === 'result' }"
+        :aria-hidden="panelStep !== 'result'"
+        :inert="panelStep !== 'result'"
+      >
+        <div class="spectrum-step spectrum-step-result">
+          <p v-if="spectrumErrorMessage" class="spectrum-state">{{ spectrumErrorMessage }}</p>
+          <p v-else-if="!spectrumPlaylists.length" class="spectrum-state">추천 결과가 없습니다.</p>
+
+          <template v-else>
+            <div class="spec-track">
+              <Swiper
+                class="spec-swiper"
+                :modules="swiperModules"
+                :slides-per-view="'auto'"
+                :space-between="14"
+                :free-mode="{ enabled: true, momentumBounce: false }"
+                :grab-cursor="true"
+                :resistance-ratio="0"
+                :watch-overflow="true"
+              >
+                <SwiperSlide
+                  v-for="playlist in spectrumPlaylists"
+                  :key="playlist.id"
+                  class="spec-slide"
+                >
+                  <RouterLink class="spec-card" :to="playlistTo(playlist.id)">
+                    <div class="spec-color" :style="{ '--c': playlist.color_hex }"></div>
+                    <div class="spec-body">
+                      <div class="spec-meta">
+                        <span class="spec-code">{{ playlist.pantone_code }}</span>
+                        <button
+                          class="mini-add"
+                          type="button"
+                          aria-label="팔레트 로그 저장"
+                          :disabled="isPalettePending(playlist.id)"
+                          @click.capture.stop.prevent="emit('toggle-palette', playlist)"
+                        >
+                          <img :src="isSaved(playlist.id) ? addCompleteIcon : addIcon" alt="저장" />
+                        </button>
+                      </div>
+                      <div class="spec-name">{{ playlist.color_name }}</div>
+                    </div>
+                  </RouterLink>
+                </SwiperSlide>
+              </Swiper>
+            </div>
+          </template>
+        </div>
+      </div>
     </div>
   </section>
 </template>
@@ -151,6 +208,8 @@ const spectrumErrorMessage = ref('');
 const spectrumPlaylists = ref([]);
 const resultExplanation = ref('');
 const typedExplanation = ref('');
+const isExplanationComplete = ref(false);
+const isSubmittingSpectrum = ref(false);
 const answers = ref({});
 const questionIndex = ref(0);
 const questions = Array.isArray(dailySpectrumQuestionnaire.questions)
@@ -170,7 +229,6 @@ const remainingExplanation = computed(() =>
 );
 
 let typingTimer = null;
-let typingDoneTimer = null;
 
 function resetQuestionFlow() {
   answers.value = {};
@@ -182,6 +240,8 @@ function clearSpectrumResult() {
   spectrumPlaylists.value = [];
   resultExplanation.value = '';
   typedExplanation.value = '';
+  isExplanationComplete.value = false;
+  isSubmittingSpectrum.value = false;
 }
 
 function resetSpectrum() {
@@ -220,7 +280,7 @@ function goPrevQuestion() {
 }
 
 async function goNextQuestion() {
-  if (!selectedAnswer.value) {
+  if (!selectedAnswer.value || isSubmittingSpectrum.value) {
     return;
   }
 
@@ -241,8 +301,8 @@ async function submitSpectrum() {
   }
 
   stopExplanationTyping();
-  panelStep.value = 'loading';
   clearSpectrumResult();
+  isSubmittingSpectrum.value = true;
 
   try {
     const result = await apiRequest(
@@ -263,6 +323,8 @@ async function submitSpectrum() {
     resultExplanation.value =
       typeof result?.explanation === 'string' ? result.explanation.trim() : '';
 
+    isSubmittingSpectrum.value = false;
+
     if (spectrumPlaylists.value.length && resultExplanation.value) {
       startExplanationTyping(resultExplanation.value);
       return;
@@ -281,16 +343,18 @@ function stopExplanationTyping() {
     window.clearInterval(typingTimer);
     typingTimer = null;
   }
+}
 
-  if (typingDoneTimer) {
-    window.clearTimeout(typingDoneTimer);
-    typingDoneTimer = null;
-  }
+function openSpectrumResult() {
+  stopExplanationTyping();
+  isExplanationComplete.value = true;
+  panelStep.value = 'result';
 }
 
 function startExplanationTyping(text) {
   stopExplanationTyping();
   typedExplanation.value = '';
+  isExplanationComplete.value = false;
   panelStep.value = 'typing';
 
   const source = String(text ?? '');
@@ -306,12 +370,9 @@ function startExplanationTyping(text) {
 
     if (index >= source.length) {
       stopExplanationTyping();
-      typingDoneTimer = window.setTimeout(() => {
-        typingDoneTimer = null;
-        panelStep.value = 'result';
-      }, 280);
+      isExplanationComplete.value = true;
     }
-  }, 48);
+  }, 60);
 }
 
 watch(
@@ -351,14 +412,41 @@ onBeforeUnmount(() => {
   color: #3f5f73;
 }
 
+.spectrum-stage {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+
+.spectrum-layer {
+  grid-area: 1 / 1;
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 560ms ease,
+    visibility 0s linear 560ms;
+}
+
+.spectrum-layer.is-active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition:
+    opacity 560ms ease,
+    visibility 0s linear 0s;
+}
+
 .spectrum-step {
   flex: 1;
   min-width: 0;
 }
 
-.spectrum-step-intro,
-.spectrum-step-loading,
-.spectrum-step-typing {
+.spectrum-step-intro {
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -368,9 +456,17 @@ onBeforeUnmount(() => {
 }
 
 .spectrum-step-question {
+  position: relative;
   display: flex;
   flex: 1;
   flex-direction: column;
+}
+
+.spectrum-step-typing {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .spectrum-step-result {
@@ -382,7 +478,6 @@ onBeforeUnmount(() => {
 
 .spectrum-intro-copy,
 .spectrum-question,
-.spectrum-loading-copy,
 .spectrum-typing-copy {
   margin: 0;
   text-align: center;
@@ -394,13 +489,94 @@ onBeforeUnmount(() => {
   font-size: 12px;
 }
 
+.spectrum-loading-orbit {
+  position: relative;
+  width: 64px;
+  height: 40px;
+  animation: spectrum-loading-orbit 2s linear infinite;
+  transform-origin: center;
+}
+
+.spectrum-loading-orb {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  box-shadow: 0 3px 6px rgba(63, 95, 115, 0.14);
+  transform: translate(-50%, -50%) rotate(var(--orb-angle)) translateY(calc(var(--orb-radius) * -1));
+}
+
+.spectrum-loading-orb-violet {
+  --orb-angle: -52deg;
+  --orb-radius: 12px;
+  background: #8b5cf6;
+}
+
+.spectrum-loading-orb-orange {
+  --orb-angle: 0deg;
+  --orb-radius: 12px;
+  background: #fb923c;
+}
+
+.spectrum-loading-orb-rose {
+  --orb-angle: 52deg;
+  --orb-radius: 12px;
+  background: #f59aa8;
+}
+
+.spectrum-question-shell {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  transition:
+    opacity 220ms ease,
+    filter 220ms ease;
+}
+
+.spectrum-question-shell.is-submitting {
+  opacity: 0.36;
+  filter: saturate(0.82) brightness(1.04);
+}
+
+.spectrum-question-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.26);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 220ms ease;
+}
+
+.spectrum-question-overlay.is-active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.spectrum-typing-body {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+}
+
+.spectrum-step-typing .spectrum-primary-btn {
+  align-self: center;
+}
+
 .spectrum-question-block {
   display: flex;
   flex: 1;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 18px;
   min-height: 0;
 }
 
@@ -473,11 +649,6 @@ onBeforeUnmount(() => {
   border: 0;
   background: var(--color-primary);
   color: #ffffff;
-}
-
-.spectrum-primary-btn:disabled {
-  opacity: 0.45;
-  cursor: default;
 }
 
 .spectrum-ghost-btn {
@@ -590,5 +761,15 @@ onBeforeUnmount(() => {
   font-size: 22px;
   font-weight: 700;
   letter-spacing: -0.4px;
+}
+
+@keyframes spectrum-loading-orbit {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>
