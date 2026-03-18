@@ -1,0 +1,118 @@
+{
+  "version": "2026-03-17",
+  "source": "backend/database/schema.sql",
+  "entity": "playlists",
+  "questions": [
+    {
+      "order": 1,
+      "field": "energy_level",
+      "question": "지금 에너지는 어떤 편인가요?",
+      "choices": [
+        {
+          "label": "낮음",
+          "value": "low"
+        },
+        {
+          "label": "보통",
+          "value": "medium"
+        },
+        {
+          "label": "높음",
+          "value": "high"
+        }
+      ]
+    },
+    {
+      "order": 2,
+      "field": "emotion_temperature",
+      "question": "지금의 감정 온도는 어떤가요?",
+      "choices": [
+        {
+          "label": "차분함",
+          "value": "cool"
+        },
+        {
+          "label": "담담함",
+          "value": "neutral"
+        },
+        {
+          "label": "달아오름",
+          "value": "heated"
+        }
+      ]
+    },
+    {
+      "order": 3,
+      "field": "desired_mood",
+      "question": "지금 필요한 분위기는 무엇인가요?",
+      "choices": [
+        {
+          "label": "안정",
+          "value": "stability"
+        },
+        {
+          "label": "집중",
+          "value": "focus"
+        },
+        {
+          "label": "환기",
+          "value": "refresh"
+        },
+        {
+          "label": "몰입",
+          "value": "immersion"
+        },
+        {
+          "label": "해소",
+          "value": "release"
+        }
+      ]
+    },
+    {
+      "order": 4,
+      "field": "day_pace",
+      "question": "오늘 하루 흐름은 어땠나요?",
+      "choices": [
+        {
+          "label": "느림",
+          "value": "slow"
+        },
+        {
+          "label": "일정함",
+          "value": "steady"
+        },
+        {
+          "label": "빠름",
+          "value": "fast"
+        }
+      ]
+    },
+    {
+      "order": 5,
+      "field": "record_focus",
+      "question": "더 남기고 싶은 건 무엇인가요?",
+      "choices": [
+        {
+          "label": "감정",
+          "value": "emotion"
+        },
+        {
+          "label": "분위기",
+          "value": "atmosphere"
+        },
+        {
+          "label": "움직임",
+          "value": "movement"
+        },
+        {
+          "label": "회복",
+          "value": "recovery"
+        },
+        {
+          "label": "자신감",
+          "value": "confidence"
+        }
+      ]
+    }
+  ]
+}
