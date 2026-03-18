@@ -97,11 +97,7 @@
               }}</span>
             </p>
           </div>
-          <button
-            class="spectrum-primary-btn"
-            type="button"
-            @click="openSpectrumResult"
-          >
+          <button class="spectrum-primary-btn" type="button" @click="openSpectrumResult">
             확인하기
           </button>
         </div>
@@ -208,7 +204,6 @@ const spectrumErrorMessage = ref('');
 const spectrumPlaylists = ref([]);
 const resultExplanation = ref('');
 const typedExplanation = ref('');
-const isExplanationComplete = ref(false);
 const isSubmittingSpectrum = ref(false);
 const answers = ref({});
 const questionIndex = ref(0);
@@ -240,7 +235,6 @@ function clearSpectrumResult() {
   spectrumPlaylists.value = [];
   resultExplanation.value = '';
   typedExplanation.value = '';
-  isExplanationComplete.value = false;
   isSubmittingSpectrum.value = false;
 }
 
@@ -347,14 +341,12 @@ function stopExplanationTyping() {
 
 function openSpectrumResult() {
   stopExplanationTyping();
-  isExplanationComplete.value = true;
   panelStep.value = 'result';
 }
 
 function startExplanationTyping(text) {
   stopExplanationTyping();
   typedExplanation.value = '';
-  isExplanationComplete.value = false;
   panelStep.value = 'typing';
 
   const source = String(text ?? '');
@@ -370,9 +362,8 @@ function startExplanationTyping(text) {
 
     if (index >= source.length) {
       stopExplanationTyping();
-      isExplanationComplete.value = true;
     }
-  }, 60);
+  }, 42);
 }
 
 watch(
@@ -471,14 +462,12 @@ onBeforeUnmount(() => {
 
 .spectrum-step-result {
   display: grid;
-  gap: 8px;
   min-height: 0;
   padding-top: 2px;
 }
 
 .spectrum-intro-copy,
-.spectrum-question,
-.spectrum-typing-copy {
+.spectrum-question {
   margin: 0;
   text-align: center;
   color: #4b6477;
@@ -658,6 +647,10 @@ onBeforeUnmount(() => {
 }
 
 .spectrum-typing-copy {
+  margin: 0;
+  text-align: center;
+  color: #4b6477;
+  line-height: 1.5;
   max-width: 260px;
   min-height: calc(13px * 1.5 * 2);
   white-space: pre-line;
