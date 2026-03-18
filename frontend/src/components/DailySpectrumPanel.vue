@@ -98,7 +98,7 @@
             </p>
           </div>
           <button class="spectrum-primary-btn" type="button" @click="openSpectrumResult">
-            확인하기
+            결과 보기
           </button>
         </div>
       </div>
@@ -159,15 +159,16 @@
 </template>
 
 <script setup>
-import { computed, onBeforeUnmount, ref, watch } from 'vue';
+import { computed, watch } from 'vue';
+import { storeToRefs } from 'pinia';
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import { FreeMode } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/free-mode';
-import { apiRequest } from '@/services/httpClient';
 import dailySpectrumQuestionnaire from '@/data/daily-spectrum-questionnaire.json';
 import addIcon from '@/assets/icons/add.svg';
 import addCompleteIcon from '@/assets/icons/addComplete.svg';
+import { useDailySpectrumStore } from '@/stores/dailySpectrum';
 
 const props = defineProps({
   isDailyLoading: {
@@ -199,14 +200,17 @@ const props = defineProps({
 const emit = defineEmits(['toggle-palette']);
 
 const swiperModules = [FreeMode];
-const panelStep = ref('intro');
-const spectrumErrorMessage = ref('');
-const spectrumPlaylists = ref([]);
-const resultExplanation = ref('');
-const typedExplanation = ref('');
-const isSubmittingSpectrum = ref(false);
-const answers = ref({});
-const questionIndex = ref(0);
+const spectrumStore = useDailySpectrumStore();
+const {
+  panelStep,
+  spectrumErrorMessage,
+  spectrumPlaylists,
+  resultExplanation,
+  typedExplanation,
+  isSubmittingSpectrum,
+  answers,
+  questionIndex
+} = storeToRefs(spectrumStore);
 const questions = Array.isArray(dailySpectrumQuestionnaire.questions)
   ? dailySpectrumQuestionnaire.questions
   : [];
@@ -223,33 +227,8 @@ const remainingExplanation = computed(() =>
   resultExplanation.value.slice(typedExplanation.value.length)
 );
 
-let typingTimer = null;
-
-function resetQuestionFlow() {
-  answers.value = {};
-  questionIndex.value = 0;
-}
-
-function clearSpectrumResult() {
-  spectrumErrorMessage.value = '';
-  spectrumPlaylists.value = [];
-  resultExplanation.value = '';
-  typedExplanation.value = '';
-  isSubmittingSpectrum.value = false;
-}
-
-function resetSpectrum() {
-  stopExplanationTyping();
-  panelStep.value = 'intro';
-  clearSpectrumResult();
-  resetQuestionFlow();
-}
-
 function startSpectrum() {
-  stopExplanationTyping();
-  clearSpectrumResult();
-  resetQuestionFlow();
-  panelStep.value = 'question';
+  spectrumStore.startSpectrum();
 }
 
 function selectAnswer(value) {
@@ -258,19 +237,16 @@ function selectAnswer(value) {
     return;
   }
 
-  answers.value = {
-    ...answers.value,
-    [field]: value
-  };
+  spectrumStore.setAnswer(field, value);
 }
 
 function goPrevQuestion() {
   if (questionIndex.value === 0) {
-    panelStep.value = 'intro';
+    spectrumStore.setPanelStep('intro');
     return;
   }
 
-  questionIndex.value -= 1;
+  spectrumStore.setQuestionIndex(questionIndex.value - 1);
 }
 
 async function goNextQuestion() {
@@ -279,104 +255,33 @@ async function goNextQuestion() {
   }
 
   if (!isLastQuestion.value) {
-    questionIndex.value += 1;
+    spectrumStore.setQuestionIndex(questionIndex.value + 1);
     return;
   }
 
-  await submitSpectrum();
-}
-
-async function submitSpectrum() {
-  if (!props.dailyPlaylistId) {
-    stopExplanationTyping();
-    spectrumErrorMessage.value = '오늘의 톤을 먼저 불러와야 합니다.';
-    panelStep.value = 'result';
-    return;
-  }
-
-  stopExplanationTyping();
-  clearSpectrumResult();
-  isSubmittingSpectrum.value = true;
-
-  try {
-    const result = await apiRequest(
-      '/api/playlist/daily-spectrum.php',
-      {
-        method: 'POST',
-        body: {
-          daily_playlist_id: props.dailyPlaylistId,
-          answers: answers.value
-        }
-      },
-      '데일리 스펙트럼 추천을 불러오지 못했습니다.'
-    );
-
-    spectrumPlaylists.value = Array.isArray(result?.spectrumPlaylists)
-      ? result.spectrumPlaylists
-      : [];
-    resultExplanation.value =
-      typeof result?.explanation === 'string' ? result.explanation.trim() : '';
-
-    isSubmittingSpectrum.value = false;
-
-    if (spectrumPlaylists.value.length && resultExplanation.value) {
-      startExplanationTyping(resultExplanation.value);
-      return;
-    }
-  } catch (error) {
-    clearSpectrumResult();
-    spectrumErrorMessage.value =
-      error instanceof Error ? error.message : '데일리 스펙트럼 추천을 불러오지 못했습니다.';
-  }
-
-  panelStep.value = 'result';
-}
-
-function stopExplanationTyping() {
-  if (typingTimer) {
-    window.clearInterval(typingTimer);
-    typingTimer = null;
-  }
+  await spectrumStore.submitSpectrum();
 }
 
 function openSpectrumResult() {
-  stopExplanationTyping();
-  panelStep.value = 'result';
-}
-
-function startExplanationTyping(text) {
-  stopExplanationTyping();
-  typedExplanation.value = '';
-  panelStep.value = 'typing';
-
-  const source = String(text ?? '');
-  if (!source) {
-    panelStep.value = 'result';
-    return;
-  }
-
-  let index = 0;
-  typingTimer = window.setInterval(() => {
-    index += 1;
-    typedExplanation.value = source.slice(0, index);
-
-    if (index >= source.length) {
-      stopExplanationTyping();
-    }
-  }, 42);
+  spectrumStore.openSpectrumResult();
 }
 
 watch(
-  () => props.dailyPlaylistId,
-  () => {
-    resetSpectrum();
+  [() => props.dailyPlaylistId, () => props.dailyErrorMessage],
+  ([nextDailyPlaylistId, nextDailyErrorMessage]) => {
+    if (nextDailyPlaylistId != null && String(nextDailyPlaylistId).trim()) {
+      spectrumStore.syncDailyPlaylist(nextDailyPlaylistId);
+      return;
+    }
+
+    if (nextDailyErrorMessage) {
+      spectrumStore.clearDailyPlaylist();
+    }
   },
   { immediate: true }
 );
 
-onBeforeUnmount(() => {
-  stopExplanationTyping();
-});
+spectrumStore.resumeTypingIfNeeded();
 </script>
 
 <style scoped>
@@ -418,17 +323,21 @@ onBeforeUnmount(() => {
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
+  transform: translateY(8px);
   transition:
-    opacity 560ms ease,
-    visibility 0s linear 560ms;
+    opacity 260ms ease,
+    transform 260ms ease,
+    visibility 0s linear 260ms;
 }
 
 .spectrum-layer.is-active {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
+  transform: translateY(0);
   transition:
-    opacity 560ms ease,
+    opacity 260ms ease,
+    transform 260ms ease,
     visibility 0s linear 0s;
 }
 
