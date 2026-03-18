@@ -571,8 +571,15 @@ onBeforeUnmount(() => {
 
 .spectrum-choice-row {
   display: flex;
-  justify-content: center;
+  width: 100%;
   min-width: 0;
+  overflow-x: auto;
+  padding: 4px;
+  scrollbar-width: none;
+}
+
+.spectrum-choice-row::-webkit-scrollbar {
+  display: none;
 }
 
 .spectrum-choice-list {
@@ -580,15 +587,11 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  overflow-x: auto;
-  width: 100%;
+  flex: 0 0 auto;
+  width: max-content;
+  min-width: 100%;
   margin: 0;
-  padding: 4px 0;
-  scrollbar-width: none;
-}
-
-.spectrum-choice-list::-webkit-scrollbar {
-  display: none;
+  padding: 0;
 }
 
 .spectrum-choice-btn {
