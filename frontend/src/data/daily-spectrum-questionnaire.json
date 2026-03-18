@@ -6,7 +6,7 @@
     {
       "order": 1,
       "field": "energy_level",
-      "question": "지금 에너지는 어느 쪽에 가까운가요?",
+      "question": "지금 에너지는 어떤 편인가요?",
       "choices": [
         {
           "label": "낮음",
@@ -25,19 +25,19 @@
     {
       "order": 2,
       "field": "emotion_temperature",
-      "question": "오늘의 감정 온도는 어떤가요?",
+      "question": "지금의 감정 온도는 어떤가요?",
       "choices": [
         {
           "label": "차분함",
           "value": "cool"
         },
         {
-          "label": "중간",
+          "label": "담담함",
           "value": "neutral"
         },
         {
-          "label": "뜨거움",
-          "value": "warm"
+          "label": "달아오름",
+          "value": "heated"
         }
       ]
     },
@@ -71,7 +71,7 @@
     {
       "order": 4,
       "field": "day_pace",
-      "question": "오늘 하루의 속도감은 어땠나요?",
+      "question": "오늘 하루 흐름은 어땠나요?",
       "choices": [
         {
           "label": "느림",
@@ -90,7 +90,7 @@
     {
       "order": 5,
       "field": "record_focus",
-      "question": "오늘 기록에 더 남기고 싶은 건?",
+      "question": "더 남기고 싶은 건 무엇인가요?",
       "choices": [
         {
           "label": "감정",
