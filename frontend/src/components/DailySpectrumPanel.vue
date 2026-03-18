@@ -52,7 +52,10 @@
     </div>
 
     <div v-else-if="panelStep === 'typing'" class="spectrum-step spectrum-step-typing">
-      <p class="spectrum-typing-copy">{{ typedExplanation }}</p>
+      <p class="spectrum-typing-copy">
+        <span>{{ typedExplanation }}</span>
+        <span aria-hidden="true" class="spectrum-typing-copy-ghost">{{ remainingExplanation }}</span>
+      </p>
     </div>
 
     <div v-else-if="panelStep === 'result'" class="spectrum-step spectrum-step-result">
@@ -162,29 +165,36 @@ const selectedAnswer = computed(() =>
   currentQuestion.value?.field ? (answers.value[currentQuestion.value.field] ?? '') : ''
 );
 const isLastQuestion = computed(() => questionIndex.value >= questions.length - 1);
+const remainingExplanation = computed(() =>
+  resultExplanation.value.slice(typedExplanation.value.length)
+);
 
 let typingTimer = null;
 let typingDoneTimer = null;
 
-function resetSpectrum() {
-  stopExplanationTyping();
-  panelStep.value = 'intro';
-  spectrumErrorMessage.value = '';
-  spectrumPlaylists.value = [];
-  resultExplanation.value = '';
-  typedExplanation.value = '';
+function resetQuestionFlow() {
   answers.value = {};
   questionIndex.value = 0;
 }
 
-function startSpectrum() {
-  stopExplanationTyping();
-  answers.value = {};
+function clearSpectrumResult() {
   spectrumErrorMessage.value = '';
   spectrumPlaylists.value = [];
   resultExplanation.value = '';
   typedExplanation.value = '';
-  questionIndex.value = 0;
+}
+
+function resetSpectrum() {
+  stopExplanationTyping();
+  panelStep.value = 'intro';
+  clearSpectrumResult();
+  resetQuestionFlow();
+}
+
+function startSpectrum() {
+  stopExplanationTyping();
+  clearSpectrumResult();
+  resetQuestionFlow();
   panelStep.value = 'question';
 }
 
@@ -232,9 +242,7 @@ async function submitSpectrum() {
 
   stopExplanationTyping();
   panelStep.value = 'loading';
-  spectrumErrorMessage.value = '';
-  resultExplanation.value = '';
-  typedExplanation.value = '';
+  clearSpectrumResult();
 
   try {
     const result = await apiRequest(
@@ -260,9 +268,7 @@ async function submitSpectrum() {
       return;
     }
   } catch (error) {
-    spectrumPlaylists.value = [];
-    resultExplanation.value = '';
-    typedExplanation.value = '';
+    clearSpectrumResult();
     spectrumErrorMessage.value =
       error instanceof Error ? error.message : '데일리 스펙트럼 추천을 불러오지 못했습니다.';
   }
@@ -305,7 +311,7 @@ function startExplanationTyping(text) {
         panelStep.value = 'result';
       }, 280);
     }
-  }, 38);
+  }, 48);
 }
 
 watch(
@@ -322,6 +328,11 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
+.panel.spectrum {
+  display: flex;
+  flex-direction: column;
+  height: 240px;
+}
 .panel-head {
   display: flex;
   align-items: center;
@@ -329,6 +340,7 @@ onBeforeUnmount(() => {
   margin-bottom: 14px;
   position: relative;
   z-index: 2;
+  flex-shrink: 0;
 }
 
 .panel.spectrum h3 {
@@ -340,24 +352,25 @@ onBeforeUnmount(() => {
 }
 
 .spectrum-step {
-  min-height: 188px;
-  padding: 4px 0 0;
+  flex: 1;
   min-width: 0;
 }
 
 .spectrum-step-intro,
 .spectrum-step-loading,
 .spectrum-step-typing {
-  display: grid;
-  justify-items: center;
-  align-content: center;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
   gap: 18px;
+  align-items: center;
+  justify-content: center;
 }
 
 .spectrum-step-question {
-  display: grid;
-  grid-template-rows: 1fr auto;
-  gap: 10px;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
 }
 
 .spectrum-step-result {
@@ -365,7 +378,6 @@ onBeforeUnmount(() => {
   gap: 8px;
   min-height: 0;
   padding-top: 2px;
-  overflow: visible;
 }
 
 .spectrum-intro-copy,
@@ -379,22 +391,23 @@ onBeforeUnmount(() => {
 }
 
 .spectrum-question {
-  margin: 0;
   font-size: 12px;
 }
 
 .spectrum-question-block {
-  display: grid;
-  align-content: center;
-  justify-items: center;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   gap: 8px;
   min-height: 0;
 }
 
 .spectrum-choice-row {
-  min-width: 0;
   display: flex;
   justify-content: center;
+  min-width: 0;
 }
 
 .spectrum-choice-list {
@@ -476,7 +489,12 @@ onBeforeUnmount(() => {
 .spectrum-typing-copy {
   max-width: 260px;
   min-height: calc(13px * 1.5 * 2);
+  white-space: pre-line;
   word-break: keep-all;
+}
+
+.spectrum-typing-copy-ghost {
+  visibility: hidden;
 }
 
 .spectrum-state {
@@ -488,16 +506,13 @@ onBeforeUnmount(() => {
 
 .spec-track {
   min-width: 0;
-  border-radius: 18px;
-  background: transparent;
-  overflow: visible;
 }
 
 .spec-swiper {
-  background: #fff;
-  padding: 20px 16px;
+  padding: 20px 16px 16px;
   margin: -20px -16px -16px;
   border-radius: 18px;
+  background: #fff;
 }
 
 .spec-swiper,
@@ -537,7 +552,6 @@ onBeforeUnmount(() => {
 }
 
 .spec-body {
-  background: #fff;
   padding: 12px 14px 14px;
 }
 
