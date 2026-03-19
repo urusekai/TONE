@@ -69,7 +69,7 @@ jobs:
           set ftp:ssl-allow no
           set ssl:verify-certificate no
           set xfer:clobber on
-          mirror --reverse --delete --verbose \
+          mirror --reverse --delete --verbose --parallel=4 \
             --exclude-glob backend/.env \
             --exclude-glob backend/.env.* \
             deploy/html/ html/
