@@ -110,7 +110,7 @@
 import { computed, onBeforeUnmount, onMounted, nextTick, ref, watch } from 'vue';
 import { usePaletteLogStore } from '@/stores/paletteLog';
 import { usePlayerStore } from '@/stores/player';
-import { apiRequest } from '@/services/httpClient';
+import { fetchDailyTone } from '@/services/dailyToneService';
 import { playPlaylistFirstTrack } from '@/services/playlistService';
 import PlaylistActionControls from '@/components/PlaylistActionControls.vue';
 import DailySpectrumPanel from '@/components/DailySpectrumPanel.vue';
@@ -189,11 +189,7 @@ async function loadDailyPlaylist() {
   dailyPlaylist.value = null;
 
   try {
-    const result = await apiRequest(
-      '/api/playlist/daily.php',
-      {},
-      '오늘의 톤을 불러오지 못했습니다.'
-    );
+    const result = await fetchDailyTone();
 
     dailyPlaylist.value = result?.playlist ?? null;
   } catch (error) {

@@ -1,4 +1,5 @@
 import { apiRequest } from '@/services/httpClient';
+import { fetchDailyTone } from '@/services/dailyToneService';
 
 export async function fetchCalendarEntries(month) {
   return await apiRequest(
@@ -37,7 +38,7 @@ export async function ensureTodayCalendarEntry() {
 }
 
 export async function fetchTodayCalendarPlaylist() {
-  const result = await apiRequest('/api/playlist/daily.php', {}, '오늘의 톤을 불러오지 못했습니다.');
+  const result = await fetchDailyTone();
   const playlist = result?.playlist;
   const track = playlist?.track;
 

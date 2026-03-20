@@ -5,6 +5,7 @@ import { useDailySpectrumStore } from '@/stores/dailySpectrum';
 import { usePaletteLogStore } from '@/stores/paletteLog';
 import { usePlayerStore } from '@/stores/player';
 import { useToastStore } from '@/stores/toast';
+import { clearDailyToneCache } from '@/services/dailyToneService';
 
 const APP_LOCAL_STORAGE_KEYS = ['tone_current_user', 'tone_recent_tags_v1'];
 
@@ -20,6 +21,7 @@ export function resetAllUserState() {
   authStore.clearCurrentUser();
   dailySpectrumStore.resetAll();
   playerStore.resetAll();
+  clearDailyToneCache();
 
   if (typeof paletteLogStore.$reset === 'function') {
     paletteLogStore.$reset();
