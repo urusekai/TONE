@@ -22,6 +22,20 @@ export async function saveCalendarEntry(payload) {
   );
 }
 
+export async function ensureTodayCalendarEntry() {
+  return await apiRequest(
+    '/api/calendar/ensure-today.php',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({})
+    },
+    '오늘 캘린더 색 기록에 실패했습니다.'
+  );
+}
+
 export async function fetchTodayCalendarPlaylist() {
   const result = await apiRequest('/api/playlist/daily.php', {}, '오늘의 톤을 불러오지 못했습니다.');
   const playlist = result?.playlist;

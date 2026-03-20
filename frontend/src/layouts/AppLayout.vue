@@ -5,6 +5,7 @@ import { usePlayerStore } from '@/stores/player';
 import { useAuthStore } from '@/stores/auth';
 import { fetchMyProfile } from '@/services/userService';
 import { apiRequest } from '@/services/httpClient';
+import { ensureTodayCalendarEntry } from '@/services/calendarService';
 
 import BottomNav from '@/components/BottomNav.vue';
 import TabMenu from '@/components/TabMenu.vue';
@@ -113,10 +114,21 @@ async function syncPlaybackState() {
 }
 
 onMounted(async () => {
+  let isAuthenticated = false;
+
   try {
     await authStore.syncMyProfile(fetchMyProfile);
+    isAuthenticated = true;
   } catch {
     // 세션이 없는 경우는 무시
+  }
+
+  if (isAuthenticated) {
+    try {
+      await ensureTodayCalendarEntry();
+    } catch {
+      // 자동 기록 실패는 화면 진입을 막지 않음
+    }
   }
 
   await hydratePlayerWithDailyTone();
