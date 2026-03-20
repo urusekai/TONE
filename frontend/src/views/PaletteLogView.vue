@@ -19,7 +19,7 @@
       </p>
 
       <div v-else class="pl-board">
-        <ul class="pl-stack" :class="{ 'is-lock': isLock }">
+        <ul :key="stackRenderKey" class="pl-stack" :class="{ 'is-lock': isLock }">
           <li
             v-for="(item, i) in displayedItems"
             :key="item.playlist_id"
@@ -85,6 +85,7 @@ const exitId = ref(null);
 const isTransitioning = ref(false);
 const items = ref([]);
 const sortMode = ref('recentAdd');
+const stackRenderKey = ref(0);
 
 const colors = {
   darkText: '#3f5f73',
@@ -170,6 +171,7 @@ function onCardClick(item) {
 
 function toggleSortMode() {
   sortMode.value = sortMode.value === 'recentAdd' ? 'recentPlay' : 'recentAdd';
+  stackRenderKey.value += 1;
   void startEntranceAnimation();
 }
 
