@@ -55,19 +55,25 @@ try {
 
     $saveStmt = $pdo->prepare(
         'INSERT INTO calendar_entries (user_uuid, entry_date, playlist_id, memo)
-         VALUES (:user_uuid, :entry_date, :playlist_id, \'\')
-         ON DUPLICATE KEY UPDATE
-           playlist_id = VALUES(playlist_id),
-           memo = memo'
+         SELECT :save_user_uuid, :save_entry_date, :save_playlist_id, \'\'
+         FROM DUAL
+         WHERE NOT EXISTS (
+           SELECT 1
+           FROM calendar_entries
+           WHERE user_uuid = :check_user_uuid
+             AND entry_date = :check_entry_date
+         )'
     );
     $saveStmt->execute([
-        'user_uuid' => $userUuid,
-        'entry_date' => $todayKey,
-        'playlist_id' => $playlistId
+        'save_user_uuid' => $userUuid,
+        'save_entry_date' => $todayKey,
+        'save_playlist_id' => $playlistId,
+        'check_user_uuid' => $userUuid,
+        'check_entry_date' => $todayKey
     ]);
 
     $entryStmt = $pdo->prepare(
-        'SELECT id, memo
+        'SELECT id, playlist_id, memo
          FROM calendar_entries
          WHERE user_uuid = :user_uuid
            AND entry_date = :entry_date
@@ -84,7 +90,7 @@ try {
         'entry' => [
             'id' => (int) ($entry['id'] ?? 0),
             'entryDate' => $todayKey,
-            'playlistId' => $playlistId,
+            'playlistId' => (int) ($entry['playlist_id'] ?? $playlistId),
             'memo' => (string) ($entry['memo'] ?? '')
         ]
     ], JSON_UNESCAPED_UNICODE);
