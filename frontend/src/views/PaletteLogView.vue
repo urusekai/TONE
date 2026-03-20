@@ -340,7 +340,7 @@ watch(
 }
 
 .pl-empty-cta {
-  margin-top: 16px;
+  margin-top: 18px;
   border-radius: 999px;
   padding: 7px 12px;
   font-size: 12px;

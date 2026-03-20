@@ -13,7 +13,7 @@ const authStore = useAuthStore();
 const toast = useToastStore();
 
 const isProfileModalOpen = ref(false);
-const isLoading = ref(false);
+const isReady = ref(false);
 const isSubmitting = ref(false);
 
 const form = reactive({
@@ -23,6 +23,19 @@ const form = reactive({
   nickname: '',
   profileColor: ''
 });
+
+function applyUserToForm(user) {
+  if (!user || typeof user !== 'object') return;
+
+  form.email = user.email || '';
+  form.nickname = user.nickname || '';
+  form.profileColor = user.profileColor || '';
+}
+
+if (authStore.currentUser) {
+  applyUserToForm(authStore.currentUser);
+  isReady.value = true;
+}
 
 function openProfileModal() {
   isProfileModalOpen.value = true;
@@ -43,8 +56,6 @@ function handleProfileConfirm(color) {
 }
 
 onMounted(async () => {
-  isLoading.value = true;
-
   try {
     await authStore.syncMyProfile(fetchMyProfile);
     const user = authStore.currentUser;
@@ -52,16 +63,13 @@ onMounted(async () => {
       throw new Error('사용자 정보를 찾을 수 없습니다.');
     }
 
-    form.email = user.email || '';
-    form.nickname = user.nickname || '';
-    form.profileColor = user.profileColor || '';
+    applyUserToForm(user);
+    isReady.value = true;
   } catch (error) {
     const message =
       error instanceof Error ? error.message : '사용자 정보를 불러오는 중 오류가 발생했습니다.';
     showAlert(message);
     router.replace('/login');
-  } finally {
-    isLoading.value = false;
   }
 });
 
@@ -114,79 +122,81 @@ async function handleSubmit() {
 
 <template>
   <main id="profile-page">
-    <div class="profile-image-area">
-      <!-- 확정된 색(form.profileColor)만 반영 -->
-      <div
-        class="profile-image"
-        id="profileMainAvatar"
-        :style="{ backgroundColor: form.profileColor || 'var(--color-pantone-primary)' }"
-      ></div>
+    <template v-if="isReady">
+      <div class="profile-image-area">
+        <!-- 확정된 색(form.profileColor)만 반영 -->
+        <div
+          class="profile-image"
+          id="profileMainAvatar"
+          :style="{ backgroundColor: form.profileColor || 'var(--color-pantone-primary)' }"
+        ></div>
 
-      <!-- 클릭하면 모달 열기 -->
-      <button type="button" class="profile-color-btn" @click="openProfileModal">색상 변경</button>
-    </div>
-
-    <!-- v-model로 폼 상태 연결 -->
-    <form class="register-form profile-form" method="post" @submit.prevent="handleSubmit">
-      <div class="form-input-box">
-        <span><img src="@/assets/icons/id.svg" alt="닉네임" /></span>
-        <input
-          id="profile-nickname"
-          name="nickname"
-          type="text"
-          placeholder="닉네임을 2 ~ 5자 내에 입력하세요"
-          autocomplete="nickname"
-          v-model="form.nickname"
-        />
+        <!-- 클릭하면 모달 열기 -->
+        <button type="button" class="profile-color-btn" @click="openProfileModal">색상 변경</button>
       </div>
 
-      <div class="form-input-box">
-        <span><img src="@/assets/icons/id.svg" alt="이메일" /></span>
-        <input
-          id="profile-email"
-          name="email"
-          type="email"
-          placeholder="이메일을 입력하세요"
-          autocomplete="email"
-          v-model="form.email"
-        />
-      </div>
+      <!-- v-model로 폼 상태 연결 -->
+      <form class="register-form profile-form" method="post" @submit.prevent="handleSubmit">
+        <div class="form-input-box">
+          <span><img src="@/assets/icons/id.svg" alt="닉네임" /></span>
+          <input
+            id="profile-nickname"
+            name="nickname"
+            type="text"
+            placeholder="닉네임을 2 ~ 5자 내에 입력하세요"
+            autocomplete="nickname"
+            v-model="form.nickname"
+          />
+        </div>
 
-      <div class="form-input-box">
-        <span><img src="@/assets/icons/password.svg" alt="비밀번호" /></span>
-        <input
-          id="profile-password"
-          name="password"
-          type="password"
-          placeholder="변경할 비밀번호"
-          autocomplete="new-password"
-          v-model="form.password"
-        />
-      </div>
+        <div class="form-input-box">
+          <span><img src="@/assets/icons/id.svg" alt="이메일" /></span>
+          <input
+            id="profile-email"
+            name="email"
+            type="email"
+            placeholder="이메일을 입력하세요"
+            autocomplete="email"
+            v-model="form.email"
+          />
+        </div>
 
-      <div class="form-input-box">
-        <span><img src="@/assets/icons/password.svg" alt="비밀번호 확인" /></span>
-        <input
-          id="profile-password-confirm"
-          name="passwordConfirm"
-          type="password"
-          placeholder="변경할 비밀번호 확인"
-          autocomplete="new-password"
-          v-model="form.passwordConfirm"
-        />
-      </div>
+        <div class="form-input-box">
+          <span><img src="@/assets/icons/password.svg" alt="비밀번호" /></span>
+          <input
+            id="profile-password"
+            name="password"
+            type="password"
+            placeholder="변경할 비밀번호"
+            autocomplete="new-password"
+            v-model="form.password"
+          />
+        </div>
 
-      <button type="submit" class="form-submit-box" :disabled="isLoading || isSubmitting">
-        {{ isLoading ? '불러오는 중...' : isSubmitting ? '수정중...' : '수정 완료' }}
-      </button>
-    </form>
+        <div class="form-input-box">
+          <span><img src="@/assets/icons/password.svg" alt="비밀번호 확인" /></span>
+          <input
+            id="profile-password-confirm"
+            name="passwordConfirm"
+            type="password"
+            placeholder="변경할 비밀번호 확인"
+            autocomplete="new-password"
+            v-model="form.passwordConfirm"
+          />
+        </div>
 
-    <ProfileModal
-      :open="isProfileModalOpen"
-      :initial-color="form.profileColor"
-      @close="closeProfileModal"
-      @confirm="handleProfileConfirm"
-    />
+        <button type="submit" class="form-submit-box" :disabled="isSubmitting">
+          {{ isSubmitting ? '수정중...' : '수정 완료' }}
+        </button>
+      </form>
+
+      <ProfileModal
+        :open="isProfileModalOpen"
+        :initial-color="form.profileColor"
+        @close="closeProfileModal"
+        @confirm="handleProfileConfirm"
+      />
+    </template>
   </main>
 </template>
 

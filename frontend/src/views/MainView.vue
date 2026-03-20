@@ -59,8 +59,6 @@
     <section class="panel log" style="--panel-delay: 96ms">
       <div class="panel-head">
         <h3>Palette Log</h3>
-
-        <!-- ✅ 더보기도 RouterLink로 -->
         <RouterLink class="more" to="/palette-log">더보기</RouterLink>
       </div>
 
@@ -605,7 +603,7 @@ watch(
 }
 
 .log-empty-cta {
-  margin-top: 12px;
+  margin-top: 18px;
   border-radius: 999px;
   padding: 7px 12px;
   font-size: 12px;
