@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import WithdrawModal from '@/components/WithdrawModal.vue';
 import { logoutUser } from '@/services/authService';
-import { fetchMyProfile, withdrawMyAccount } from '@/services/userService';
+import { withdrawMyAccount } from '@/services/userService';
 import { useAuthStore } from '@/stores/auth';
 import { resetAllUserState } from '@/stores/resetAllUserState';
 import { useToastStore } from '@/stores/toast';
@@ -110,17 +110,9 @@ function applyUser(userData) {
     typeof userData.profileColor === 'string' ? userData.profileColor : user.profileColor;
 }
 
-onMounted(async () => {
+onMounted(() => {
   if (authStore.currentUser) {
     applyUser(authStore.currentUser);
-  }
-
-  try {
-    await authStore.syncMyProfile(fetchMyProfile);
-    if (!authStore.currentUser) return;
-    applyUser(authStore.currentUser);
-  } catch {
-    // 세션이 없거나 요청 실패 시 기존 화면 데이터 유지
   }
 });
 
