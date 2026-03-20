@@ -65,9 +65,10 @@
       </div>
 
       <div class="log-list">
-        <p v-if="!paletteLogPreview.length" class="log-empty">
-          아직 저장한 팔레트 로그가 없습니다.
-        </p>
+        <div v-if="!paletteLogPreview.length" class="log-empty">
+          <span>아직 저장된 팔레트로그가 없습니다</span>
+          <RouterLink to="/color-chart" class="log-empty-cta">컬러차트 살펴보기</RouterLink>
+        </div>
         <RouterLink
           v-for="log in paletteLogPreview"
           :key="`${log.playlist_id}-${log.created_at}`"
@@ -83,7 +84,7 @@
             <div class="log-sub">♫ 총 {{ log.playlist.totalTracks }}곡</div>
           </div>
           <span class="log-arrow" aria-hidden="true">
-              <img src="@/assets/icons/arrow-right.svg" alt=">" />
+            <img src="@/assets/icons/arrow-right.svg" alt=">" />
           </span>
         </RouterLink>
       </div>
@@ -596,8 +597,24 @@ watch(
 .log-empty {
   padding: 14px 0;
   font-size: 13px;
-  color: #6b7280;
+  color: var(--color-text-primary);
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.log-empty-cta {
+  margin-top: 12px;
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 0;
+  background: var(--color-primary);
+  color: #ffffff;
+  text-decoration: none;
 }
 
 .log-item {
