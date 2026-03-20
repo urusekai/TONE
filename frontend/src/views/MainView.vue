@@ -79,7 +79,7 @@
             <div class="log-main">
               <strong>{{ log.playlist.color_name }}</strong>
             </div>
-            <div class="log-sub">♫ 총 {{ log.playlist.totalTracks }}곡</div>
+            <div class="log-sub">♫ {{ formatTrackCount(log.playlist.totalTracks) }} Tracks</div>
           </div>
           <span class="log-arrow" aria-hidden="true">
             <img src="@/assets/icons/arrow-right.svg" alt=">" />
@@ -230,6 +230,10 @@ function getBrightness(color) {
   if (!rgb) return 0;
   const { r, g, b } = rgb;
   return (r * 299 + g * 587 + b * 114) / 1000;
+}
+
+function formatTrackCount(value) {
+  return Number(value || 0).toLocaleString('en-US');
 }
 
 function pickNextEchoNote() {

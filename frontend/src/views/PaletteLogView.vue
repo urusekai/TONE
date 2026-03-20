@@ -54,7 +54,7 @@
                 </span>
                 <span :style="{ filter: getIconFilter(item.playlist.color_hex) }">
                   <img :src="noteIcon" alt="note" />
-                  {{ formatPlays(item.playlist.play_count) }}
+                  {{ formatTracks(item.playlist.totalTracks) }}
                 </span>
               </div>
             </button>
@@ -86,6 +86,7 @@ const isTransitioning = ref(false);
 const items = ref([]);
 const sortMode = ref('recentAdd');
 const stackRenderKey = ref(0);
+const sortModes = ['recentAdd', 'mostPopular', 'nameAsc'];
 
 const colors = {
   darkText: '#3f5f73',
@@ -95,10 +96,26 @@ const colors = {
 const displayedItems = computed(() => {
   const nextItems = [...items.value];
 
-  if (sortMode.value === 'recentPlay') {
+  if (sortMode.value === 'mostPopular') {
     nextItems.sort((a, b) => {
+      const likeGap = Number(b?.playlist?.like_count || 0) - Number(a?.playlist?.like_count || 0);
+      if (likeGap !== 0) return likeGap;
       const playGap = Number(b?.playlist?.play_count || 0) - Number(a?.playlist?.play_count || 0);
       if (playGap !== 0) return playGap;
+      return String(b?.created_at || '').localeCompare(String(a?.created_at || ''));
+    });
+    return nextItems;
+  }
+
+  if (sortMode.value === 'nameAsc') {
+    nextItems.sort((a, b) => {
+      const leftName = String(a?.playlist?.color_name || '').trim();
+      const rightName = String(b?.playlist?.color_name || '').trim();
+      const nameGap = leftName.localeCompare(rightName, ['ko', 'en'], {
+        numeric: true,
+        sensitivity: 'base'
+      });
+      if (nameGap !== 0) return nameGap;
       return String(b?.created_at || '').localeCompare(String(a?.created_at || ''));
     });
     return nextItems;
@@ -113,9 +130,11 @@ const displayedItems = computed(() => {
   return nextItems;
 });
 
-const sortLabel = computed(() =>
-  sortMode.value === 'recentAdd' ? '최근 추가 순' : '최근 재생 순'
-);
+const sortLabel = computed(() => {
+  if (sortMode.value === 'mostPopular') return '인기 많은 순';
+  if (sortMode.value === 'nameAsc') return '컬러명 순';
+  return '최근 추가 순';
+});
 const hasState = computed(
   () => isLoading.value || Boolean(errorMessage.value) || !items.value.length
 );
@@ -170,7 +189,9 @@ function onCardClick(item) {
 }
 
 function toggleSortMode() {
-  sortMode.value = sortMode.value === 'recentAdd' ? 'recentPlay' : 'recentAdd';
+  const currentIndex = sortModes.indexOf(sortMode.value);
+  const nextIndex = currentIndex < 0 ? 0 : (currentIndex + 1) % sortModes.length;
+  sortMode.value = sortModes[nextIndex];
   stackRenderKey.value += 1;
   void startEntranceAnimation();
 }
@@ -229,8 +250,8 @@ function formatCount(value) {
   return Number(value || 0).toLocaleString('en-US');
 }
 
-function formatPlays(value) {
-  return `${Number(value || 0).toLocaleString('en-US')} Plays`;
+function formatTracks(value) {
+  return `${Number(value || 0).toLocaleString('en-US')} Tracks`;
 }
 
 onMounted(async () => {
