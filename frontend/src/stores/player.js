@@ -333,6 +333,17 @@ export const usePlayerStore = defineStore('player', () => {
     repeat_mode.value = 'off';
   }
 
+  function resetAll() {
+    mode.value = 'mini';
+    current_playlist.value = createDefaultPlaylist();
+    current_track.value = createDefaultTrack();
+    track_queue.value = [];
+    current_index.value = -1;
+    resetPlaybackState();
+    is_shuffle.value = false;
+    repeat_mode.value = 'off';
+  }
+
   return {
     mode,
     current_playlist,
@@ -370,6 +381,7 @@ export const usePlayerStore = defineStore('player', () => {
     playPrev,
     toggleShuffle,
     toggleRepeat,
+    resetAll,
     openMain,
     openMini,
     closeMain,

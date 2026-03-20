@@ -6,6 +6,7 @@ import WithdrawModal from '@/components/WithdrawModal.vue';
 import { logoutUser } from '@/services/authService';
 import { fetchMyProfile, withdrawMyAccount } from '@/services/userService';
 import { useAuthStore } from '@/stores/auth';
+import { resetAllUserState } from '@/stores/resetAllUserState';
 import { useToastStore } from '@/stores/toast';
 import { showAlert } from '@/utils/alert';
 
@@ -127,9 +128,7 @@ onMounted(async () => {
    로그아웃 / 탈퇴 공통 처리
 ------------------------ */
 const clearAuthAndGoLogin = () => {
-  authStore.clearCurrentUser();
-  sessionStorage.clear();
-
+  resetAllUserState();
   router.replace('/login'); // 뒤로가기 방지
 };
 

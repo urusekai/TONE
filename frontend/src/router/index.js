@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { apiClient } from '@/services/httpClient';
+import { resetAllUserState } from '@/stores/resetAllUserState';
 
 async function hasServerSession() {
   try {
@@ -112,13 +113,18 @@ router.beforeEach(async (to) => {
     return true;
   }
 
+  let hasSession = false;
   try {
-    if (await hasServerSession()) {
-      return true;
-    }
+    hasSession = await hasServerSession();
   } catch {
     // 세션 확인 실패 시 로그인으로 이동
   }
+
+  if (hasSession) {
+    return true;
+  }
+
+  resetAllUserState();
 
   return {
     path: '/login',

@@ -60,10 +60,11 @@ export const useDailySpectrumStore = defineStore('dailySpectrum', () => {
   }
 
   function clearDailyPlaylist() {
-    if (!activeDailyPlaylistId.value) {
-      return;
-    }
+    activeDailyPlaylistId.value = '';
+    resetSpectrum();
+  }
 
+  function resetAll() {
     activeDailyPlaylistId.value = '';
     resetSpectrum();
   }
@@ -212,6 +213,7 @@ export const useDailySpectrumStore = defineStore('dailySpectrum', () => {
     questionIndex,
     syncDailyPlaylist,
     clearDailyPlaylist,
+    resetAll,
     startSpectrum,
     setPanelStep,
     setQuestionIndex,
