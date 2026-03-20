@@ -135,6 +135,7 @@ async function loadPaletteLogs() {
 }
 
 async function startEntranceAnimation() {
+  isAnim.value = false;
   await nextTick();
   if (!items.value.length) return;
 
@@ -163,6 +164,7 @@ function onCardClick(item) {
 
 function toggleSortMode() {
   sortMode.value = sortMode.value === 'recentAdd' ? 'recentPlay' : 'recentAdd';
+  void startEntranceAnimation();
 }
 
 function parseToRGB(color) {
