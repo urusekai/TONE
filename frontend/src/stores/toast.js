@@ -28,6 +28,16 @@ export const useToastStore = defineStore('toast', {
 
     close() {
       this.open = false;
+    },
+
+    reset() {
+      if (openFrameId !== null) {
+        window.cancelAnimationFrame(openFrameId);
+        openFrameId = null;
+      }
+
+      this.open = false;
+      this.message = '';
     }
   }
 });
