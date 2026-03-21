@@ -56,10 +56,7 @@
                 <div
                   v-if="isDotQuestion(currentQuestion?.field)"
                   class="spectrum-dot-rail"
-                  :class="{ 'has-selection': hasDotSelection }"
-                  :style="dotRailStyle"
                 >
-                  <span class="spectrum-dot-indicator" aria-hidden="true"></span>
                   <button
                     v-for="choice in currentQuestionChoices"
                     :key="choice.value"
@@ -390,22 +387,6 @@ const currentQuestionChoices = computed(() =>
 const selectedAnswer = computed(() =>
   currentQuestion.value?.field ? (answers.value[currentQuestion.value.field] ?? '') : ''
 );
-const selectedChoiceIndex = computed(() =>
-  currentQuestionChoices.value.findIndex((choice) => choice.value === selectedAnswer.value)
-);
-const hasDotSelection = computed(
-  () => isDotQuestion(currentQuestion.value?.field) && selectedChoiceIndex.value >= 0
-);
-const dotRailStyle = computed(() => {
-  if (!isDotQuestion(currentQuestion.value?.field)) {
-    return null;
-  }
-
-  return {
-    '--dot-choice-count': Math.max(currentQuestionChoices.value.length, 1),
-    '--dot-choice-index': Math.max(selectedChoiceIndex.value, 0)
-  };
-});
 const isLastQuestion = computed(() => questionIndex.value >= questions.length - 1);
 const remainingExplanation = computed(() =>
   resultExplanation.value.slice(typedExplanation.value.length)
@@ -854,12 +835,9 @@ spectrumStore.resumeTypingIfNeeded();
 .spectrum-dot-rail {
   --dot-rail-max-width: 225px;
   --dot-rail-height: 45px;
-  --dot-indicator-inset-x: 2px;
-  --dot-indicator-inset-y: 4px;
   position: relative;
-  overflow: hidden;
   display: grid;
-  grid-template-columns: repeat(var(--dot-choice-count, 5), minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   width: min(100%, var(--dot-rail-max-width));
   min-width: 0;
   height: var(--dot-rail-height);
@@ -870,36 +848,6 @@ spectrumStore.resumeTypingIfNeeded();
     inset 0 1px 0 rgba(255, 255, 255, 0.94),
     inset 0 0 0 1px rgba(63, 95, 115, 0.07),
     inset 0 -2px 5px rgba(63, 95, 115, 0.05);
-}
-
-.spectrum-dot-indicator {
-  position: absolute;
-  top: var(--dot-indicator-inset-y);
-  bottom: var(--dot-indicator-inset-y);
-  left: calc(
-    var(--dot-indicator-inset-x) +
-      ((100% / var(--dot-choice-count, 5)) * var(--dot-choice-index, 0))
-  );
-  width: calc(
-    (100% / var(--dot-choice-count, 5)) - (var(--dot-indicator-inset-x) * 2)
-  );
-  border-radius: 19px;
-  background: rgba(227, 221, 216, 0.7);
-  border: 1px solid rgba(206, 196, 186, 0.72);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.65),
-    inset 0 -2px 4px rgba(130, 118, 107, 0.14);
-  opacity: 0;
-  will-change: left;
-  backface-visibility: hidden;
-  transition:
-    left 250ms cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 90ms linear;
-  pointer-events: none;
-}
-
-.spectrum-dot-rail.has-selection .spectrum-dot-indicator {
-  opacity: 1;
 }
 
 .spectrum-choice-btn {
@@ -975,8 +923,11 @@ spectrumStore.resumeTypingIfNeeded();
   min-width: 0;
   padding: 4px 2px;
   border-radius: 19px;
+  border: 1px solid transparent;
   transition:
-    transform 140ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 180ms ease-out,
+    box-shadow 180ms ease-out,
+    background-color 180ms ease-out,
     color 180ms ease-out;
 }
 
@@ -989,7 +940,6 @@ spectrumStore.resumeTypingIfNeeded();
   justify-content: center;
   background: #d7d9dd;
   transition:
-    transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
     background-color 180ms ease-out,
     opacity 180ms ease-out;
 }
@@ -1017,20 +967,27 @@ spectrumStore.resumeTypingIfNeeded();
 }
 
 .spectrum-dot-segment:hover .spectrum-dot-segment-body {
-  transform: scale(1.02);
+  background: rgba(227, 221, 216, 0.28);
 }
 
 .spectrum-dot-segment:hover .spectrum-dot-segment-dot {
-  transform: scale(1.05);
+  background: #cfd4da;
+}
+
+.spectrum-dot-segment.is-selected .spectrum-dot-segment-body {
+  background: rgba(227, 221, 216, 0.7);
+  border-color: rgba(206, 196, 186, 0.72);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.65),
+    inset 0 -2px 4px rgba(130, 118, 107, 0.14);
 }
 
 .spectrum-dot-segment:active .spectrum-dot-segment-body {
-  transform: scale(0.98);
+  background: rgba(227, 221, 216, 0.44);
 }
 
 .spectrum-dot-segment.is-selected .spectrum-dot-segment-dot {
   background: transparent;
-  transform: scale(1.02);
 }
 
 .spectrum-dot-segment.is-selected .spectrum-dot-segment-icon {
