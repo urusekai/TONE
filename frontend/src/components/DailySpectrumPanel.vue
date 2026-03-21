@@ -53,13 +53,7 @@
                   'is-dot-row': isDotQuestion(currentQuestion?.field)
                 }"
               >
-                <div
-                  v-if="isDotQuestion(currentQuestion?.field)"
-                  class="spectrum-dot-rail"
-                  :class="{ 'has-selection': hasDotSelection }"
-                  :style="dotRailStyle"
-                >
-                  <span class="spectrum-dot-indicator" aria-hidden="true"></span>
+                <div v-if="isDotQuestion(currentQuestion?.field)" class="spectrum-dot-rail">
                   <button
                     v-for="choice in currentQuestionChoices"
                     :key="choice.value"
@@ -204,7 +198,7 @@
                   class="spec-swiper"
                   :modules="swiperModules"
                   :slides-per-view="'auto'"
-                  :space-between="4"
+                  :space-between="16"
                   :free-mode="{ enabled: true, momentumBounce: false }"
                   :grab-cursor="true"
                   :resistance-ratio="0"
@@ -237,7 +231,16 @@
                           <div class="spec-meta">
                             <span class="spec-code">{{ playlist.pantone_code }}</span>
                           </div>
-                          <div class="spec-name">{{ playlist.color_name }}</div>
+                          <div class="spec-name">
+                            <span class="spec-name-text">{{ playlist.color_name }}</span>
+                            <img
+                              v-if="selectedTonePlaylistId === playlist.id"
+                              class="spec-name-icon"
+                              :src="addCompleteIcon"
+                              alt=""
+                              aria-hidden="true"
+                            />
+                          </div>
                         </div>
                       </div>
                     </article>
@@ -269,6 +272,7 @@ import blueDot from '@/assets/icons/blueDot.svg';
 import greenDot from '@/assets/icons/greenDot.svg';
 import orangeDot from '@/assets/icons/orangeDot.svg';
 import yellowDot from '@/assets/icons/yellowDot.svg';
+import addCompleteIcon from '@/assets/icons/addComplete.svg';
 import SpectrumProgressDots from '@/components/SpectrumProgressDots.vue';
 import { useDailySpectrumStore } from '@/stores/dailySpectrum';
 import { useCalendarStore } from '@/stores/calendarStore';
@@ -359,7 +363,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['toggle-palette']);
+const emit = defineEmits(['toggle-palette', 'daily-tone-changed']);
 
 const swiperModules = [FreeMode];
 const todayKey = getTodayKey();
@@ -390,22 +394,6 @@ const currentQuestionChoices = computed(() =>
 const selectedAnswer = computed(() =>
   currentQuestion.value?.field ? (answers.value[currentQuestion.value.field] ?? '') : ''
 );
-const selectedChoiceIndex = computed(() =>
-  currentQuestionChoices.value.findIndex((choice) => choice.value === selectedAnswer.value)
-);
-const hasDotSelection = computed(
-  () => isDotQuestion(currentQuestion.value?.field) && selectedChoiceIndex.value >= 0
-);
-const dotRailStyle = computed(() => {
-  if (!isDotQuestion(currentQuestion.value?.field)) {
-    return null;
-  }
-
-  return {
-    '--dot-choice-count': Math.max(currentQuestionChoices.value.length, 1),
-    '--dot-choice-index': Math.max(selectedChoiceIndex.value, 0)
-  };
-});
 const isLastQuestion = computed(() => questionIndex.value >= questions.length - 1);
 const remainingExplanation = computed(() =>
   resultExplanation.value.slice(typedExplanation.value.length)
@@ -493,6 +481,7 @@ async function applySpectrumTone(playlist) {
   try {
     applyingTonePlaylistId.value = playlistId;
     await calendarStore.saveTone(todayKey, playlistId);
+    emit('daily-tone-changed');
     toast.show('오늘의 톤이 변경되었습니다');
   } catch (error) {
     const message = error instanceof Error ? error.message : '오늘의 톤을 변경하지 못했습니다.';
@@ -523,8 +512,8 @@ spectrumStore.resumeTypingIfNeeded();
 <style scoped>
 .panel.spectrum {
   display: flex;
+  height: 223px;
   flex-direction: column;
-  height: 240px;
   overflow: hidden;
   transition: background 220ms ease;
 }
@@ -635,8 +624,8 @@ spectrumStore.resumeTypingIfNeeded();
   display: flex;
   flex-direction: column;
   min-height: 0;
-  padding-top: 2px;
-  overflow: hidden;
+  padding-top: 0;
+  overflow: visible;
 }
 
 .spectrum-intro-copy,
@@ -853,12 +842,9 @@ spectrumStore.resumeTypingIfNeeded();
 .spectrum-dot-rail {
   --dot-rail-max-width: 225px;
   --dot-rail-height: 45px;
-  --dot-indicator-inset-x: 6px;
-  --dot-indicator-inset-y: 4px;
   position: relative;
-  overflow: hidden;
   display: grid;
-  grid-template-columns: repeat(var(--dot-choice-count, 5), minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   width: min(100%, var(--dot-rail-max-width));
   min-width: 0;
   height: var(--dot-rail-height);
@@ -869,32 +855,6 @@ spectrumStore.resumeTypingIfNeeded();
     inset 0 1px 0 rgba(255, 255, 255, 0.94),
     inset 0 0 0 1px rgba(63, 95, 115, 0.07),
     inset 0 -2px 5px rgba(63, 95, 115, 0.05);
-}
-
-.spectrum-dot-indicator {
-  position: absolute;
-  top: var(--dot-indicator-inset-y);
-  bottom: var(--dot-indicator-inset-y);
-  left: var(--dot-indicator-inset-x);
-  width: calc((100% - (var(--dot-indicator-inset-x) * 2)) / var(--dot-choice-count, 5));
-  border-radius: 19px;
-  background: rgba(227, 221, 216, 0.7);
-  border: 1px solid rgba(206, 196, 186, 0.72);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.65),
-    inset 0 -2px 4px rgba(130, 118, 107, 0.14);
-  opacity: 0;
-  transform: translate3d(calc(var(--dot-choice-index, 0) * 100%), 0, 0);
-  will-change: transform;
-  backface-visibility: hidden;
-  transition:
-    transform 250ms cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 90ms linear;
-  pointer-events: none;
-}
-
-.spectrum-dot-rail.has-selection .spectrum-dot-indicator {
-  opacity: 1;
 }
 
 .spectrum-choice-btn {
@@ -964,40 +924,39 @@ spectrumStore.resumeTypingIfNeeded();
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
+  gap: 6px;
   width: 100%;
   height: 100%;
   min-width: 0;
   padding: 4px 2px;
   border-radius: 19px;
+  border: 1px solid transparent;
   transition:
-    transform 140ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 180ms ease-out,
+    box-shadow 180ms ease-out,
+    background-color 180ms ease-out,
     color 180ms ease-out;
 }
 
 .spectrum-dot-segment-dot {
-  width: 14px;
-  height: 14px;
+  width: 8px;
+  height: 8px;
   border-radius: 999px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   background: #d7d9dd;
   transition:
-    transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
     background-color 180ms ease-out,
     opacity 180ms ease-out;
 }
 
 .spectrum-dot-segment-icon {
-  width: 14px;
-  height: 14px;
+  width: 8px;
+  height: 8px;
   display: block;
   opacity: 0;
-  transform: scale(0.92);
-  transition:
-    opacity 140ms linear,
-    transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity 140ms linear;
 }
 
 .spectrum-dot-segment-label {
@@ -1012,25 +971,31 @@ spectrumStore.resumeTypingIfNeeded();
 }
 
 .spectrum-dot-segment:hover .spectrum-dot-segment-body {
-  transform: scale(1.02);
+  background: rgba(227, 221, 216, 0.28);
 }
 
 .spectrum-dot-segment:hover .spectrum-dot-segment-dot {
-  transform: scale(1.05);
+  background: #cfd4da;
+}
+
+.spectrum-dot-segment.is-selected .spectrum-dot-segment-body {
+  background: rgba(227, 221, 216, 0.7);
+  border-color: rgba(206, 196, 186, 0.72);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.65),
+    inset 0 -2px 4px rgba(130, 118, 107, 0.14);
 }
 
 .spectrum-dot-segment:active .spectrum-dot-segment-body {
-  transform: scale(0.98);
+  background: rgba(227, 221, 216, 0.44);
 }
 
 .spectrum-dot-segment.is-selected .spectrum-dot-segment-dot {
   background: transparent;
-  transform: scale(1.02);
 }
 
 .spectrum-dot-segment.is-selected .spectrum-dot-segment-icon {
   opacity: 1;
-  transform: scale(1);
 }
 
 .spectrum-dot-segment.is-selected .spectrum-dot-segment-label {
@@ -1074,10 +1039,6 @@ spectrumStore.resumeTypingIfNeeded();
 }
 
 .spectrum-progress {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
   pointer-events: none;
 }
 
@@ -1135,11 +1096,11 @@ spectrumStore.resumeTypingIfNeeded();
   flex: 1;
   min-width: 0;
   min-height: 0;
-  width: calc(100% + 16px);
-  margin-right: -16px;
-  padding: 8px 0 4px;
-  border-radius: 17px;
-  overflow: hidden;
+  width: 100%;
+  margin-right: 0;
+  padding: 0;
+  border-radius: 0;
+  overflow: visible;
   background: transparent;
   border: 0;
   box-shadow: none;
@@ -1155,13 +1116,14 @@ spectrumStore.resumeTypingIfNeeded();
   min-width: 0;
   min-height: 0;
   height: 100%;
+  overflow: visible;
   padding-left: 0;
 }
 
 .spec-swiper {
   height: 100%;
   overflow: visible;
-  padding: 0 0 2px 0;
+  padding: 0;
   margin: 0;
   border-radius: 0;
   background: transparent;
@@ -1181,22 +1143,23 @@ spectrumStore.resumeTypingIfNeeded();
 
 .spec-swiper :deep(.swiper-wrapper) {
   align-items: stretch;
+  overflow: visible;
 }
 
 .spec-slide {
   width: min(286px, calc(100vw - 90px));
   display: flex;
   align-items: flex-start;
+  overflow: visible;
 }
 
 .spec-card {
   position: relative;
   width: 100%;
-  height: auto;
-  aspect-ratio: 272 / 162;
+  height: 100%;
   border-radius: 17px;
   padding: 4px 4px 8px 4px;
-  margin-left: 18px;
+  margin-left: 0;
   background: #ffffff;
   box-shadow:
     0 12px 28px rgba(63, 95, 115, 0.16),
@@ -1253,8 +1216,7 @@ spectrumStore.resumeTypingIfNeeded();
 .spec-body {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  padding: 18px 20px 18px;
+  padding: 12px 8px 4px;
   background: #ffffff;
 }
 
@@ -1275,12 +1237,28 @@ spectrumStore.resumeTypingIfNeeded();
 }
 
 .spec-name {
-  margin-top: 6px;
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+}
+
+.spec-name-text {
   font-size: 27px;
   font-weight: 700;
   line-height: 0.98;
   letter-spacing: -0.04em;
   color: #3f5f73;
+  min-width: 0;
+}
+
+.spec-name-icon {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  object-fit: contain;
 }
 
 @media (max-width: 420px) {
@@ -1312,9 +1290,9 @@ spectrumStore.resumeTypingIfNeeded();
   }
 
   .spec-shell {
-    width: calc(100% + 16px);
-    margin-right: -16px;
-    padding: 7px 0 4px;
+    width: 100%;
+    margin-right: 0;
+    padding: 0;
   }
 
   .spec-track {
@@ -1322,15 +1300,11 @@ spectrumStore.resumeTypingIfNeeded();
   }
 
   .spec-swiper {
-    padding-right: 0;
+    padding: 0;
   }
 
   .spec-slide {
     width: min(270px, calc(100vw - 98px));
-  }
-
-  .spec-body {
-    padding: 16px 18px 15px;
   }
 
   .spec-code {
@@ -1338,7 +1312,16 @@ spectrumStore.resumeTypingIfNeeded();
   }
 
   .spec-name {
+    gap: 8px;
+  }
+
+  .spec-name-text {
     font-size: 24px;
+  }
+
+  .spec-name-icon {
+    width: 18px;
+    height: 18px;
   }
 }
 

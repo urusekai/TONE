@@ -55,7 +55,6 @@ export const useDailySpectrumStore = defineStore('dailySpectrum', () => {
     }
 
     activeDailyPlaylistId.value = normalizedDailyPlaylistId;
-    resetSpectrum();
     return true;
   }
 
