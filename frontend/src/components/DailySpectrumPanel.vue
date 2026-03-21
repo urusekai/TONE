@@ -924,7 +924,7 @@ spectrumStore.resumeTypingIfNeeded();
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
+  gap: 6px;
   width: 100%;
   height: 100%;
   min-width: 0;
@@ -939,8 +939,8 @@ spectrumStore.resumeTypingIfNeeded();
 }
 
 .spectrum-dot-segment-dot {
-  width: 14px;
-  height: 14px;
+  width: 8px;
+  height: 8px;
   border-radius: 999px;
   display: inline-flex;
   align-items: center;
@@ -952,14 +952,11 @@ spectrumStore.resumeTypingIfNeeded();
 }
 
 .spectrum-dot-segment-icon {
-  width: 14px;
-  height: 14px;
+  width: 8px;
+  height: 8px;
   display: block;
   opacity: 0;
-  transform: scale(0.92);
-  transition:
-    opacity 140ms linear,
-    transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity 140ms linear;
 }
 
 .spectrum-dot-segment-label {
@@ -999,7 +996,6 @@ spectrumStore.resumeTypingIfNeeded();
 
 .spectrum-dot-segment.is-selected .spectrum-dot-segment-icon {
   opacity: 1;
-  transform: scale(1);
 }
 
 .spectrum-dot-segment.is-selected .spectrum-dot-segment-label {
