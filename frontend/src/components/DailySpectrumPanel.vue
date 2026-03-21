@@ -359,7 +359,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['toggle-palette']);
+const emit = defineEmits(['toggle-palette', 'daily-tone-changed']);
 
 const swiperModules = [FreeMode];
 const todayKey = getTodayKey();
@@ -493,6 +493,7 @@ async function applySpectrumTone(playlist) {
   try {
     applyingTonePlaylistId.value = playlistId;
     await calendarStore.saveTone(todayKey, playlistId);
+    emit('daily-tone-changed');
     toast.show('오늘의 톤이 변경되었습니다');
   } catch (error) {
     const message = error instanceof Error ? error.message : '오늘의 톤을 변경하지 못했습니다.';

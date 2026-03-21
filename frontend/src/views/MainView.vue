@@ -53,6 +53,7 @@
       :is-saved="paletteLog.has"
       :is-palette-pending="paletteLog.isPending"
       @toggle-palette="handleTogglePalette"
+      @daily-tone-changed="handleDailyToneChanged"
     />
 
     <!-- 3) Palette Log -->
@@ -183,13 +184,13 @@ async function handleTogglePalette(item) {
   }
 }
 
-async function loadDailyPlaylist() {
+async function loadDailyPlaylist(options = {}) {
   isDailyLoading.value = true;
   dailyErrorMessage.value = '';
   dailyPlaylist.value = null;
 
   try {
-    const result = await fetchDailyTone();
+    const result = await fetchDailyTone(options);
 
     dailyPlaylist.value = result?.playlist ?? null;
   } catch (error) {
@@ -199,6 +200,10 @@ async function loadDailyPlaylist() {
   } finally {
     isDailyLoading.value = false;
   }
+}
+
+async function handleDailyToneChanged() {
+  await loadDailyPlaylist({ force: true });
 }
 
 /* ---------- color utils (hex/rgb/rgba 전부 처리) ---------- */
