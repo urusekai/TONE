@@ -53,21 +53,21 @@
       :is-saved="paletteLog.has"
       :is-palette-pending="paletteLog.isPending"
       @toggle-palette="handleTogglePalette"
+      @daily-tone-changed="handleDailyToneChanged"
     />
 
     <!-- 3) Palette Log -->
     <section class="panel log" style="--panel-delay: 96ms">
       <div class="panel-head">
         <h3>Palette Log</h3>
-
-        <!-- ✅ 더보기도 RouterLink로 -->
         <RouterLink class="more" to="/palette-log">더보기</RouterLink>
       </div>
 
       <div class="log-list">
-        <p v-if="!paletteLogPreview.length" class="log-empty">
-          아직 저장한 팔레트 로그가 없습니다.
-        </p>
+        <div v-if="!paletteLogPreview.length" class="log-empty">
+          <span>아직 저장된 팔레트로그가 없습니다</span>
+          <RouterLink to="/color-chart" class="log-empty-cta">컬러차트 살펴보기</RouterLink>
+        </div>
         <RouterLink
           v-for="log in paletteLogPreview"
           :key="`${log.playlist_id}-${log.created_at}`"
@@ -80,10 +80,10 @@
             <div class="log-main">
               <strong>{{ log.playlist.color_name }}</strong>
             </div>
-            <div class="log-sub">♫ 총 {{ log.playlist.totalTracks }}곡</div>
+            <div class="log-sub">♫ {{ formatTrackCount(log.playlist.totalTracks) }} Tracks</div>
           </div>
           <span class="log-arrow" aria-hidden="true">
-              <img src="@/assets/icons/arrow-right.svg" alt=">" />
+            <img src="@/assets/icons/arrow-right.svg" alt=">" />
           </span>
         </RouterLink>
       </div>
@@ -111,7 +111,7 @@
 import { computed, onBeforeUnmount, onMounted, nextTick, ref, watch } from 'vue';
 import { usePaletteLogStore } from '@/stores/paletteLog';
 import { usePlayerStore } from '@/stores/player';
-import { apiRequest } from '@/services/httpClient';
+import { fetchDailyTone } from '@/services/dailyToneService';
 import { playPlaylistFirstTrack } from '@/services/playlistService';
 import PlaylistActionControls from '@/components/PlaylistActionControls.vue';
 import DailySpectrumPanel from '@/components/DailySpectrumPanel.vue';
@@ -184,26 +184,35 @@ async function handleTogglePalette(item) {
   }
 }
 
-async function loadDailyPlaylist() {
-  isDailyLoading.value = true;
-  dailyErrorMessage.value = '';
-  dailyPlaylist.value = null;
+async function loadDailyPlaylist(options = {}) {
+  const shouldPreserveCurrentPlaylist = options.force === true && Boolean(dailyPlaylist.value);
+
+  if (!shouldPreserveCurrentPlaylist) {
+    isDailyLoading.value = true;
+    dailyErrorMessage.value = '';
+    dailyPlaylist.value = null;
+  }
 
   try {
-    const result = await apiRequest(
-      '/api/playlist/daily.php',
-      {},
-      '오늘의 톤을 불러오지 못했습니다.'
-    );
+    const result = await fetchDailyTone(options);
 
     dailyPlaylist.value = result?.playlist ?? null;
+    dailyErrorMessage.value = '';
   } catch (error) {
-    dailyPlaylist.value = null;
-    dailyErrorMessage.value =
-      error instanceof Error ? error.message : '오늘의 톤을 불러오지 못했습니다.';
+    if (!shouldPreserveCurrentPlaylist) {
+      dailyPlaylist.value = null;
+      dailyErrorMessage.value =
+        error instanceof Error ? error.message : '오늘의 톤을 불러오지 못했습니다.';
+    }
   } finally {
-    isDailyLoading.value = false;
+    if (!shouldPreserveCurrentPlaylist) {
+      isDailyLoading.value = false;
+    }
   }
+}
+
+async function handleDailyToneChanged() {
+  await loadDailyPlaylist({ force: true });
 }
 
 /* ---------- color utils (hex/rgb/rgba 전부 처리) ---------- */
@@ -231,6 +240,10 @@ function getBrightness(color) {
   if (!rgb) return 0;
   const { r, g, b } = rgb;
   return (r * 299 + g * 587 + b * 114) / 1000;
+}
+
+function formatTrackCount(value) {
+  return Number(value || 0).toLocaleString('en-US');
 }
 
 function pickNextEchoNote() {
@@ -596,8 +609,24 @@ watch(
 .log-empty {
   padding: 14px 0;
   font-size: 13px;
-  color: #6b7280;
+  color: var(--color-text-primary);
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.log-empty-cta {
+  margin-top: 18px;
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 0;
+  background: var(--color-primary);
+  color: #ffffff;
+  text-decoration: none;
 }
 
 .log-item {
