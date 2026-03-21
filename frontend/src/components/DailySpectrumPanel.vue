@@ -854,7 +854,7 @@ spectrumStore.resumeTypingIfNeeded();
 .spectrum-dot-rail {
   --dot-rail-max-width: 225px;
   --dot-rail-height: 45px;
-  --dot-indicator-inset-x: 6px;
+  --dot-indicator-inset-x: 2px;
   --dot-indicator-inset-y: 4px;
   position: relative;
   overflow: hidden;
@@ -876,8 +876,13 @@ spectrumStore.resumeTypingIfNeeded();
   position: absolute;
   top: var(--dot-indicator-inset-y);
   bottom: var(--dot-indicator-inset-y);
-  left: var(--dot-indicator-inset-x);
-  width: calc((100% - (var(--dot-indicator-inset-x) * 2)) / var(--dot-choice-count, 5));
+  left: calc(
+    var(--dot-indicator-inset-x) +
+      ((100% / var(--dot-choice-count, 5)) * var(--dot-choice-index, 0))
+  );
+  width: calc(
+    (100% / var(--dot-choice-count, 5)) - (var(--dot-indicator-inset-x) * 2)
+  );
   border-radius: 19px;
   background: rgba(227, 221, 216, 0.7);
   border: 1px solid rgba(206, 196, 186, 0.72);
@@ -885,11 +890,10 @@ spectrumStore.resumeTypingIfNeeded();
     inset 0 1px 0 rgba(255, 255, 255, 0.65),
     inset 0 -2px 4px rgba(130, 118, 107, 0.14);
   opacity: 0;
-  transform: translate3d(calc(var(--dot-choice-index, 0) * 100%), 0, 0);
-  will-change: transform;
+  will-change: left;
   backface-visibility: hidden;
   transition:
-    transform 250ms cubic-bezier(0.22, 1, 0.36, 1),
+    left 250ms cubic-bezier(0.22, 1, 0.36, 1),
     opacity 90ms linear;
   pointer-events: none;
 }
