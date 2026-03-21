@@ -204,7 +204,7 @@
                   class="spec-swiper"
                   :modules="swiperModules"
                   :slides-per-view="'auto'"
-                  :space-between="4"
+                  :space-between="16"
                   :free-mode="{ enabled: true, momentumBounce: false }"
                   :grab-cursor="true"
                   :resistance-ratio="0"
@@ -524,8 +524,8 @@ spectrumStore.resumeTypingIfNeeded();
 <style scoped>
 .panel.spectrum {
   display: flex;
+  height: 223px;
   flex-direction: column;
-  height: 240px;
   overflow: hidden;
   transition: background 220ms ease;
 }
@@ -636,8 +636,8 @@ spectrumStore.resumeTypingIfNeeded();
   display: flex;
   flex-direction: column;
   min-height: 0;
-  padding-top: 2px;
-  overflow: hidden;
+  padding-top: 0;
+  overflow: visible;
 }
 
 .spectrum-intro-copy,
@@ -1136,11 +1136,11 @@ spectrumStore.resumeTypingIfNeeded();
   flex: 1;
   min-width: 0;
   min-height: 0;
-  width: calc(100% + 16px);
-  margin-right: -16px;
-  padding: 8px 0 4px;
-  border-radius: 17px;
-  overflow: hidden;
+  width: 100%;
+  margin-right: 0;
+  padding: 0;
+  border-radius: 0;
+  overflow: visible;
   background: transparent;
   border: 0;
   box-shadow: none;
@@ -1156,13 +1156,14 @@ spectrumStore.resumeTypingIfNeeded();
   min-width: 0;
   min-height: 0;
   height: 100%;
+  overflow: visible;
   padding-left: 0;
 }
 
 .spec-swiper {
   height: 100%;
   overflow: visible;
-  padding: 0 0 2px 0;
+  padding: 0;
   margin: 0;
   border-radius: 0;
   background: transparent;
@@ -1182,22 +1183,23 @@ spectrumStore.resumeTypingIfNeeded();
 
 .spec-swiper :deep(.swiper-wrapper) {
   align-items: stretch;
+  overflow: visible;
 }
 
 .spec-slide {
   width: min(286px, calc(100vw - 90px));
   display: flex;
   align-items: flex-start;
+  overflow: visible;
 }
 
 .spec-card {
   position: relative;
   width: 100%;
-  height: auto;
-  aspect-ratio: 272 / 162;
+  height: 100%;
   border-radius: 17px;
   padding: 4px 4px 8px 4px;
-  margin-left: 18px;
+  margin-left: 0;
   background: #ffffff;
   box-shadow:
     0 12px 28px rgba(63, 95, 115, 0.16),
@@ -1255,7 +1257,7 @@ spectrumStore.resumeTypingIfNeeded();
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  padding: 18px 20px 18px;
+  padding: 16px 18px;
   background: #ffffff;
 }
 
@@ -1276,7 +1278,7 @@ spectrumStore.resumeTypingIfNeeded();
 }
 
 .spec-name {
-  margin-top: 6px;
+  margin-top: 4px;
   font-size: 27px;
   font-weight: 700;
   line-height: 0.98;
@@ -1313,9 +1315,9 @@ spectrumStore.resumeTypingIfNeeded();
   }
 
   .spec-shell {
-    width: calc(100% + 16px);
-    margin-right: -16px;
-    padding: 7px 0 4px;
+    width: 100%;
+    margin-right: 0;
+    padding: 0;
   }
 
   .spec-track {
@@ -1323,7 +1325,7 @@ spectrumStore.resumeTypingIfNeeded();
   }
 
   .spec-swiper {
-    padding-right: 0;
+    padding: 0;
   }
 
   .spec-slide {
@@ -1331,7 +1333,7 @@ spectrumStore.resumeTypingIfNeeded();
   }
 
   .spec-body {
-    padding: 16px 18px 15px;
+    padding: 14px 16px;
   }
 
   .spec-code {
