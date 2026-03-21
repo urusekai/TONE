@@ -53,10 +53,7 @@
                   'is-dot-row': isDotQuestion(currentQuestion?.field)
                 }"
               >
-                <div
-                  v-if="isDotQuestion(currentQuestion?.field)"
-                  class="spectrum-dot-rail"
-                >
+                <div v-if="isDotQuestion(currentQuestion?.field)" class="spectrum-dot-rail">
                   <button
                     v-for="choice in currentQuestionChoices"
                     :key="choice.value"
@@ -234,7 +231,16 @@
                           <div class="spec-meta">
                             <span class="spec-code">{{ playlist.pantone_code }}</span>
                           </div>
-                          <div class="spec-name">{{ playlist.color_name }}</div>
+                          <div class="spec-name">
+                            <span class="spec-name-text">{{ playlist.color_name }}</span>
+                            <img
+                              v-if="selectedTonePlaylistId === playlist.id"
+                              class="spec-name-icon"
+                              :src="addCompleteIcon"
+                              alt=""
+                              aria-hidden="true"
+                            />
+                          </div>
                         </div>
                       </div>
                     </article>
@@ -266,6 +272,7 @@ import blueDot from '@/assets/icons/blueDot.svg';
 import greenDot from '@/assets/icons/greenDot.svg';
 import orangeDot from '@/assets/icons/orangeDot.svg';
 import yellowDot from '@/assets/icons/yellowDot.svg';
+import addCompleteIcon from '@/assets/icons/addComplete.svg';
 import SpectrumProgressDots from '@/components/SpectrumProgressDots.vue';
 import { useDailySpectrumStore } from '@/stores/dailySpectrum';
 import { useCalendarStore } from '@/stores/calendarStore';
@@ -1213,8 +1220,7 @@ spectrumStore.resumeTypingIfNeeded();
 .spec-body {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  padding: 16px 18px;
+  padding: 12px 8px 4px;
   background: #ffffff;
 }
 
@@ -1235,12 +1241,28 @@ spectrumStore.resumeTypingIfNeeded();
 }
 
 .spec-name {
-  margin-top: 4px;
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+}
+
+.spec-name-text {
   font-size: 27px;
   font-weight: 700;
   line-height: 0.98;
   letter-spacing: -0.04em;
   color: #3f5f73;
+  min-width: 0;
+}
+
+.spec-name-icon {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  object-fit: contain;
 }
 
 @media (max-width: 420px) {
@@ -1289,16 +1311,21 @@ spectrumStore.resumeTypingIfNeeded();
     width: min(270px, calc(100vw - 98px));
   }
 
-  .spec-body {
-    padding: 14px 16px;
-  }
-
   .spec-code {
     font-size: 16px;
   }
 
   .spec-name {
+    gap: 8px;
+  }
+
+  .spec-name-text {
     font-size: 24px;
+  }
+
+  .spec-name-icon {
+    width: 18px;
+    height: 18px;
   }
 }
 
