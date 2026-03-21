@@ -185,20 +185,29 @@ async function handleTogglePalette(item) {
 }
 
 async function loadDailyPlaylist(options = {}) {
-  isDailyLoading.value = true;
-  dailyErrorMessage.value = '';
-  dailyPlaylist.value = null;
+  const shouldPreserveCurrentPlaylist = options.force === true && Boolean(dailyPlaylist.value);
+
+  if (!shouldPreserveCurrentPlaylist) {
+    isDailyLoading.value = true;
+    dailyErrorMessage.value = '';
+    dailyPlaylist.value = null;
+  }
 
   try {
     const result = await fetchDailyTone(options);
 
     dailyPlaylist.value = result?.playlist ?? null;
+    dailyErrorMessage.value = '';
   } catch (error) {
-    dailyPlaylist.value = null;
-    dailyErrorMessage.value =
-      error instanceof Error ? error.message : '오늘의 톤을 불러오지 못했습니다.';
+    if (!shouldPreserveCurrentPlaylist) {
+      dailyPlaylist.value = null;
+      dailyErrorMessage.value =
+        error instanceof Error ? error.message : '오늘의 톤을 불러오지 못했습니다.';
+    }
   } finally {
-    isDailyLoading.value = false;
+    if (!shouldPreserveCurrentPlaylist) {
+      isDailyLoading.value = false;
+    }
   }
 }
 
