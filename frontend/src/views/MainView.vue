@@ -12,12 +12,10 @@
 
       <div v-else-if="dailyPlaylist" class="daily-inner">
         <div class="daily-text">
-          <h2 :style="dailyToneAccentStyle">{{ dailyPlaylist.color_name }}</h2>
+          <h2>{{ dailyPlaylist.color_name }}</h2>
           <p class="daily-description" aria-live="polite">
             <span>{{ typedDailyIntro.prefix }}</span>
-            <b v-if="typedDailyIntro.name" :style="dailyToneAccentStyle">{{
-              typedDailyIntro.name
-            }}</b>
+            <b v-if="typedDailyIntro.name">{{ typedDailyIntro.name }}</b>
             <span>{{ typedDailyIntro.suffix }}</span>
             <br v-if="typedDailyIntro.secondLine" />
             <span>{{ typedDailyIntro.secondLine }}</span>
@@ -26,7 +24,7 @@
           <PlaylistActionControls
             class="daily-actions"
             surface="white"
-            :play-color="dailyPlaylist.color_hex"
+            play-color="var(--color-text-primary)"
             :saved="paletteLog.has(dailyPlaylist.id)"
             :play-disabled="!dailyPlaylist?.id"
             :save-disabled="!dailyPlaylist?.id || paletteLog.isPending(dailyPlaylist.id)"
@@ -127,7 +125,7 @@
             <div class="log-sub">♫ 총 {{ log.playlist.totalTracks }}곡</div>
           </div>
           <span class="log-arrow" aria-hidden="true">
-              <img src="@/assets/icons/arrow-right.svg" alt=">" />
+            <img src="@/assets/icons/arrow-right.svg" alt=">" />
           </span>
         </RouterLink>
       </div>
@@ -368,7 +366,7 @@ function startDailyTyping() {
 }
 
 const echoDotStyle = computed(() => ({
-  backgroundColor: dailyPlaylist.value?.color_hex || '#7b56d7'
+  backgroundColor: dailyPlaylist.value?.color_hex || '#3f5f73'
 }));
 
 const echoDateLabel = computed(() => {
@@ -377,10 +375,6 @@ const echoDateLabel = computed(() => {
   const day = String(today.getDate()).padStart(2, '0');
   return `${month}.${day}`;
 });
-
-const dailyToneAccentStyle = computed(() => ({
-  color: dailyPlaylist.value?.color_hex || '#615694'
-}));
 
 const dailyIntroSource = computed(() => {
   const prefix = '오늘의 톤은 ';
@@ -571,7 +565,7 @@ watch(
   margin: 0 0 8px;
   font-size: 20px;
   font-weight: 700;
-  color: #615694;
+  color: var(--color-text-primary);
 }
 
 .daily-text p {
@@ -591,7 +585,7 @@ watch(
 }
 
 .daily-text b {
-  color: #615694;
+  color: var(--color-text-primary);
   font-weight: 700;
 }
 
@@ -620,7 +614,6 @@ watch(
   overflow: hidden;
   align-self: flex-start;
   border-radius: 29.5px;
-  background: #615694;
   border: 3px solid #ffffff;
   box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.25);
 }
