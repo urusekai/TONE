@@ -27,7 +27,8 @@ if (!is_array($payload)) {
 }
 
 $entryDate = trim((string) ($payload['entryDate'] ?? ''));
-$memo = trim((string) ($payload['memo'] ?? ''));
+$hasMemo = array_key_exists('memo', $payload);
+$memo = $hasMemo ? trim((string) ($payload['memo'] ?? '')) : null;
 $playlistId = isset($payload['playlistId']) ? (int) $payload['playlistId'] : 0;
 
 if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $entryDate)) {
@@ -40,18 +41,18 @@ if (
     !$entryDateObj instanceof DateTimeImmutable ||
     ($entryDateErrors !== false && (($entryDateErrors['warning_count'] ?? 0) > 0 || ($entryDateErrors['error_count'] ?? 0) > 0))
 ) {
-    app_error('유효한 entryDate 값이 아닙니다.', 400);
+    app_error('유효한 entryDate 값이 필요합니다.', 400);
 }
 
-if (function_exists('mb_strlen') ? mb_strlen($memo) > 50 : strlen($memo) > 50) {
-    app_error('메모는 50자 이하로 입력해주세요.', 400);
+if ($hasMemo && (function_exists('mb_strlen') ? mb_strlen($memo) > 50 : strlen($memo) > 50)) {
+    app_error('메모는 50자 이하로 입력해 주세요.', 400);
 }
 
 try {
     $pdo = Database::getConnection();
 
     $existingStmt = $pdo->prepare(
-        'SELECT id, playlist_id
+        'SELECT id, playlist_id, memo
          FROM calendar_entries
          WHERE user_uuid = :user_uuid
            AND entry_date = :entry_date
@@ -67,6 +68,10 @@ try {
     if ($resolvedPlaylistId < 1) {
         app_error('playlistId가 필요합니다.', 400);
     }
+
+    $resolvedMemo = $hasMemo
+        ? (string) $memo
+        : (string) ($existingEntry['memo'] ?? '');
 
     $playlistStmt = $pdo->prepare(
         'SELECT
@@ -102,7 +107,7 @@ try {
         );
         $saveStmt->execute([
             'playlist_id' => $resolvedPlaylistId,
-            'memo' => $memo,
+            'memo' => $resolvedMemo,
             'id' => (int) $existingEntry['id']
         ]);
         $entryId = (int) $existingEntry['id'];
@@ -115,7 +120,7 @@ try {
             'user_uuid' => $userUuid,
             'entry_date' => $entryDate,
             'playlist_id' => $resolvedPlaylistId,
-            'memo' => $memo
+            'memo' => $resolvedMemo
         ]);
         $entryId = (int) $pdo->lastInsertId();
     }
@@ -125,7 +130,7 @@ try {
         'entry' => [
             'id' => $entryId,
             'entryDate' => $entryDate,
-            'memo' => $memo,
+            'memo' => $resolvedMemo,
             'playlistId' => (int) $playlist['id'],
             'name' => (string) $playlist['color_name'],
             'number' => (string) $playlist['pantone_code'],

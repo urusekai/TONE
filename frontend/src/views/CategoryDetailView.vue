@@ -15,37 +15,14 @@
       <p v-else-if="errorMessage" class="color-state color-state-error">{{ errorMessage }}</p>
       <p v-else-if="!colorCards.length" class="color-state">등록된 플레이리스트가 없습니다.</p>
 
-      <article
+      <PlaylistColorCard
         v-for="(card, cardIndex) in colorCards"
         :key="card.id"
+        :card="card"
         class="color-card"
         :style="{ '--card-delay': `${Math.min(8, cardIndex) * 36}ms` }"
-        role="button"
-        tabindex="0"
-        @click="goPlaylist(card)"
-        @keydown.enter="goPlaylist(card)"
-      >
-        <div class="color-bar" :style="{ background: card.color_hex }"></div>
-
-        <div class="color-content">
-          <div class="color-top">
-            <h3 class="color-name">{{ card.color_name }}</h3>
-
-            <div class="color-right">
-              <span class="arrow">
-                <img :src="arrowRight" alt=">" />
-              </span>
-            </div>
-          </div>
-
-          <div class="song-area">
-            <ul class="song-list">
-              <li v-for="(song, index) in card.preview_songs" :key="index">{{ song }}</li>
-            </ul>
-            <p class="total">총 {{ card.total_tracks }}곡</p>
-          </div>
-        </div>
-      </article>
+        @select="goPlaylist"
+      />
     </section>
   </main>
 </template>
@@ -53,8 +30,9 @@
 <script setup>
 import { computed, nextTick, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import arrowRight from '@/assets/icons/arrow-right.svg';
+import PlaylistColorCard from '@/components/PlaylistColorCard.vue';
 import { apiRequest } from '@/services/httpClient';
+import { mapCategoryPlaylistCard } from '@/utils/playlistCardMapper';
 
 const route = useRoute();
 const router = useRouter();
@@ -82,39 +60,6 @@ function formatMoodLabel(value) {
   return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
-function toNumber(value, fallback = 0) {
-  const parsed = Number(value);
-  return Number.isFinite(parsed) ? parsed : fallback;
-}
-
-function mapPreviewSongs(songs) {
-  if (!Array.isArray(songs)) {
-    return [];
-  }
-
-  return songs
-    .map((song) => {
-      const artist = String(song?.artist || '').trim();
-      const title = String(song?.title || '').trim();
-
-      if (artist && title) return `${artist} - ${title}`;
-      return title || artist;
-    })
-    .filter(Boolean)
-    .slice(0, 3);
-}
-
-function mapCard(item) {
-  return {
-    id: String(item?.id || ''),
-    pantone_code: String(item?.pantone_code || ''),
-    color_name: String(item?.color_name || ''),
-    color_hex: String(item?.color_hex || '#b7aea6'),
-    preview_songs: mapPreviewSongs(item?.previewSongs),
-    total_tracks: toNumber(item?.totalTracks)
-  };
-}
-
 async function fetchPlaylists() {
   const query = new URLSearchParams({ mood: mood.value });
   const result = await apiRequest(
@@ -125,7 +70,7 @@ async function fetchPlaylists() {
 
   const items = Array.isArray(result?.playlists) ? result.playlists : [];
 
-  return items.map(mapCard);
+  return items.map(mapCategoryPlaylistCard);
 }
 
 async function loadCategoryDetail() {
@@ -278,111 +223,6 @@ watch(
 
 .color-state-error {
   color: #b42318;
-}
-
-.color-card {
-  flex: 0 0 auto;
-  width: 100%;
-  max-width: 352px;
-  height: 120px;
-  margin: 0 auto;
-
-  display: flex;
-  overflow: hidden;
-  border-radius: 18px;
-
-  background: #ffffff;
-  box-shadow: 0 0px 4px rgba(0, 0, 0, 0.25);
-  cursor: pointer;
-}
-
-.color-bar {
-  width: 95px;
-  height: 120px;
-  flex: 0 0 95px;
-}
-
-.color-content {
-  flex: 1;
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.color-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 12px;
-  padding-bottom: 12px;
-}
-
-.color-name {
-  color: #3a586a;
-  font-family: 'Pretendard', sans-serif;
-  font-size: 26px;
-  font-weight: 700;
-  line-height: 1;
-  margin: 0;
-}
-
-.color-right {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  padding-top: 10px;
-  gap: 10px;
-}
-
-.arrow {
-  font-size: 20px;
-  line-height: 1;
-  opacity: 0.55;
-}
-
-.song-area {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: 12px;
-}
-
-.song-list {
-  flex: 0 0 180px;
-  width: 180px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  font-size: 14px;
-  color: #b7aeac;
-  line-height: 1.1;
-}
-
-.song-list li {
-  margin: 0;
-  position: relative;
-  padding-left: 10px;
-  width: 100%;
-  display: block;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.song-list li::before {
-  content: '•';
-  position: absolute;
-  left: 0;
-  top: 0;
-}
-
-.total {
-  flex: 0 0 auto;
-  margin: 0;
-  font-size: 10px;
-  color: #b7aeac;
-  white-space: nowrap;
 }
 
 @keyframes category-detail-hero-enter {

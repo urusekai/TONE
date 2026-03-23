@@ -43,73 +43,29 @@
     </section>
 
     <!-- 2) Daily Spectrum -->
-    <section class="panel spectrum" style="--panel-delay: 48ms">
-      <div class="panel-head">
-        <h3>Daily Spectrum</h3>
-        <span class="hint">오늘 톤과 비슷한 색상 추천</span>
-      </div>
-
-      <p v-if="isDailyLoading" class="spectrum-state">오늘의 톤을 먼저 불러오는 중...</p>
-      <p v-else-if="dailyErrorMessage" class="spectrum-state">
-        오늘의 톤을 불러오지 못해 추천을 표시할 수 없습니다.
-      </p>
-      <p v-else-if="isSpectrumLoading" class="spectrum-state">비슷한 색상을 불러오는 중...</p>
-      <p v-else-if="spectrumErrorMessage" class="spectrum-state">{{ spectrumErrorMessage }}</p>
-      <p v-else-if="!spectrumPlaylists.length" class="spectrum-state">
-        비슷한 색상 추천이 없습니다.
-      </p>
-
-      <div v-else class="spec-track">
-        <Swiper
-          class="spec-swiper"
-          :modules="swiperModules"
-          :slides-per-view="'auto'"
-          :space-between="14"
-          :free-mode="{ enabled: true, momentumBounce: false }"
-          :grab-cursor="true"
-          :resistance-ratio="0"
-          :watch-overflow="true"
-        >
-          <SwiperSlide v-for="playlist in spectrumPlaylists" :key="playlist.id" class="spec-slide">
-            <RouterLink class="spec-card" :to="playlistTo(playlist.id)">
-              <div class="spec-color" :style="{ '--c': playlist.color_hex }"></div>
-              <div class="spec-body">
-                <div class="spec-meta">
-                  <span class="spec-code">{{ playlist.pantone_code }}</span>
-                  <button
-                    class="mini-add"
-                    type="button"
-                    aria-label="팔레트 로그 저장"
-                    :disabled="paletteLog.isPending(playlist.id)"
-                    @click.capture.stop.prevent="handleTogglePalette(playlist)"
-                  >
-                    <img
-                      :src="paletteLog.has(playlist.id) ? addCompleteIcon : addIcon"
-                      alt="저장"
-                    />
-                  </button>
-                </div>
-                <div class="spec-name">{{ playlist.color_name }}</div>
-              </div>
-            </RouterLink>
-          </SwiperSlide>
-        </Swiper>
-      </div>
-    </section>
+    <DailySpectrumPanel
+      :is-daily-loading="isDailyLoading"
+      :daily-error-message="dailyErrorMessage"
+      :daily-playlist-id="dailyPlaylist?.id ?? null"
+      :playlist-to="playlistTo"
+      :is-saved="paletteLog.has"
+      :is-palette-pending="paletteLog.isPending"
+      @toggle-palette="handleTogglePalette"
+      @daily-tone-changed="handleDailyToneChanged"
+    />
 
     <!-- 3) Palette Log -->
     <section class="panel log" style="--panel-delay: 96ms">
       <div class="panel-head">
         <h3>Palette Log</h3>
-
-        <!-- ✅ 더보기도 RouterLink로 -->
         <RouterLink class="more" to="/palette-log">더보기</RouterLink>
       </div>
 
       <div class="log-list">
-        <p v-if="!paletteLogPreview.length" class="log-empty">
-          아직 저장한 팔레트 로그가 없습니다.
-        </p>
+        <div v-if="!paletteLogPreview.length" class="log-empty">
+          <span>아직 저장된 팔레트로그가 없습니다</span>
+          <RouterLink to="/color-chart" class="log-empty-cta">컬러차트 살펴보기</RouterLink>
+        </div>
         <RouterLink
           v-for="log in paletteLogPreview"
           :key="`${log.playlist_id}-${log.created_at}`"
@@ -122,7 +78,7 @@
             <div class="log-main">
               <strong>{{ log.playlist.color_name }}</strong>
             </div>
-            <div class="log-sub">♫ 총 {{ log.playlist.totalTracks }}곡</div>
+            <div class="log-sub">♫ {{ formatTrackCount(log.playlist.totalTracks) }} Tracks</div>
           </div>
           <span class="log-arrow" aria-hidden="true">
             <img src="@/assets/icons/arrow-right.svg" alt=">" />
@@ -151,30 +107,20 @@
 
 <script setup>
 import { computed, onBeforeUnmount, onMounted, nextTick, ref, watch } from 'vue';
-import { Swiper, SwiperSlide } from 'swiper/vue';
-import { FreeMode } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/free-mode';
 import { usePaletteLogStore } from '@/stores/paletteLog';
 import { usePlayerStore } from '@/stores/player';
-import { apiRequest } from '@/services/httpClient';
+import { fetchDailyTone } from '@/services/dailyToneService';
 import { playPlaylistFirstTrack } from '@/services/playlistService';
 import PlaylistActionControls from '@/components/PlaylistActionControls.vue';
+import DailySpectrumPanel from '@/components/DailySpectrumPanel.vue';
 import { showAlert } from '@/utils/alert';
-import addIcon from '@/assets/icons/add.svg';
-import addCompleteIcon from '@/assets/icons/addComplete.svg';
 
 const paletteLog = usePaletteLogStore();
 const player = usePlayerStore();
-const swiperModules = [FreeMode];
-
 const rootEl = ref(null);
 const dailyPlaylist = ref(null);
 const isDailyLoading = ref(false);
-const isSpectrumLoading = ref(false);
 const dailyErrorMessage = ref('');
-const spectrumPlaylists = ref([]);
-const spectrumErrorMessage = ref('');
 const paletteLogPreview = computed(() => paletteLog.paletteLogs.slice(0, 4));
 const isEnterReady = ref(false);
 const typedDailyCount = ref(0);
@@ -236,55 +182,35 @@ async function handleTogglePalette(item) {
   }
 }
 
-async function loadSpectrumPlaylists() {
-  if (!dailyPlaylist.value?.id) {
-    spectrumPlaylists.value = [];
-    spectrumErrorMessage.value = '';
-    return;
+async function loadDailyPlaylist(options = {}) {
+  const shouldPreserveCurrentPlaylist = options.force === true && Boolean(dailyPlaylist.value);
+
+  if (!shouldPreserveCurrentPlaylist) {
+    isDailyLoading.value = true;
+    dailyErrorMessage.value = '';
+    dailyPlaylist.value = null;
   }
 
-  isSpectrumLoading.value = true;
-  spectrumErrorMessage.value = '';
-
   try {
-    const result = await apiRequest(
-      `/api/playlist/spectrum.php?id=${encodeURIComponent(dailyPlaylist.value.id)}`,
-      {},
-      '데일리 스펙트럼을 불러오지 못했습니다.'
-    );
+    const result = await fetchDailyTone(options);
 
-    spectrumPlaylists.value = Array.isArray(result?.spectrumPlaylists)
-      ? result.spectrumPlaylists
-      : [];
+    dailyPlaylist.value = result?.playlist ?? null;
+    dailyErrorMessage.value = '';
   } catch (error) {
-    spectrumPlaylists.value = [];
-    spectrumErrorMessage.value =
-      error instanceof Error ? error.message : '데일리 스펙트럼을 불러오지 못했습니다.';
+    if (!shouldPreserveCurrentPlaylist) {
+      dailyPlaylist.value = null;
+      dailyErrorMessage.value =
+        error instanceof Error ? error.message : '오늘의 톤을 불러오지 못했습니다.';
+    }
   } finally {
-    isSpectrumLoading.value = false;
+    if (!shouldPreserveCurrentPlaylist) {
+      isDailyLoading.value = false;
+    }
   }
 }
 
-async function loadDailyPlaylist() {
-  isDailyLoading.value = true;
-  dailyErrorMessage.value = '';
-  dailyPlaylist.value = null;
-
-  try {
-    const result = await apiRequest(
-      '/api/playlist/daily.php',
-      {},
-      '오늘의 톤을 불러오지 못했습니다.'
-    );
-
-    dailyPlaylist.value = result?.playlist ?? null;
-  } catch (error) {
-    dailyPlaylist.value = null;
-    dailyErrorMessage.value =
-      error instanceof Error ? error.message : '오늘의 톤을 불러오지 못했습니다.';
-  } finally {
-    isDailyLoading.value = false;
-  }
+async function handleDailyToneChanged() {
+  await loadDailyPlaylist({ force: true });
 }
 
 /* ---------- color utils (hex/rgb/rgba 전부 처리) ---------- */
@@ -312,6 +238,10 @@ function getBrightness(color) {
   if (!rgb) return 0;
   const { r, g, b } = rgb;
   return (r * 299 + g * 587 + b * 114) / 1000;
+}
+
+function formatTrackCount(value) {
+  return Number(value || 0).toLocaleString('en-US');
 }
 
 function pickNextEchoNote() {
@@ -445,7 +375,6 @@ onMounted(async () => {
   startEchoRotation();
   await paletteLog.load({ silent: true });
   await loadDailyPlaylist();
-  await loadSpectrumPlaylists();
   await nextTick();
 
   // 스타일 적용 타이밍 보장(2프레임)
@@ -639,47 +568,6 @@ watch(
   animation: daily-swatch-glass-sheen 4s ease infinite;
 }
 
-.mini-add:disabled {
-  opacity: 0.7;
-}
-
-/* ===== Spectrum ===== */
-.spec-track {
-  border-radius: 18px;
-  background: transparent;
-  overflow: visible;
-}
-
-.spectrum-state {
-  padding: 12px 0;
-  font-size: 13px;
-  color: #6b7280;
-  text-align: center;
-}
-
-.spec-swiper {
-  background: #fff;
-  padding: 20px 16px;
-  margin: -20px -16px;
-  border-radius: 18px;
-}
-
-.spec-swiper,
-.spec-swiper .swiper-wrapper,
-.spec-swiper .swiper-slide {
-  cursor: grab;
-}
-
-.spec-swiper:active,
-.spec-swiper:active .swiper-wrapper,
-.spec-swiper:active .swiper-slide {
-  cursor: grabbing;
-}
-
-.spec-slide {
-  width: 268px;
-}
-
 /* 패널 헤더 */
 .panel-head {
   display: flex;
@@ -705,63 +593,6 @@ watch(
   color: inherit;
 }
 
-.spec-card {
-  display: block;
-  border-radius: 17px;
-  background: #fff;
-  box-shadow: 0px 0px 21.3px -3px rgba(0, 0, 0, 0.25);
-  text-decoration: none;
-  overflow: hidden;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  color: inherit;
-  cursor: pointer;
-}
-
-.spec-color {
-  height: 90px;
-  background: var(--c, #3fb9c8);
-  border-radius: 17px 17px 0 0;
-  border: 4px solid #fff;
-}
-
-.spec-body {
-  background: #fff;
-  padding: 12px 14px 14px;
-}
-
-.spec-meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.spec-code {
-  font-size: 16px;
-  font-weight: 700;
-}
-
-.mini-add {
-  width: 26px;
-  height: 26px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  cursor: pointer;
-}
-
-.mini-add img {
-  width: 14px;
-  height: 14px;
-}
-
-.spec-name {
-  margin-top: 2px;
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: -0.4px;
-}
-
 /* ===== Palette Log ===== */
 .log-list {
   display: grid;
@@ -771,8 +602,24 @@ watch(
 .log-empty {
   padding: 14px 0;
   font-size: 13px;
-  color: #6b7280;
+  color: var(--color-text-primary);
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.log-empty-cta {
+  margin-top: 18px;
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 0;
+  background: var(--color-primary);
+  color: #ffffff;
+  text-decoration: none;
 }
 
 .log-item {

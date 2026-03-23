@@ -24,6 +24,10 @@ if ($userUuid === '') {
     app_error('로그인이 필요합니다.', 401);
 }
 
+if (session_status() === PHP_SESSION_ACTIVE) {
+    session_write_close();
+}
+
 try {
     $pdo = Database::getConnection();
 

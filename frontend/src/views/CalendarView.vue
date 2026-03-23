@@ -85,11 +85,16 @@ onMounted(async () => {
   - store의 기본값과 일치하여 예측 가능한 동작
 */
 const selectedData = computed(() => {
+  const storedEntry = calendarStore.calendarData[selectedKey.value];
+  if (storedEntry) {
+    return storedEntry;
+  }
+
   if (selectedKey.value === todayKey && todayFallbackEntry.value) {
     return todayFallbackEntry.value;
   }
 
-  return calendarStore.calendarData[selectedKey.value] || createDefaultEntry();
+  return createDefaultEntry();
 });
 
 const hasSelectedEntry = computed(
@@ -160,11 +165,18 @@ const dayColorMap = computed(() => {
   calendarDays.value.forEach((day) => {
     if (day) {
       const key = formatKey(currentYear.value, currentMonth.value + 1, day);
+      const storedColor = calendarStore.calendarData[key]?.color;
+      if (storedColor) {
+        map[day] = storedColor;
+        return;
+      }
+
       if (key === todayKey && todayFallbackEntry.value?.color) {
         map[day] = todayFallbackEntry.value.color;
         return;
       }
-      map[day] = calendarStore.calendarData[key]?.color || '#d9d9d9';
+
+      map[day] = '#d9d9d9';
     }
   });
   return map;

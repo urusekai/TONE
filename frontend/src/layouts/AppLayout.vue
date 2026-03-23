@@ -3,8 +3,9 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { usePlayerStore } from '@/stores/player';
 import { useAuthStore } from '@/stores/auth';
-import { fetchMyProfile } from '@/services/userService';
 import { apiRequest } from '@/services/httpClient';
+import { ensureTodayCalendarEntry } from '@/services/calendarService';
+import { fetchDailyTone } from '@/services/dailyToneService';
 
 import BottomNav from '@/components/BottomNav.vue';
 import TabMenu from '@/components/TabMenu.vue';
@@ -50,7 +51,7 @@ async function hydratePlayerWithDailyTone() {
   if (player.has_track) return;
 
   try {
-    const dailyResult = await apiRequest('/api/playlist/daily.php', {}, '오늘의 톤을 불러오지 못했습니다.');
+    const dailyResult = await fetchDailyTone();
     const dailyPlaylist = dailyResult?.playlist ?? null;
 
     if (!dailyPlaylist?.id) return;
@@ -113,10 +114,14 @@ async function syncPlaybackState() {
 }
 
 onMounted(async () => {
-  try {
-    await authStore.syncMyProfile(fetchMyProfile);
-  } catch {
-    // 세션이 없는 경우는 무시
+  const isAuthenticated = Boolean(authStore.currentUser);
+
+  if (isAuthenticated) {
+    try {
+      await ensureTodayCalendarEntry();
+    } catch {
+      // 자동 기록 실패는 화면 진입을 막지 않음
+    }
   }
 
   await hydratePlayerWithDailyTone();

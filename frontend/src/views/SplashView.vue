@@ -7,18 +7,12 @@
 <script setup>
 import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { apiClient } from '@/services/httpClient';
 
 const router = useRouter();
 
 onMounted(() => {
-  setTimeout(async () => {
-    try {
-      await apiClient.get('/api/auth/me.php');
-      router.replace('/main');
-    } catch {
-      router.replace('/login');
-    }
+  setTimeout(() => {
+    router.replace('/main');
   }, 2000);
 });
 </script>

@@ -1,11 +1,34 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { apiClient } from '@/services/httpClient';
+import { resetAllUserState } from '@/stores/resetAllUserState';
+import { useAuthStore } from '@/stores/auth';
 
-async function hasServerSession() {
+let isSessionValidated = false;
+
+async function ensureServerSession() {
+  const authStore = useAuthStore();
+
+  if (isSessionValidated && authStore.currentUser) {
+    return true;
+  }
+
   try {
     const response = await apiClient.get('/api/auth/me.php');
-    return response?.data?.success === true;
+    const user = response?.data?.user ?? null;
+    const success = response?.data?.success === true && Boolean(user);
+
+    if (!success) {
+      isSessionValidated = false;
+      authStore.clearCurrentUser();
+      return false;
+    }
+
+    authStore.setCurrentUser(user);
+    isSessionValidated = true;
+    return true;
   } catch {
+    isSessionValidated = false;
+    authStore.clearCurrentUser();
     return false;
   }
 }
@@ -112,13 +135,18 @@ router.beforeEach(async (to) => {
     return true;
   }
 
+  let hasSession = false;
   try {
-    if (await hasServerSession()) {
-      return true;
-    }
+    hasSession = await ensureServerSession();
   } catch {
     // 세션 확인 실패 시 로그인으로 이동
   }
+
+  if (hasSession) {
+    return true;
+  }
+
+  resetAllUserState();
 
   return {
     path: '/login',

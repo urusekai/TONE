@@ -87,28 +87,48 @@ TONE은 사용자에게 매일 팬톤컬러 기반의 색상과 그에 어울리
 
 ```bash
 TONE/
-├─ .github/                  # GitHub Actions, PR 템플릿, 배포 제외 목록
-├─ .vscode/                  # 에디터 공통 설정
+├─ .github/                    # GitHub 협업/배포 설정
+│  ├─ workflows/               # GitHub Actions 워크플로우
+│  │  └─ deploy.yml            # 프론트 빌드 + 닷홈 FTP 자동 배포
+│  ├─ deploy-exclude.txt       # 배포 패키지 제외 목록
+│  └─ pull_request_template.md # PR 작성 템플릿
+├─ .vscode/                    # 에디터 공통 설정
 ├─ backend/
-│  ├─ api/                   # 인증, 플레이리스트, 캘린더 API
-│  ├─ database/              # 스키마 및 데이터 파일
-│  ├─ src/                   # 인증, DB 연결, 미디어 URL 공통 로직
-│  ├─ vendor/                # Composer 의존성
-│  ├─ .env.example           # 환경변수 예시
-│  ├─ bootstrap.php          # 백엔드 공통 초기화
-│  └─ composer.json          # 백엔드 의존성 설정
+│  ├─ api/                     # 엔드포인트 진입점 모음
+│  │  ├─ auth/                 # 일반 로그인, 소셜 로그인, 프로필 관련 API
+│  │  ├─ calendar/             # 감정 기록 캘린더 API
+│  │  ├─ categories/           # 카테고리/플레이리스트 목록 API
+│  │  ├─ palette-logs/         # 저장/좋아요 기록 API
+│  │  └─ playlist/             # 일일 추천, 상세, 좋아요 API
+│  ├─ database/                # schema.sql, reset.sql, track_list.json
+│  ├─ prompts/                 # 추천 생성용 프롬프트 템플릿
+│  ├─ src/                     # Auth, Database, MediaUrl 공통 로직
+│  ├─ vendor/                  # Composer 의존성
+│  ├─ .env.example             # 백엔드 환경변수 예시
+│  ├─ bootstrap.php            # 백엔드 공통 초기화
+│  ├─ composer.json            # 백엔드 의존성 설정
+│  └─ composer.lock            # Composer 의존성 잠금 파일
 ├─ frontend/
-│  └─ src/
-│     ├─ assets/             # 이미지, 아이콘, 공통 스타일
-│     ├─ components/         # 재사용 UI 컴포넌트
-│     ├─ layouts/            # 화면 레이아웃
-│     ├─ router/             # 라우팅 설정
-│     ├─ services/           # API 요청 로직
-│     ├─ stores/             # Pinia 상태 관리
-│     ├─ utils/              # 공통 유틸 함수
-│     └─ views/              # 페이지 단위 화면
-├─ .prettierrc               # 코드 포맷팅 규칙
-└─ README.md
+│  ├─ public/                  # favicon, 배포용 정적 파일
+│  ├─ src/                     # 프론트 애플리케이션 소스
+│  │  ├─ assets/               # 이미지, 아이콘, 공통 스타일
+│  │  ├─ components/           # 재사용 UI 컴포넌트
+│  │  ├─ data/                 # 설문/추천 관련 정적 데이터
+│  │  ├─ layouts/              # 앱/인증 레이아웃
+│  │  ├─ router/               # Vue Router 설정
+│  │  ├─ services/             # axios 기반 API 요청 로직
+│  │  ├─ stores/               # Pinia 상태 관리
+│  │  ├─ utils/                # 인증 검증, alert 유틸
+│  │  ├─ views/                # 페이지 단위 화면
+│  │  ├─ App.vue               # 최상위 Vue 앱 컴포넌트
+│  │  └─ main.js               # 프론트 앱 진입 파일
+│  ├─ index.html               # Vite HTML 엔트리
+│  ├─ package.json             # 프론트 스크립트/의존성 설정
+│  └─ vite.config.js           # Vite 개발/빌드 설정
+├─ .gitattributes              # Git 텍스트/줄바꿈 속성
+├─ .gitignore                  # Git 추적 제외 규칙
+├─ .prettierrc                 # 코드 포맷팅 규칙
+└─ README.md                   # 프로젝트 소개 및 가이드
 ```
 
 <br>
@@ -119,7 +139,7 @@ TONE/
 
 - `main` : 운영 배포 브랜치
 - `develop` : 기능 통합 및 배포 전 검증 브랜치
-- `feature/*`, `fix/*`, `refactor/*`, `chore/*` : 개별 작업 브랜치
+- `feat/*`, `fix/*`, `refactor/*`, `chore/*` : 개별 작업 브랜치
 
 ### 브랜치명
 

@@ -1,6 +1,6 @@
 <template>
   <main id="palette-log-page" :class="{ 'is-anim': isAnim }">
-    <section class="pl">
+    <section class="pl" :class="{ 'has-state': hasState }">
       <div class="pl-head">
         <h1 class="pl-title">Palette Log</h1>
         <button type="button" class="pl-sort-toggle" @click="toggleSortMode">
@@ -13,10 +13,13 @@
 
       <p v-if="isLoading" class="pl-state">팔레트 로그를 불러오는 중...</p>
       <p v-else-if="errorMessage" class="pl-state pl-state-error">{{ errorMessage }}</p>
-      <p v-else-if="!items.length" class="pl-state">저장된 팔레트 로그가 없습니다.</p>
+      <p v-else-if="!items.length" class="pl-state">
+        아직 저장된 팔레트로그가 없습니다
+        <RouterLink to="/color-chart" class="pl-empty-cta">컬러차트 살펴보기</RouterLink>
+      </p>
 
       <div v-else class="pl-board">
-        <ul class="pl-stack" :class="{ 'is-lock': isLock }">
+        <ul :key="stackRenderKey" class="pl-stack" :class="{ 'is-lock': isLock }">
           <li
             v-for="(item, i) in displayedItems"
             :key="item.playlist_id"
@@ -51,7 +54,7 @@
                 </span>
                 <span :style="{ filter: getIconFilter(item.playlist.color_hex) }">
                   <img :src="noteIcon" alt="note" />
-                  {{ formatPlays(item.playlist.play_count) }}
+                  {{ formatTracks(item.playlist.totalTracks) }}
                 </span>
               </div>
             </button>
@@ -64,7 +67,7 @@
 
 <script setup>
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
-import { useRouter } from 'vue-router';
+import { RouterLink, useRouter } from 'vue-router';
 import { apiRequest } from '@/services/httpClient';
 
 import arrowIcon from '@/assets/icons/arrow-right.svg';
@@ -82,6 +85,8 @@ const exitId = ref(null);
 const isTransitioning = ref(false);
 const items = ref([]);
 const sortMode = ref('recentAdd');
+const stackRenderKey = ref(0);
+const sortModes = ['recentAdd', 'mostPopular', 'nameAsc'];
 
 const colors = {
   darkText: '#3f5f73',
@@ -91,10 +96,26 @@ const colors = {
 const displayedItems = computed(() => {
   const nextItems = [...items.value];
 
-  if (sortMode.value === 'recentPlay') {
+  if (sortMode.value === 'mostPopular') {
     nextItems.sort((a, b) => {
+      const likeGap = Number(b?.playlist?.like_count || 0) - Number(a?.playlist?.like_count || 0);
+      if (likeGap !== 0) return likeGap;
       const playGap = Number(b?.playlist?.play_count || 0) - Number(a?.playlist?.play_count || 0);
       if (playGap !== 0) return playGap;
+      return String(b?.created_at || '').localeCompare(String(a?.created_at || ''));
+    });
+    return nextItems;
+  }
+
+  if (sortMode.value === 'nameAsc') {
+    nextItems.sort((a, b) => {
+      const leftName = String(a?.playlist?.color_name || '').trim();
+      const rightName = String(b?.playlist?.color_name || '').trim();
+      const nameGap = leftName.localeCompare(rightName, ['ko', 'en'], {
+        numeric: true,
+        sensitivity: 'base'
+      });
+      if (nameGap !== 0) return nameGap;
       return String(b?.created_at || '').localeCompare(String(a?.created_at || ''));
     });
     return nextItems;
@@ -109,8 +130,13 @@ const displayedItems = computed(() => {
   return nextItems;
 });
 
-const sortLabel = computed(() =>
-  sortMode.value === 'recentAdd' ? '최근 추가 순' : '최근 재생 순'
+const sortLabel = computed(() => {
+  if (sortMode.value === 'mostPopular') return '인기 많은 순';
+  if (sortMode.value === 'nameAsc') return '컬러명 순';
+  return '최근 추가 순';
+});
+const hasState = computed(
+  () => isLoading.value || Boolean(errorMessage.value) || !items.value.length
 );
 
 async function loadPaletteLogs() {
@@ -135,6 +161,7 @@ async function loadPaletteLogs() {
 }
 
 async function startEntranceAnimation() {
+  isAnim.value = false;
   await nextTick();
   if (!items.value.length) return;
 
@@ -162,7 +189,11 @@ function onCardClick(item) {
 }
 
 function toggleSortMode() {
-  sortMode.value = sortMode.value === 'recentAdd' ? 'recentPlay' : 'recentAdd';
+  const currentIndex = sortModes.indexOf(sortMode.value);
+  const nextIndex = currentIndex < 0 ? 0 : (currentIndex + 1) % sortModes.length;
+  sortMode.value = sortModes[nextIndex];
+  stackRenderKey.value += 1;
+  void startEntranceAnimation();
 }
 
 function parseToRGB(color) {
@@ -219,8 +250,8 @@ function formatCount(value) {
   return Number(value || 0).toLocaleString('en-US');
 }
 
-function formatPlays(value) {
-  return `${Number(value || 0).toLocaleString('en-US')} Plays`;
+function formatTracks(value) {
+  return `${Number(value || 0).toLocaleString('en-US')} Tracks`;
 }
 
 onMounted(async () => {
@@ -257,6 +288,16 @@ watch(
 }
 
 /* 헤더 텍스트 */
+.pl.has-state {
+  min-height: calc(100dvh - var(--app-main-top) - var(--app-main-bottom));
+  display: flex;
+  flex-direction: column;
+}
+
+.pl.has-state .pl-head {
+  margin-bottom: 0;
+}
+
 .pl-head {
   display: flex;
   align-items: flex-end;
@@ -310,6 +351,28 @@ watch(
   font-size: 14px;
   color: #3f5f73;
   text-align: center;
+}
+
+.pl.has-state .pl-state {
+  margin: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.pl-empty-cta {
+  margin-top: 18px;
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 0;
+  background: var(--color-primary);
+  color: #ffffff;
+  text-decoration: none;
 }
 
 .pl-state-error {

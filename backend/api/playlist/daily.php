@@ -23,19 +23,8 @@ if ($userUuid === '') {
 
 try {
     $pdo = Database::getConnection();
-
-    $countStmt = $pdo->query('SELECT COUNT(*) FROM playlists');
-    $playlistCount = (int) $countStmt->fetchColumn();
-
-    if ($playlistCount < 1) {
-        app_error('플레이리스트를 찾을 수 없습니다.', 404);
-    }
-
-    $today = new DateTimeImmutable('today');
-    $todayKey = $today->format('Y-m-d');
-    $epoch = new DateTimeImmutable('2026-01-01');
-    $dayOffset = (int) $epoch->diff($today)->format('%r%a');
-    $offset = (($dayOffset % $playlistCount) + $playlistCount) % $playlistCount;
+    $todayKey = DailyTone::getTodayKey();
+    DailyTone::ensureTodayEntry($pdo, $userUuid, $todayKey);
 
     $dailyStmt = $pdo->prepare(
         'SELECT
@@ -52,7 +41,9 @@ try {
             t.artist AS track_artist,
             t.cover_filename AS track_cover_filename,
             t.audio_filename AS track_audio_filename
-         FROM playlists p
+         FROM calendar_entries ce
+         INNER JOIN playlists p
+           ON p.id = ce.playlist_id
          INNER JOIN categories c
            ON c.id = p.category_id
          LEFT JOIN palette_logs pal
@@ -63,11 +54,13 @@ try {
           AND pt.track_order = 1
          LEFT JOIN tracks t
            ON t.id = pt.track_id
-         ORDER BY p.id ASC
-         LIMIT 1 OFFSET :offset_value'
+         WHERE ce.user_uuid = :entry_user_uuid
+           AND ce.entry_date = :entry_date
+         LIMIT 1'
     );
     $dailyStmt->bindValue(':saved_user_uuid', $userUuid, PDO::PARAM_STR);
-    $dailyStmt->bindValue(':offset_value', $offset, PDO::PARAM_INT);
+    $dailyStmt->bindValue(':entry_user_uuid', $userUuid, PDO::PARAM_STR);
+    $dailyStmt->bindValue(':entry_date', $todayKey, PDO::PARAM_STR);
     $dailyStmt->execute();
     $playlist = $dailyStmt->fetch();
 
