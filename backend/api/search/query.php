@@ -562,7 +562,8 @@ function requestSearchResult(
     $promptCandidates = array_map(
         static function (array $candidate): array {
             return [
-                'id' => (int) $candidate['id'],
+                'playlist_id' => (int) $candidate['id'],
+                'display_name' => (string) $candidate['color_name'],
                 'pantone_code' => (string) $candidate['pantone_code'],
                 'color_name' => (string) $candidate['color_name'],
                 'category_label' => (string) $candidate['category_label'],
