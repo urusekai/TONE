@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 import addIcon from '@/assets/icons/add.svg';
 import addCompleteIcon from '@/assets/icons/addComplete.svg';
+import playIcon from '@/assets/icons/play.svg';
 
 const props = defineProps({
   saved: {
