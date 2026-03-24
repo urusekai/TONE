@@ -246,10 +246,7 @@ const shouldShowSearchResults = computed(() => hasSearched.value);
 </script>
 
 <template>
-  <main
-    id="search"
-    :class="{ 'is-enter-ready': isEnterReady, 'is-searching-lock': isSearching }"
-  >
+  <main id="search" :class="{ 'is-enter-ready': isEnterReady, 'is-searching-lock': isSearching }">
     <div v-if="isSearching" class="search-page-overlay" aria-hidden="true">
       <div class="search-loading-shell">
         <div class="spectrum-loading-orbit search-loading-orbit">
@@ -286,7 +283,7 @@ const shouldShowSearchResults = computed(() => hasSearched.value);
         >
           <SwiperSlide v-for="t in searchData.tags" :key="t" class="tag-slide">
             <div
-              class="tag"
+              class="tag search-elevated"
               role="button"
               tabindex="0"
               @click="applyTagToSearch(t)"
@@ -344,7 +341,7 @@ const shouldShowSearchResults = computed(() => hasSearched.value);
         <section class="recent-colors-section" style="--search-section-delay: 80ms">
           <h3 class="section-title">최근 컬러</h3>
 
-          <div class="recent-colors-wrapper">
+          <div class="recent-colors-wrapper search-elevated">
             <div
               v-if="isLoadingColors"
               class="search-loading-shell search-loading-shell-box"
@@ -401,7 +398,7 @@ const shouldShowSearchResults = computed(() => hasSearched.value);
             <article
               v-for="r in searchData.recommended"
               :key="`${r.brand}-${r.name}`"
-              class="pantone-card"
+              class="pantone-card search-elevated"
               @click="goToPlaylist(r)"
             >
               <div class="card-color-top" :style="{ backgroundColor: r.code }"></div>
@@ -568,7 +565,8 @@ const shouldShowSearchResults = computed(() => hasSearched.value);
 }
 
 .tag-swiper {
-  padding: 0;
+  padding: 4px 0;
+  margin: -4px 0;
   overflow: hidden;
 }
 
@@ -581,6 +579,10 @@ const shouldShowSearchResults = computed(() => hasSearched.value);
   padding: 0 14px;
 }
 
+.search-elevated {
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+}
+
 /* 최근 검색어 태그 */
 .tag {
   flex: 0 0 auto;
@@ -590,7 +592,6 @@ const shouldShowSearchResults = computed(() => hasSearched.value);
   padding: 8px 14px;
   border-radius: 20px;
   font-size: 14px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   cursor: pointer;
 }
 
@@ -615,7 +616,6 @@ const shouldShowSearchResults = computed(() => hasSearched.value);
   padding: 15px 0px 10px;
   background: #ffffff;
   border-radius: 15px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
   overflow: hidden;
 
   position: relative;
@@ -767,7 +767,6 @@ const shouldShowSearchResults = computed(() => hasSearched.value);
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
   cursor: pointer;
 }
 

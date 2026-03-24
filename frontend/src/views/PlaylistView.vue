@@ -297,7 +297,7 @@ watch(
   margin-inline: calc(var(--playlist-main-side-padding) * -1);
   padding: 0 var(--playlist-main-side-padding) 25px;
   background: var(--color-bg-app);
-  box-shadow: 0 10px 12px -12px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 5px 5px rgba(0, 0, 0, 0.16);
 }
 
 #playlist .playlist-hero__thumb {
