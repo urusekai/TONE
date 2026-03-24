@@ -703,7 +703,7 @@ watch(
 }
 
 .echo-text {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
   line-height: 1.4;
   min-height: calc(18px * 1.4 * 2);
