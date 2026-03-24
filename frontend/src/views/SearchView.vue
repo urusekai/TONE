@@ -14,15 +14,16 @@ const swiperModules = [FreeMode];
 
 const STORAGE_KEY = 'tone_recent_tags_v1';
 const MAX_TAGS = 12;
+const DEFAULT_RECENT_TAGS = ['NewJeans', '차분한 블루', '드라이브', '시티팝'];
 
 // localStorage에서 불러오기
 const loadTags = () => {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     const parsed = raw ? JSON.parse(raw) : null;
-    return Array.isArray(parsed) ? parsed : ['Coral', 'White', '카더가든', '파란색', '여름노래'];
+    return Array.isArray(parsed) && parsed.length > 0 ? parsed : DEFAULT_RECENT_TAGS;
   } catch {
-    return ['Coral', 'White', '카더가든', '파란색', '여름노래'];
+    return DEFAULT_RECENT_TAGS;
   }
 };
 
@@ -79,7 +80,11 @@ function removeTag(tag) {
 }
 
 function applyTagToSearch(tag) {
-  keyword.value = normalizeTag(String(tag || ''));
+  const normalized = normalizeTag(String(tag || ''));
+  if (!normalized) return;
+
+  keyword.value = normalized;
+  void runSearch(normalized);
 }
 
 function goToPlaylist(payload) {
@@ -125,10 +130,8 @@ function startSummaryTyping(text) {
   }, 42);
 }
 
-async function onSubmit(e) {
-  e.preventDefault();
-
-  const t = keyword.value.trim();
+async function runSearch(rawQuery) {
+  const t = normalizeTag(String(rawQuery || ''));
   if (!t) return;
 
   addRecentTag(t);
@@ -155,7 +158,9 @@ async function onSubmit(e) {
 
     searchSummary.value = String(result?.summary || '').trim();
     startSummaryTyping(searchSummary.value);
-    searchResults.value = Array.isArray(result?.results) ? result.results.map(mapSearchPlaylistCard) : [];
+    searchResults.value = Array.isArray(result?.results)
+      ? result.results.map(mapSearchPlaylistCard)
+      : [];
   } catch (error) {
     stopSummaryTyping();
     searchErrorMessage.value =
@@ -166,6 +171,11 @@ async function onSubmit(e) {
   }
 
   keyword.value = '';
+}
+
+async function onSubmit(e) {
+  e.preventDefault();
+  await runSearch(keyword.value);
 }
 
 function mapRecentColor(item) {
@@ -201,7 +211,9 @@ async function loadSearchCollections() {
 
     const recentUnique = paletteLogs.filter(
       (item, index, array) =>
-        array.findIndex((target) => String(target?.playlist?.id || '') === String(item?.playlist?.id || '')) === index
+        array.findIndex(
+          (target) => String(target?.playlist?.id || '') === String(item?.playlist?.id || '')
+        ) === index
     );
 
     searchData.recentColors = recentUnique.slice(0, 8).map(mapRecentColor);
@@ -240,7 +252,10 @@ const shouldShowSearchResults = computed(() => hasSearched.value);
       </form>
     </section>
 
-    <div class="search-content-scroll" :class="{ 'is-searching': shouldShowSearchResults && isSearching }">
+    <div
+      class="search-content-scroll"
+      :class="{ 'is-searching': shouldShowSearchResults && isSearching }"
+    >
       <div
         v-if="shouldShowSearchResults && isSearching"
         class="search-loading-overlay"
@@ -270,7 +285,13 @@ const shouldShowSearchResults = computed(() => hasSearched.value);
           :watch-overflow="true"
         >
           <SwiperSlide v-for="t in searchData.tags" :key="t" class="tag-slide">
-            <div class="tag" role="button" tabindex="0" @click="applyTagToSearch(t)" @keydown.enter="applyTagToSearch(t)">
+            <div
+              class="tag"
+              role="button"
+              tabindex="0"
+              @click="applyTagToSearch(t)"
+              @keydown.enter="applyTagToSearch(t)"
+            >
               {{ t }}
               <button class="btn-delete" type="button" @click.stop="removeTag(t)">
                 <img src="@/assets/icons/remove.svg" alt="삭제" />
@@ -283,7 +304,9 @@ const shouldShowSearchResults = computed(() => hasSearched.value);
       <template v-if="shouldShowSearchResults">
         <template v-if="!isSearching">
           <section class="search-result-summary-section" style="--search-section-delay: 80ms">
-            <p v-if="searchErrorMessage" class="section-empty search-error">{{ searchErrorMessage }}</p>
+            <p v-if="searchErrorMessage" class="section-empty search-error">
+              {{ searchErrorMessage }}
+            </p>
             <div v-else-if="searchSummary" class="search-summary-box">
               <p class="search-summary-text" :class="{ 'is-typing': isTypingSummary }">
                 {{ typedSearchSummary }}
@@ -291,12 +314,17 @@ const shouldShowSearchResults = computed(() => hasSearched.value);
             </div>
           </section>
 
-          <section v-if="!searchErrorMessage" class="search-result-list-section" style="--search-section-delay: 120ms">
-            <p
-              v-if="!searchResults.length"
-              class="section-empty"
-            >
-              {{ lastSearchedQuery ? `"${lastSearchedQuery}" 검색 결과가 없습니다.` : '검색 결과가 없습니다.' }}
+          <section
+            v-if="!searchErrorMessage"
+            class="search-result-list-section"
+            style="--search-section-delay: 120ms"
+          >
+            <p v-if="!searchResults.length" class="section-empty">
+              {{
+                lastSearchedQuery
+                  ? `"${lastSearchedQuery}" 검색 결과가 없습니다.`
+                  : '검색 결과가 없습니다.'
+              }}
             </p>
 
             <template v-else>
@@ -317,14 +345,21 @@ const shouldShowSearchResults = computed(() => hasSearched.value);
           <h3 class="section-title">최근 컬러</h3>
 
           <div class="recent-colors-wrapper">
-            <div v-if="isLoadingColors" class="search-loading-shell search-loading-shell-box" aria-hidden="true">
+            <div
+              v-if="isLoadingColors"
+              class="search-loading-shell search-loading-shell-box"
+              aria-hidden="true"
+            >
               <div class="spectrum-loading-orbit search-loading-orbit">
                 <span class="spectrum-loading-orb spectrum-loading-orb-violet"></span>
                 <span class="spectrum-loading-orb spectrum-loading-orb-orange"></span>
                 <span class="spectrum-loading-orb spectrum-loading-orb-rose"></span>
               </div>
             </div>
-            <p v-else-if="searchData.recentColors.length === 0" class="section-empty recent-colors-empty">
+            <p
+              v-else-if="searchData.recentColors.length === 0"
+              class="section-empty recent-colors-empty"
+            >
               최근 저장한 컬러가 없습니다.
             </p>
             <Swiper
@@ -666,9 +701,9 @@ const shouldShowSearchResults = computed(() => hasSearched.value);
 }
 
 .search-result-list-section {
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
   margin-bottom: 0;
 }
 
