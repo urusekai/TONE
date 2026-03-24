@@ -21,20 +21,52 @@ TONE은 사용자에게 매일 팬톤컬러 기반의 색상과 그에 어울리
 
 <br>
 
-## ✨ 주요 기능
+## 🖥️ 주요 기능 & 화면
 
-- **데일리 톤 추천** : 매일 팬톤 컬러를 기반으로 플레이리스트를 추천해 색과 음악을 함께 제안합니다.
-- **플레이리스트 탐색** : 카테고리와 컬러 정보를 바탕으로 플레이리스트를 조회하고 트랙 구성을 확인할 수 있습니다.
-- **뮤직 플레이어** : 미니 플레이어와 메인 플레이어를 통해 재생, 일시정지, 셔플, 반복 재생을 지원합니다.
-- **뮤직비디오 재생** : 메인 플레이어에서 곡 재생과 함께 배경 영상을 감상할 수 있습니다.
-- **감정 기록 캘린더** : 날짜별로 메모와 플레이리스트를 저장해 하루의 감정을 기록할 수 있습니다.
-- **팔레트 로그** : 좋아요 또는 저장한 플레이리스트를 모아 개인 기록처럼 다시 확인할 수 있습니다.
+<table align="center">
+  <tr>
+    <td align="center"><b>[ 소셜 로그인 ]</b><br>카카오 / 네이버 / 구글</td>
+    <td align="center"><b>[ 메인 페이지 ]</b><br/>컬러차트 / 팔레트로그 / 카테고리</b></td>
+    <td align="center"><b>[ 데일리 스펙트럼 ]</b><br>설문을 통한 색 추천과 AI 해설</b></td>
+  </tr>
+  <tr>
+    <td align="center" width="300">
+      <img src="https://github.com/user-attachments/assets/101f73fb-82b1-426b-9afd-b1f8fb8bc40b" width="250"/>
+    </td>
+    <td align="center" width="300">
+      <img src="https://github.com/user-attachments/assets/b7df23ee-94ff-4f51-ba69-d675cab03468" width="250"/>
+    </td>
+    <td align="center" width="300">
+      <img src="https://github.com/user-attachments/assets/33757b7d-5d00-4f69-aa45-df8dcfb15544" width="250"/>
+    </td>
+  </tr>
+</table>
+<table align="center">
+  <tr>
+    <td align="center"><b>[ 플레이어 ]</b><br>미니&메인플레이어 전환 / MV재생</b></td>
+    <td align="center"><b>[ 검색 ]</b><br>AI 기반 플레이리스트 추천과 설명</b></td>
+    <td align="center"><b>[ 캘린더 ]</b><br>오늘의 색과 감정을 아카이빙</td>
+  </tr>
+  <tr>
+    <td align="center" width="300">
+      <img src="https://github.com/user-attachments/assets/3cc1f92f-8b76-4eb3-b9ee-c718b17a2ff6" width="250"/>
+    </td>
+    <td align="center" width="300">
+      <img src="https://github.com/user-attachments/assets/50c1eb64-76d9-4c32-a2ad-23e83990302b" width="250"/>
+    </td>
+    <td align="center" width="300">
+      <img src="https://github.com/user-attachments/assets/ad6d21ea-fa26-4a92-a30a-19d1874dbf7f" width="250"/>
+    </td>
+  </tr>
+</table>
 
 <br>
 
 ## 🛠 구현 포인트
 
-- **백엔드 API 및 DB 연동** : 모든 주요 기능을 PHP API와 MySQL DB까지 연결해 직접 구현했습니다.
+- **백엔드 API 및 DB 연동** : 모든 주요 기능을 PHP API와 데이터베이스에 연결해 직접 구현했습니다.
+- **Pinia 상태 관리** : 인증, 플레이어, 캘린더, 팔레트 로그 상태를 Pinia로 관리했습니다.
+- **OpenAI API 연동** : OpenAI의 API를 활용해 데일리스펙트럼 추천과 자연어 검색 기능을 구현했습니다.
 - **소셜 로그인 연동** : 카카오, 구글, 네이버 Oauth를 통해 소셜 로그인을 구현했습니다.
 - **배포 자동화** : `main` 머지 시 GitHub Actions를 통해 빌드와 닷홈 서버 배포까지의 자동화를 구현했습니다.
 - **미디어 분리 운영** : Cloudflare R2 기반으로 커버, 음원, 영상 리소스를 분리해서 관리했습니다.
@@ -43,7 +75,7 @@ TONE은 사용자에게 매일 팬톤컬러 기반의 색상과 그에 어울리
 
 ## ⚙ 기술 스택
 
-### 프론트엔드
+**프론트엔드**
 
 <p>
   <img alt="Vue.js" hspace="3" src="https://img.shields.io/badge/vuejs-%2335495e.svg?style=flat-square&logo=vuedotjs&logoColor=%234FC08D" />
@@ -51,34 +83,22 @@ TONE은 사용자에게 매일 팬톤컬러 기반의 색상과 그에 어울리
   <img alt="Vite" hspace="3" src="https://img.shields.io/badge/vite-%23646CFF.svg?style=flat-square&logo=vite&logoColor=white" />
   <img alt="Pinia" hspace="3" src="https://img.shields.io/badge/Pinia-FFD859?style=flat-square&logo=pinia&logoColor=black" />
   <img alt="Axios" hspace="3" src="https://img.shields.io/badge/Axios-5A29E4?style=flat-square&logo=axios&logoColor=white" />
-  <img alt="Swiper" hspace="3" src="https://img.shields.io/badge/Swiper-6332F6?style=flat-square&logo=swiper&logoColor=white" />
 </p>
 
-### 백엔드
+**백엔드 & AI**
 
 <p>
   <img alt="PHP" hspace="3" src="https://img.shields.io/badge/php-%23777BB4.svg?style=flat-square&logo=php&logoColor=white" />
   <img alt="MySQL" hspace="3" src="https://img.shields.io/badge/mysql-4479A1.svg?style=flat-square&logo=mysql&logoColor=white" />
   <img alt="Composer" hspace="3" src="https://img.shields.io/badge/composer-885630?style=flat-square&logo=composer&logoColor=white" />
-  <img alt="Guzzle" hspace="3" src="https://img.shields.io/badge/Guzzle-000000?style=flat-square&logo=php&logoColor=white" />
-  <img alt="phpdotenv" hspace="3" src="https://img.shields.io/badge/phpdotenv-6C7EB7?style=flat-square&logo=php&logoColor=white" />
+  <img alt="OpenAI API" hspace="3" src="https://img.shields.io/badge/OpenAI%20API-412991?style=flat-square&logo=openai&logoColor=white" />
 </p>
 
-### 배포 & 인프라
+**배포 & 인프라**
 
 <p>
   <img alt="GitHub Actions" hspace="3" src="https://img.shields.io/badge/GitHub%20Actions-2088FF?style=flat-square&logo=githubactions&logoColor=white" />
   <img alt="Cloudflare R2" hspace="3" src="https://img.shields.io/badge/Cloudflare%20R2-F38020?style=flat-square&logo=cloudflare&logoColor=white" />
-</p>
-
-### 협업
-
-<p>
-  <img alt="GitHub" hspace="3" src="https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=github&logoColor=white" />
-  <img alt="Figma" hspace="3" src="https://img.shields.io/badge/Figma-F24E1E?style=flat-square&logo=figma&logoColor=white" />
-  <img alt="Notion" hspace="3" src="https://img.shields.io/badge/Notion-000000?style=flat-square&logo=notion&logoColor=white" />
-  <img alt="ESLint" hspace="3" src="https://img.shields.io/badge/ESLint-4B32C3?style=flat-square&logo=eslint&logoColor=white" />
-  <img alt="Prettier" hspace="3" src="https://img.shields.io/badge/Prettier-F7B93E?style=flat-square&logo=prettier&logoColor=black" />
 </p>
 
 <br>
