@@ -45,6 +45,7 @@ const searchResults = ref([]);
 const searchErrorMessage = ref('');
 const lastSearchedQuery = ref('');
 let summaryTypingTimer = null;
+let latestSearchRequestId = 0;
 
 // tags가 바뀔 때마다 localStorage 저장
 watch(
@@ -134,15 +135,14 @@ async function runSearch(rawQuery) {
   const t = normalizeTag(String(rawQuery || ''));
   if (!t) return;
 
+  const requestId = ++latestSearchRequestId;
   addRecentTag(t);
   isSearching.value = true;
   hasSearched.value = true;
   stopSummaryTyping();
-  searchSummary.value = '';
-  typedSearchSummary.value = '';
-  searchResults.value = [];
   searchErrorMessage.value = '';
   lastSearchedQuery.value = t;
+  keyword.value = '';
 
   try {
     const result = await apiRequest(
@@ -156,21 +156,25 @@ async function runSearch(rawQuery) {
       '검색 결과를 불러오지 못했습니다.'
     );
 
+    if (requestId !== latestSearchRequestId) return;
+
     searchSummary.value = String(result?.summary || '').trim();
     startSummaryTyping(searchSummary.value);
     searchResults.value = Array.isArray(result?.results)
       ? result.results.map(mapSearchPlaylistCard)
       : [];
   } catch (error) {
+    if (requestId !== latestSearchRequestId) return;
+
     stopSummaryTyping();
     searchErrorMessage.value =
       error instanceof Error ? error.message : '검색 결과를 불러오지 못했습니다.';
     console.error(error);
   } finally {
-    isSearching.value = false;
+    if (requestId === latestSearchRequestId) {
+      isSearching.value = false;
+    }
   }
-
-  keyword.value = '';
 }
 
 async function onSubmit(e) {
@@ -242,7 +246,20 @@ const shouldShowSearchResults = computed(() => hasSearched.value);
 </script>
 
 <template>
-  <main id="search" :class="{ 'is-enter-ready': isEnterReady }">
+  <main
+    id="search"
+    :class="{ 'is-enter-ready': isEnterReady, 'is-searching-lock': isSearching }"
+  >
+    <div v-if="isSearching" class="search-page-overlay" aria-hidden="true">
+      <div class="search-loading-shell">
+        <div class="spectrum-loading-orbit search-loading-orbit">
+          <span class="spectrum-loading-orb spectrum-loading-orb-violet"></span>
+          <span class="spectrum-loading-orb spectrum-loading-orb-orange"></span>
+          <span class="spectrum-loading-orb spectrum-loading-orb-rose"></span>
+        </div>
+      </div>
+    </div>
+
     <section class="search-bar-section" style="--search-section-delay: 0ms">
       <form class="search-input-box" role="search" @submit="onSubmit">
         <input v-model="keyword" type="text" placeholder="노래, 아티스트, 색상 검색" />
@@ -252,24 +269,7 @@ const shouldShowSearchResults = computed(() => hasSearched.value);
       </form>
     </section>
 
-    <div
-      class="search-content-scroll"
-      :class="{ 'is-searching': shouldShowSearchResults && isSearching }"
-    >
-      <div
-        v-if="shouldShowSearchResults && isSearching"
-        class="search-loading-overlay"
-        aria-hidden="true"
-      >
-        <div class="search-loading-shell">
-          <div class="spectrum-loading-orbit search-loading-orbit">
-            <span class="spectrum-loading-orb spectrum-loading-orb-violet"></span>
-            <span class="spectrum-loading-orb spectrum-loading-orb-orange"></span>
-            <span class="spectrum-loading-orb spectrum-loading-orb-rose"></span>
-          </div>
-        </div>
-      </div>
-
+    <div class="search-content-scroll">
       <!-- 최근 검색어 -->
       <section class="search-section" style="--search-section-delay: 40ms">
         <h3 class="section-title">최근 검색어</h3>
@@ -423,6 +423,7 @@ const shouldShowSearchResults = computed(() => hasSearched.value);
   --section-gap: 30px;
   --title-content-gap: 12px;
 
+  position: relative;
   justify-content: flex-start;
   align-items: stretch;
   min-height: 0;
@@ -432,6 +433,25 @@ const shouldShowSearchResults = computed(() => hasSearched.value);
   padding-right: 0;
   background-color: #f2f2ee;
   box-sizing: border-box;
+}
+
+#search.is-searching-lock > :not(.search-page-overlay) {
+  pointer-events: none;
+}
+
+#search.is-searching-lock .search-bar-section,
+#search.is-searching-lock .search-content-scroll {
+  opacity: 0.42;
+}
+
+.search-page-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(242, 242, 238, 0.2);
 }
 
 #search .search-bar-section,
@@ -505,19 +525,6 @@ const shouldShowSearchResults = computed(() => hasSearched.value);
   overscroll-behavior: contain;
   padding: 0 var(--layout-x) calc(var(--app-main-bottom) + var(--section-gap));
   box-sizing: border-box;
-}
-
-.search-content-scroll.is-searching {
-  min-height: 100%;
-}
-
-.search-loading-overlay {
-  position: absolute;
-  inset: 0 0 calc(var(--app-main-bottom) + var(--section-gap)) 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
 }
 
 .search-input-box {
