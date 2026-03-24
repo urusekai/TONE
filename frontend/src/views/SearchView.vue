@@ -580,7 +580,7 @@ const shouldShowSearchResults = computed(() => hasSearched.value);
 }
 
 .search-elevated {
-  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.1);
 }
 
 /* 최근 검색어 태그 */

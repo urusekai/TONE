@@ -183,9 +183,8 @@ onMounted(async () => {
 
   text-decoration: none;
   color: inherit;
-  /* 카드 기본 바탕 */
   background: #ffffff;
-  box-shadow: 0 0px 10px rgba(0, 0, 0, 0.16);
+  box-shadow: 0 5px 5px rgba(0, 0, 0, 0.1);
   border: 1px solid #b7aea671;
 
   overflow: hidden;

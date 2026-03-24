@@ -737,7 +737,6 @@ watch(
   border-radius: 17px;
   padding: 20px;
   margin-top: 24px;
-  margin-bottom: 20px;
   width: 100%;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
