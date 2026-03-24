@@ -96,9 +96,7 @@
 
       <div class="echo-card">
         <Transition name="echo-fade" mode="out-in">
-          <p :key="currentEchoNote" class="echo-text">
-            <span v-for="line in currentEchoLines" :key="line" class="echo-text-line">{{ line }}</span>
-          </p>
+          <p :key="currentEchoNote" class="echo-text">{{ currentEchoNote }}</p>
         </Transition>
         <div class="echo-line"></div>
         <p class="echo-date">{{ echoDateLabel }}</p>
@@ -231,33 +229,13 @@ function formatTrackCount(value) {
   return Number(value || 0).toLocaleString('en-US');
 }
 
-function splitEchoLines(text) {
-  const normalized = String(text || '').trim().replace(/\s+/g, ' ');
-  if (!normalized) return [''];
-
-  const words = normalized.split(' ');
-  if (words.length < 2) return [normalized];
-
-  let bestIndex = 1;
-  let bestGap = Number.POSITIVE_INFINITY;
-
-  for (let index = 1; index < words.length; index += 1) {
-    const left = words.slice(0, index).join(' ');
-    const right = words.slice(index).join(' ');
-    const gap = Math.abs(left.length - right.length);
-
-    if (gap < bestGap) {
-      bestGap = gap;
-      bestIndex = index;
-    }
-  }
-
-  return [words.slice(0, bestIndex).join(' '), words.slice(bestIndex).join(' ')].filter(Boolean);
-}
-
 async function loadEchoNotes() {
   try {
-    const result = await apiRequest('/api/calendar/echo-notes.php', {}, '에코 노트를 불러오지 못했습니다.');
+    const result = await apiRequest(
+      '/api/calendar/echo-notes.php',
+      {},
+      '에코 노트를 불러오지 못했습니다.'
+    );
     echoNotes.value = Array.isArray(result?.echoNotes) ? result.echoNotes : [];
     currentEchoIndex.value = 0;
   } catch {
@@ -318,7 +296,6 @@ const echoDotStyle = computed(() => ({
 
 const currentEchoEntry = computed(() => echoNotes.value[currentEchoIndex.value] ?? null);
 const currentEchoNote = computed(() => currentEchoEntry.value?.memo || '');
-const currentEchoLines = computed(() => splitEchoLines(currentEchoNote.value));
 
 const echoDateLabel = computed(() => {
   const today = new Date();
@@ -463,9 +440,7 @@ watch(
   background: #fff;
   border-radius: 22px;
   padding: 16px;
-  box-shadow:
-    0 18px 40px rgba(0, 0, 0, 0.1),
-    0 2px 10px rgba(0, 0, 0, 0.06);
+  box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.16);
 }
 
 /* ===== Daily tone ===== */
@@ -652,7 +627,7 @@ watch(
   background: var(--bg, #b7cc1a);
   color: #fff;
   text-decoration: none;
-  box-shadow: 0 18px 30px rgba(0, 0, 0, 0.18);
+  box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.16);
 }
 
 .log-copy {
@@ -728,19 +703,15 @@ watch(
 }
 
 .echo-text {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
   line-height: 1.4;
   min-height: calc(18px * 1.4 * 2);
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-}
-
-.echo-text-line {
-  display: block;
   text-align: center;
+  word-break: keep-all;
 }
 
 .echo-line {

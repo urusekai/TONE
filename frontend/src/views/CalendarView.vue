@@ -504,6 +504,7 @@ watch(
 #calendar.is-enter-ready .memo-card {
   animation: calendar-card-enter 320ms ease both;
   animation-delay: var(--calendar-card-delay, 0ms);
+  box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.16);
 }
 
 /* ------------------ CALENDAR HEADER ------------------ */
@@ -736,7 +737,6 @@ watch(
   border-radius: 17px;
   padding: 20px;
   margin-top: 24px;
-  margin-bottom: 20px;
   width: 100%;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }

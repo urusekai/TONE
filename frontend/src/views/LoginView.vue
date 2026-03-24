@@ -1,5 +1,5 @@
 <template>
-  <main id="login-page">
+  <main id="login-page" :class="{ 'is-enter-ready': isEnterReady }">
     <img class="logo" src="@/assets/icons/logo-full.svg" alt="로고" />
     <form class="login-form" @submit.prevent="handleLogin">
       <div class="form-input-box">
@@ -45,7 +45,7 @@
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue';
+import { nextTick, onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { loginUser, startSocialLogin } from '@/services/authService';
 import { useAuthStore } from '@/stores/auth';
@@ -59,6 +59,7 @@ const form = reactive({
   pw: ''
 });
 
+const isEnterReady = ref(false);
 const isLoggingIn = ref(false);
 
 async function handleLogin() {
@@ -98,13 +99,51 @@ function handleSocialLogin(provider) {
 
   showAlert('해당 소셜 로그인은 준비 중입니다.');
 }
+
+onMounted(async () => {
+  await nextTick();
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      isEnterReady.value = true;
+    });
+  });
+});
 </script>
 
 <style scoped>
 #login-page {
+  position: relative;
   justify-content: center;
   align-items: center;
   gap: 70px;
+}
+
+#login-page .logo,
+#login-page .login-form,
+#login-page .oauth {
+  position: relative;
+  z-index: 1;
+  opacity: 0;
+  transform: translateY(14px);
+  will-change: transform, opacity;
+}
+
+#login-page.is-enter-ready .logo,
+#login-page.is-enter-ready .login-form,
+#login-page.is-enter-ready .oauth {
+  animation: login-panel-enter 480ms ease both;
+}
+
+#login-page.is-enter-ready .logo {
+  animation-delay: 0ms;
+}
+
+#login-page.is-enter-ready .login-form {
+  animation-delay: 90ms;
+}
+
+#login-page.is-enter-ready .oauth {
+  animation-delay: 180ms;
 }
 
 #login-page .login-form {
@@ -188,5 +227,17 @@ function handleSocialLogin(provider) {
   padding: 0;
   display: inline-flex;
   cursor: pointer;
+}
+
+@keyframes login-panel-enter {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>
