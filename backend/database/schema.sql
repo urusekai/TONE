@@ -447,35 +447,35 @@ INSERT INTO playlists (
   play_count
 )
 VALUES
-  ((SELECT id FROM categories WHERE mood = 'energetic'), '18-1750', 'Viva Magenta', '#BB2649', 'high', 'heated', 'release', 'fast', 'confidence', 9823, 986),
-  ((SELECT id FROM categories WHERE mood = 'energetic'), '18-4245', 'Electric Blue', '#003399', 'high', 'cool', 'focus', 'fast', 'movement', 9560, 964),
-  ((SELECT id FROM categories WHERE mood = 'energetic'), '18-1664', 'Fiery Red', '#FF0000', 'high', 'heated', 'immersion', 'fast', 'confidence', 9342, 942),
-  ((SELECT id FROM categories WHERE mood = 'energetic'), '14-0760', 'Cyber Yellow', '#FFD300', 'high', 'heated', 'refresh', 'fast', 'movement', 9105, 921),
+  ((SELECT id FROM categories WHERE mood = 'energetic'), '18-1750', 'Viva Magenta', '#BB2648', 'high', 'heated', 'release', 'fast', 'confidence', 9823, 986),
+  ((SELECT id FROM categories WHERE mood = 'energetic'), '18-4245', 'Electric Blue', '#0063B1', 'high', 'cool', 'focus', 'fast', 'movement', 9560, 964),
+  ((SELECT id FROM categories WHERE mood = 'energetic'), '18-1664', 'Fiery Red', '#D11C20', 'high', 'heated', 'immersion', 'fast', 'confidence', 9342, 942),
+  ((SELECT id FROM categories WHERE mood = 'energetic'), '14-0760', 'Cyber Yellow', '#FFD500', 'high', 'heated', 'refresh', 'fast', 'movement', 9105, 921),
 
-  ((SELECT id FROM categories WHERE mood = 'emotional'), '19-4052', 'Classic Blue', '#0F4C81', 'low', 'cool', 'stability', 'slow', 'emotion', 8890, 902),
-  ((SELECT id FROM categories WHERE mood = 'emotional'), '16-4120', 'Dusk Blue', '#779ECB', 'low', 'neutral', 'stability', 'slow', 'recovery', 8674, 883),
-  ((SELECT id FROM categories WHERE mood = 'emotional'), '19-4007', 'Anthracite', '#28282D', 'low', 'cool', 'immersion', 'slow', 'emotion', 8461, 864),
-  ((SELECT id FROM categories WHERE mood = 'emotional'), '18-3834', 'Deep Wisteria', '#615694', 'medium', 'neutral', 'immersion', 'steady', 'emotion', 8250, 845),
+  ((SELECT id FROM categories WHERE mood = 'emotional'), '19-4052', 'Classic Blue', '#0F4D81', 'low', 'cool', 'stability', 'slow', 'emotion', 8890, 902),
+  ((SELECT id FROM categories WHERE mood = 'emotional'), '16-4120', 'Dusk Blue', '#7AA0C1', 'low', 'neutral', 'stability', 'slow', 'recovery', 8674, 883),
+  ((SELECT id FROM categories WHERE mood = 'emotional'), '19-4007', 'Anthracite', '#29282D', 'low', 'cool', 'immersion', 'slow', 'emotion', 8461, 864),
+  ((SELECT id FROM categories WHERE mood = 'emotional'), '18-3834', 'Deep Wisteria', '#443F6E', 'medium', 'neutral', 'immersion', 'steady', 'emotion', 8250, 845),
 
-  ((SELECT id FROM categories WHERE mood = 'groovy'), '16-1546', 'Living Coral', '#FF6F61', 'medium', 'heated', 'refresh', 'steady', 'movement', 8042, 826),
-  ((SELECT id FROM categories WHERE mood = 'groovy'), '16-1544', 'Peach Echo', '#F47362', 'medium', 'heated', 'refresh', 'steady', 'atmosphere', 7840, 807),
+  ((SELECT id FROM categories WHERE mood = 'groovy'), '16-1546', 'Living Coral', '#FF6F62', 'medium', 'heated', 'refresh', 'steady', 'movement', 8042, 826),
+  ((SELECT id FROM categories WHERE mood = 'groovy'), '16-1544', 'Peach Echo', '#F8796B', 'medium', 'heated', 'refresh', 'steady', 'atmosphere', 7840, 807),
   ((SELECT id FROM categories WHERE mood = 'groovy'), '18-3838', 'Ultra Violet', '#5F4B8B', 'medium', 'neutral', 'immersion', 'steady', 'atmosphere', 7643, 788),
-  ((SELECT id FROM categories WHERE mood = 'groovy'), '16-0952', 'Nugget Gold', '#C89720', 'medium', 'heated', 'release', 'steady', 'confidence', 7451, 769),
+  ((SELECT id FROM categories WHERE mood = 'groovy'), '16-0952', 'Nugget Gold', '#C89721', 'medium', 'heated', 'release', 'steady', 'confidence', 7451, 769),
 
-  ((SELECT id FROM categories WHERE mood = 'bright'), '13-0647', 'Illuminating', '#F5DF4D', 'high', 'heated', 'refresh', 'fast', 'confidence', 7262, 750),
-  ((SELECT id FROM categories WHERE mood = 'bright'), '12-0743', 'Sunny Lime', '#E2EF44', 'high', 'heated', 'refresh', 'fast', 'recovery', 7078, 731),
-  ((SELECT id FROM categories WHERE mood = 'bright'), '14-4318', 'Sky Blue', '#87CEEB', 'medium', 'cool', 'refresh', 'steady', 'atmosphere', 6895, 712),
-  ((SELECT id FROM categories WHERE mood = 'bright'), '14-2311', 'Prism Pink', '#F0A1BF', 'medium', 'heated', 'refresh', 'steady', 'confidence', 6714, 693),
+  ((SELECT id FROM categories WHERE mood = 'bright'), '13-0647', 'Illuminating', '#F5DF4E', 'high', 'heated', 'refresh', 'fast', 'confidence', 7262, 750),
+  ((SELECT id FROM categories WHERE mood = 'bright'), '12-0743', 'Sunny Lime', '#E0EE88', 'high', 'heated', 'refresh', 'fast', 'recovery', 7078, 731),
+  ((SELECT id FROM categories WHERE mood = 'bright'), '14-4318', 'Sky Blue', '#8ABAD3', 'medium', 'cool', 'refresh', 'steady', 'atmosphere', 6895, 712),
+  ((SELECT id FROM categories WHERE mood = 'bright'), '14-2311', 'Prism Pink', '#F0A2BF', 'medium', 'heated', 'refresh', 'steady', 'confidence', 6714, 693),
 
-  ((SELECT id FROM categories WHERE mood = 'chill'), '11-4201', 'Cloud Dancer', '#F0F3F4', 'low', 'cool', 'stability', 'slow', 'recovery', 6536, 674),
-  ((SELECT id FROM categories WHERE mood = 'chill'), '14-4102', 'Glacier Gray', '#C4C7C9', 'low', 'neutral', 'stability', 'slow', 'emotion', 6361, 655),
-  ((SELECT id FROM categories WHERE mood = 'chill'), '16-3801', 'Quiet Shade', '#929497', 'low', 'cool', 'focus', 'steady', 'atmosphere', 6188, 636),
-  ((SELECT id FROM categories WHERE mood = 'chill'), '15-1214', 'Warm Sand', '#C5B097', 'low', 'heated', 'stability', 'slow', 'recovery', 6018, 617),
+  ((SELECT id FROM categories WHERE mood = 'chill'), '11-4201', 'Cloud Dancer', '#F0EFEB', 'low', 'cool', 'stability', 'slow', 'recovery', 6536, 674),
+  ((SELECT id FROM categories WHERE mood = 'chill'), '14-4102', 'Glacier Gray', '#C6C6C6', 'low', 'neutral', 'stability', 'slow', 'emotion', 6361, 655),
+  ((SELECT id FROM categories WHERE mood = 'chill'), '16-3801', 'Quiet Shade', '#66676E', 'low', 'cool', 'focus', 'steady', 'atmosphere', 6188, 636),
+  ((SELECT id FROM categories WHERE mood = 'chill'), '15-1214', 'Warm Sand', '#C5AF92', 'low', 'heated', 'stability', 'slow', 'recovery', 6018, 617),
 
-  ((SELECT id FROM categories WHERE mood = 'intense'), '19-4028', 'Insignia Blue', '#2E3D59', 'high', 'cool', 'focus', 'fast', 'emotion', 5850, 598),
-  ((SELECT id FROM categories WHERE mood = 'intense'), '19-1650', 'Biking Red', '#612129', 'high', 'heated', 'release', 'fast', 'movement', 5685, 579),
-  ((SELECT id FROM categories WHERE mood = 'intense'), '19-0303', 'Jet Black', '#2B2C2D', 'high', 'neutral', 'immersion', 'fast', 'movement', 5522, 560),
-  ((SELECT id FROM categories WHERE mood = 'intense'), '18-1306', 'Iron', '#735B52', 'medium', 'neutral', 'focus', 'steady', 'confidence', 5362, 541)
+  ((SELECT id FROM categories WHERE mood = 'intense'), '19-4028', 'Insignia Blue', '#303E55', 'high', 'cool', 'focus', 'fast', 'emotion', 5850, 598),
+  ((SELECT id FROM categories WHERE mood = 'intense'), '19-1650', 'Biking Red', '#781F2D', 'high', 'heated', 'release', 'fast', 'movement', 5685, 579),
+  ((SELECT id FROM categories WHERE mood = 'intense'), '19-0303', 'Jet Black', '#2C2C2E', 'high', 'neutral', 'immersion', 'fast', 'movement', 5522, 560),
+  ((SELECT id FROM categories WHERE mood = 'intense'), '18-1306', 'Iron', '#736360', 'medium', 'neutral', 'focus', 'steady', 'confidence', 5362, 541)
 ON DUPLICATE KEY UPDATE
   category_id = VALUES(category_id),
   color_name = VALUES(color_name),

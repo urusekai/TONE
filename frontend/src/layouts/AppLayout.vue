@@ -17,6 +17,8 @@ const route = useRoute();
 const player = usePlayerStore();
 const authStore = useAuthStore();
 const audioRef = ref(null);
+let playbackSyncToken = 0;
+let isSourceTransitioning = false;
 
 const hasTabs = computed(() => route.meta.hasTabs === true);
 
@@ -84,11 +86,15 @@ async function hydratePlayerWithDailyTone() {
 async function syncPlaybackState() {
   const audio = audioRef.value;
   if (!audio) return;
+  const syncToken = ++playbackSyncToken;
 
   if (!player.has_track || !player.current_track.audio_url) {
+    isSourceTransitioning = true;
     audio.pause();
     audio.removeAttribute('src');
     audio.load();
+    if (syncToken !== playbackSyncToken) return;
+    isSourceTransitioning = false;
     player.setPlayingState(false);
     player.setCurrentTime(0);
     player.setDuration(0);
@@ -97,6 +103,7 @@ async function syncPlaybackState() {
 
   const nextSource = player.current_track.audio_url.trim();
   if ((audio.getAttribute('src') || '') !== nextSource) {
+    isSourceTransitioning = true;
     audio.src = nextSource;
     audio.load();
   }
@@ -104,13 +111,21 @@ async function syncPlaybackState() {
   if (player.is_playing) {
     try {
       await audio.play();
-    } catch {
+      if (syncToken !== playbackSyncToken) return;
+      isSourceTransitioning = false;
+    } catch (error) {
+      if (syncToken !== playbackSyncToken) return;
+      const errorName = String(error?.name || '');
+      if (errorName === 'AbortError') return;
+      isSourceTransitioning = false;
       player.setPlayingState(false);
     }
     return;
   }
 
   audio.pause();
+  if (syncToken !== playbackSyncToken) return;
+  isSourceTransitioning = false;
 }
 
 onMounted(async () => {
@@ -179,10 +194,14 @@ function handleTimeUpdate() {
 }
 
 function handleAudioPlay() {
+  isSourceTransitioning = false;
   player.setPlayingState(true);
 }
 
 function handleAudioPause() {
+  if (isSourceTransitioning && player.is_playing) {
+    return;
+  }
   player.setPlayingState(false);
 }
 
