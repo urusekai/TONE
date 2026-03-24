@@ -96,7 +96,9 @@
 
       <div class="echo-card">
         <Transition name="echo-fade" mode="out-in">
-          <p :key="currentEchoNote" class="echo-text">{{ currentEchoNote }}</p>
+          <p :key="currentEchoNote" class="echo-text">
+            <span v-for="line in currentEchoLines" :key="line" class="echo-text-line">{{ line }}</span>
+          </p>
         </Transition>
         <div class="echo-line"></div>
         <p class="echo-date">{{ echoDateLabel }}</p>
@@ -111,6 +113,7 @@ import { usePaletteLogStore } from '@/stores/paletteLog';
 import { usePlayerStore } from '@/stores/player';
 import { fetchDailyTone } from '@/services/dailyToneService';
 import { playPlaylistFirstTrack } from '@/services/playlistService';
+import { apiRequest } from '@/services/httpClient';
 import PlaylistActionControls from '@/components/PlaylistActionControls.vue';
 import DailySpectrumPanel from '@/components/DailySpectrumPanel.vue';
 import { showAlert } from '@/utils/alert';
@@ -124,24 +127,8 @@ const dailyErrorMessage = ref('');
 const paletteLogPreview = computed(() => paletteLog.paletteLogs.slice(0, 4));
 const isEnterReady = ref(false);
 const typedDailyCount = ref(0);
-const echoNotes = [
-  '오늘은 좀 울적하다..ㅜㅜ',
-  '오늘은 괜히 기분 좋음 ㅎㅎ',
-  '아무 일 없는데 괜히 마음이 축 처짐...',
-  '생각보다 평온해서 마음이 놓였다..',
-  '오늘따라 말하기도 귀찮네 ㅋㅋ',
-  '별거 없었는데 괜히 행복한 날!',
-  '괜찮은 줄 알았는데 좀 지쳤나봐..',
-  '그냥 오늘은 조용히 있고 싶다!!!!',
-  '오늘은 마음이 좀 가벼워서 좋다',
-  '별말 아닌데 괜히 계속 생각남..',
-  '기분이 왔다갔다해서 더 피곤함 ㅜ',
-  '소소한데 은근 웃을 일이 많았다 ㅋㅋ',
-  '하루가 왜 이렇게 길지..',
-  '괜히 센치해서 기록 남겨둠 ㅎㅎ',
-  '오늘의 나는 좀 천천히 가고 싶음...'
-];
-const currentEchoNote = ref(echoNotes[0]);
+const echoNotes = ref([]);
+const currentEchoIndex = ref(0);
 
 let echoRotationTimer = null;
 let dailyTypingTimer = null;
@@ -244,22 +231,52 @@ function formatTrackCount(value) {
   return Number(value || 0).toLocaleString('en-US');
 }
 
+function splitEchoLines(text) {
+  const normalized = String(text || '').trim().replace(/\s+/g, ' ');
+  if (!normalized) return [''];
+
+  const words = normalized.split(' ');
+  if (words.length < 2) return [normalized];
+
+  let bestIndex = 1;
+  let bestGap = Number.POSITIVE_INFINITY;
+
+  for (let index = 1; index < words.length; index += 1) {
+    const left = words.slice(0, index).join(' ');
+    const right = words.slice(index).join(' ');
+    const gap = Math.abs(left.length - right.length);
+
+    if (gap < bestGap) {
+      bestGap = gap;
+      bestIndex = index;
+    }
+  }
+
+  return [words.slice(0, bestIndex).join(' '), words.slice(bestIndex).join(' ')].filter(Boolean);
+}
+
+async function loadEchoNotes() {
+  try {
+    const result = await apiRequest('/api/calendar/echo-notes.php', {}, '에코 노트를 불러오지 못했습니다.');
+    echoNotes.value = Array.isArray(result?.echoNotes) ? result.echoNotes : [];
+    currentEchoIndex.value = 0;
+  } catch {
+    echoNotes.value = [];
+    currentEchoIndex.value = 0;
+  }
+}
+
 function pickNextEchoNote() {
-  if (echoNotes.length <= 1) {
-    currentEchoNote.value = echoNotes[0] || '';
+  if (echoNotes.value.length <= 1) {
+    currentEchoIndex.value = 0;
     return;
   }
 
-  let nextNote = currentEchoNote.value;
-  while (nextNote === currentEchoNote.value) {
-    nextNote = echoNotes[Math.floor(Math.random() * echoNotes.length)];
-  }
-
-  currentEchoNote.value = nextNote;
+  currentEchoIndex.value = (currentEchoIndex.value + 1) % echoNotes.value.length;
 }
 
 function startEchoRotation() {
-  pickNextEchoNote();
+  if (echoNotes.value.length < 1) return;
   echoRotationTimer = window.setInterval(() => {
     pickNextEchoNote();
   }, 4000);
@@ -298,6 +315,10 @@ function startDailyTyping() {
 const echoDotStyle = computed(() => ({
   backgroundColor: dailyPlaylist.value?.color_hex || '#3f5f73'
 }));
+
+const currentEchoEntry = computed(() => echoNotes.value[currentEchoIndex.value] ?? null);
+const currentEchoNote = computed(() => currentEchoEntry.value?.memo || '');
+const currentEchoLines = computed(() => splitEchoLines(currentEchoNote.value));
 
 const echoDateLabel = computed(() => {
   const today = new Date();
@@ -372,6 +393,7 @@ function applyLogItemTheme(root) {
 
 onMounted(async () => {
   isEnterReady.value = false;
+  await loadEchoNotes();
   startEchoRotation();
   await paletteLog.load({ silent: true });
   await loadDailyPlaylist();
@@ -711,8 +733,14 @@ watch(
   line-height: 1.4;
   min-height: calc(18px * 1.4 * 2);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+
+.echo-text-line {
+  display: block;
+  text-align: center;
 }
 
 .echo-line {
