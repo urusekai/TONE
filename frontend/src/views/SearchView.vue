@@ -14,7 +14,7 @@ const swiperModules = [FreeMode];
 
 const STORAGE_KEY = 'tone_recent_tags_v1';
 const MAX_TAGS = 12;
-const DEFAULT_RECENT_TAGS = ['NewJeans', '비오는 날에 어울리는 색', '드라이브', '시티팝'];
+const DEFAULT_RECENT_TAGS = ['비 오는 날 어울리는 색', 'NewJeans', '드라이브', '시티팝'];
 
 // localStorage에서 불러오기
 const loadTags = () => {
