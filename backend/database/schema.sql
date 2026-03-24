@@ -732,13 +732,42 @@ VALUES
 ON DUPLICATE KEY UPDATE
   track_order = VALUES(track_order);
 
--- calendar_entries 테스트 데이터 (2026-03, testuser 기준)
+-- calendar_entries 테스트 데이터 (2026-02-20 ~ 2026-03-23, testuser 기준)
 INSERT INTO calendar_entries (user_uuid, entry_date, playlist_id, memo)
 VALUES
-  ((SELECT user_uuid FROM users WHERE id = 'testuser'), '2026-03-01', (SELECT id FROM playlists WHERE pantone_code = '18-1750'), '3월의 시작, 강렬한 무드'),
-  ((SELECT user_uuid FROM users WHERE id = 'testuser'), '2026-03-02', (SELECT id FROM playlists WHERE pantone_code = '18-4245'), '차분하게 집중한 하루'),
-  ((SELECT user_uuid FROM users WHERE id = 'testuser'), '2026-03-03', (SELECT id FROM playlists WHERE pantone_code = '18-1664'), '에너지 넘치게 작업'),
-  ((SELECT user_uuid FROM users WHERE id = 'testuser'), '2026-03-04', (SELECT id FROM playlists WHERE pantone_code = '14-0760'), '조금은 뜨겁고 선명한 기분')
+  ((SELECT user_uuid FROM users WHERE id = 'testuser'), '2026-02-20', (SELECT id FROM playlists WHERE pantone_code = '11-4201'), '오늘은 이것만 보고 있어도 좀 진정됐다...'),
+  ((SELECT user_uuid FROM users WHERE id = 'testuser'), '2026-02-21', (SELECT id FROM playlists WHERE pantone_code = '14-4102'), '머리 복잡했는데 이 톤 보니까 좀 정리됨!'),
+  ((SELECT user_uuid FROM users WHERE id = 'testuser'), '2026-02-22', (SELECT id FROM playlists WHERE pantone_code = '16-3801'), '기분 가라앉은 날이랑 너무 잘 맞아서 계속 들었다'),
+  ((SELECT user_uuid FROM users WHERE id = 'testuser'), '2026-02-23', (SELECT id FROM playlists WHERE pantone_code = '15-1214'), '오늘은 유난히 포근한 톤에 끌림'),
+  ((SELECT user_uuid FROM users WHERE id = 'testuser'), '2026-02-24', (SELECT id FROM playlists WHERE pantone_code = '19-4052'), '흔들리던 마음이 조금은 잡히는 느낌'),
+  ((SELECT user_uuid FROM users WHERE id = 'testuser'), '2026-02-25', (SELECT id FROM playlists WHERE pantone_code = '16-4120'), '예민했는데 이 색 덕분에 좀 식었다...'),
+  ((SELECT user_uuid FROM users WHERE id = 'testuser'), '2026-02-26', (SELECT id FROM playlists WHERE pantone_code = '19-4007'), '조용한데 힘 있는 느낌이라 오늘이랑 잘 붙었다'),
+  ((SELECT user_uuid FROM users WHERE id = 'testuser'), '2026-02-27', (SELECT id FROM playlists WHERE pantone_code = '18-3834'), '밤 감정이랑 너무 잘 맞아서 괜히 더 오래 봄'),
+  ((SELECT user_uuid FROM users WHERE id = 'testuser'), '2026-02-28', (SELECT id FROM playlists WHERE pantone_code = '14-2311'), '별거 없던 하루인데 기분은 꽤 말랑했다!'),
+
+  ((SELECT user_uuid FROM users WHERE id = 'testuser'), '2026-03-01', (SELECT id FROM playlists WHERE pantone_code = '18-1750'), '3월 시작하자마자 텐션 확 올려주는 색이었다!!!'),
+  ((SELECT user_uuid FROM users WHERE id = 'testuser'), '2026-03-02', (SELECT id FROM playlists WHERE pantone_code = '18-4245'), '산만했는데 이 톤 보자마자 집중 다시 돌아옴'),
+  ((SELECT user_uuid FROM users WHERE id = 'testuser'), '2026-03-03', (SELECT id FROM playlists WHERE pantone_code = '18-1664'), '오늘은 진짜 가만히 있기 싫은 날이라 이 에너지 딱 좋았음'),
+  ((SELECT user_uuid FROM users WHERE id = 'testuser'), '2026-03-04', (SELECT id FROM playlists WHERE pantone_code = '14-0760'), '너무 선명해서 보는 순간 기분까지 밝아졌다!'),
+  ((SELECT user_uuid FROM users WHERE id = 'testuser'), '2026-03-05', (SELECT id FROM playlists WHERE pantone_code = '16-1546'), '축 처진 하루였는데 이 색 덕분에 생기 조금 돌아옴'),
+  ((SELECT user_uuid FROM users WHERE id = 'testuser'), '2026-03-06', (SELECT id FROM playlists WHERE pantone_code = '16-1544'), '괜히 다정해지고 싶은 날엔 이런 톤이 제일 좋다...'),
+  ((SELECT user_uuid FROM users WHERE id = 'testuser'), '2026-03-07', (SELECT id FROM playlists WHERE pantone_code = '18-3838'), '주말 밤 분위기에 그냥 푹 잠기는 느낌'),
+  ((SELECT user_uuid FROM users WHERE id = 'testuser'), '2026-03-08', (SELECT id FROM playlists WHERE pantone_code = '16-0952'), '작아졌던 자신감이 조금은 살아나는 기분 :)'),
+  ((SELECT user_uuid FROM users WHERE id = 'testuser'), '2026-03-09', (SELECT id FROM playlists WHERE pantone_code = '13-0647'), '월요일인데도 생각보다 가볍게 출발해서 놀람'),
+  ((SELECT user_uuid FROM users WHERE id = 'testuser'), '2026-03-10', (SELECT id FROM playlists WHERE pantone_code = '12-0743'), '피곤했는데도 이 톤 덕분에 마음은 먼저 환기됨!'),
+  ((SELECT user_uuid FROM users WHERE id = 'testuser'), '2026-03-11', (SELECT id FROM playlists WHERE pantone_code = '14-4318'), '맑은데 과하지 않아서 오늘이랑 진짜 잘 맞았다'),
+  ((SELECT user_uuid FROM users WHERE id = 'testuser'), '2026-03-12', (SELECT id FROM playlists WHERE pantone_code = '14-4102'), '별일 없는 날인데 오래 편안했던 건 이 색 덕분 같음...'),
+  ((SELECT user_uuid FROM users WHERE id = 'testuser'), '2026-03-13', (SELECT id FROM playlists WHERE pantone_code = '11-4201'), '조용히 켜두니까 머릿속이 좀 비워지는 느낌이었다'),
+  ((SELECT user_uuid FROM users WHERE id = 'testuser'), '2026-03-14', (SELECT id FROM playlists WHERE pantone_code = '15-1214'), '주말 오후에 이 톤이랑 차 한 잔이면 그냥 끝'),
+  ((SELECT user_uuid FROM users WHERE id = 'testuser'), '2026-03-15', (SELECT id FROM playlists WHERE pantone_code = '19-4028'), '잡생각 많았는데 이 색 덕분에 몰입은 좀 됐다'),
+  ((SELECT user_uuid FROM users WHERE id = 'testuser'), '2026-03-16', (SELECT id FROM playlists WHERE pantone_code = '19-1650'), '쌓여 있던 감정이 오늘은 좀 시원하게 빠져나감!'),
+  ((SELECT user_uuid FROM users WHERE id = 'testuser'), '2026-03-17', (SELECT id FROM playlists WHERE pantone_code = '19-0303'), '빡센 날이었는데도 중심 안 잃게 해준 톤'),
+  ((SELECT user_uuid FROM users WHERE id = 'testuser'), '2026-03-18', (SELECT id FROM playlists WHERE pantone_code = '18-1306'), '거친 하루 끝에 남는 안정감이 은근 좋았다...'),
+  ((SELECT user_uuid FROM users WHERE id = 'testuser'), '2026-03-19', (SELECT id FROM playlists WHERE pantone_code = '19-4052'), '조급할 때마다 이 톤 보면서 호흡 다시 맞춤'),
+  ((SELECT user_uuid FROM users WHERE id = 'testuser'), '2026-03-20', (SELECT id FROM playlists WHERE pantone_code = '16-4120'), '예민했던 감정 온도가 밤 되니까 좀 내려갔다'),
+  ((SELECT user_uuid FROM users WHERE id = 'testuser'), '2026-03-21', (SELECT id FROM playlists WHERE pantone_code = '16-1546'), '주말 낮 텐션이 기분 좋게 유지돼서 만족!'),
+  ((SELECT user_uuid FROM users WHERE id = 'testuser'), '2026-03-22', (SELECT id FROM playlists WHERE pantone_code = '13-0647'), '내일 월요일인데도 밝은 쪽 감정이 조금 더 컸다'),
+  ((SELECT user_uuid FROM users WHERE id = 'testuser'), '2026-03-23', (SELECT id FROM playlists WHERE pantone_code = '18-1750'), '미루던 일 끝내고 오늘은 내가 좀 멋져 보였음')
 ON DUPLICATE KEY UPDATE
   playlist_id = VALUES(playlist_id),
   memo = VALUES(memo),
