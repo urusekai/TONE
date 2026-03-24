@@ -1,9 +1,5 @@
 <template>
-  <main
-    id="category-page"
-    :class="{ 'is-enter-ready': isEnterReady }"
-    aria-label="Categories"
-  >
+  <main id="category-page" :class="{ 'is-enter-ready': isEnterReady }" aria-label="Categories">
     <h1 class="cg-title">Categories</h1>
 
     <p v-if="isLoading" class="cg-state">카테고리를 불러오는 중...</p>
@@ -70,7 +66,11 @@ async function loadCategories() {
   isEnterReady.value = false;
 
   try {
-    const result = await apiRequest('/api/categories/list.php', {}, '카테고리 목록을 불러오지 못했습니다.');
+    const result = await apiRequest(
+      '/api/categories/list.php',
+      {},
+      '카테고리 목록을 불러오지 못했습니다.'
+    );
     const items = Array.isArray(result?.categories) ? result.categories : [];
 
     categories.value = items.map((item) => ({
@@ -185,7 +185,7 @@ onMounted(async () => {
   color: inherit;
   /* 카드 기본 바탕 */
   background: #ffffff;
-  box-shadow: 0 0px 15px rgba(0, 0, 0, 0.13);
+  box-shadow: 0 0px 5px rgba(0, 0, 0, 0.16);
   border: 1px solid #b7aea671;
 
   overflow: hidden;
