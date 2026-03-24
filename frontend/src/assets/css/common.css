@@ -83,12 +83,12 @@ body {
 
 /* 미니플레이어가 열린 페이지 */
 .app.has-mini-open {
-  --app-bottom-fixed-height: 160px;
+  --app-bottom-fixed-height: 180px;
 }
 
 /* 미니플레이어가 닫힌(핸들만 노출) 페이지 */
 .app.has-mini-hidden {
-  --app-bottom-fixed-height: 97px; /* bottom-nav 75 + visible peek 22 */
+  --app-bottom-fixed-height: 117px;
 }
 
 /* ----------------------------------------
@@ -120,9 +120,8 @@ body {
 }
 
 .route-view-shell--tab-rise {
-  animation:
-    tab-content-rise-in var(--app-route-transition-duration) var(--app-route-transition-easing)
-    both;
+  animation: tab-content-rise-in var(--app-route-transition-duration)
+    var(--app-route-transition-easing) both;
 }
 
 @keyframes tab-content-rise-in {

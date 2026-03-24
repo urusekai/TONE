@@ -45,6 +45,7 @@ const searchResults = ref([]);
 const searchErrorMessage = ref('');
 const lastSearchedQuery = ref('');
 let summaryTypingTimer = null;
+let latestSearchRequestId = 0;
 
 // tags가 바뀔 때마다 localStorage 저장
 watch(
@@ -134,15 +135,14 @@ async function runSearch(rawQuery) {
   const t = normalizeTag(String(rawQuery || ''));
   if (!t) return;
 
+  const requestId = ++latestSearchRequestId;
   addRecentTag(t);
   isSearching.value = true;
   hasSearched.value = true;
   stopSummaryTyping();
-  searchSummary.value = '';
-  typedSearchSummary.value = '';
-  searchResults.value = [];
   searchErrorMessage.value = '';
   lastSearchedQuery.value = t;
+  keyword.value = '';
 
   try {
     const result = await apiRequest(
@@ -156,21 +156,25 @@ async function runSearch(rawQuery) {
       '검색 결과를 불러오지 못했습니다.'
     );
 
+    if (requestId !== latestSearchRequestId) return;
+
     searchSummary.value = String(result?.summary || '').trim();
     startSummaryTyping(searchSummary.value);
     searchResults.value = Array.isArray(result?.results)
       ? result.results.map(mapSearchPlaylistCard)
       : [];
   } catch (error) {
+    if (requestId !== latestSearchRequestId) return;
+
     stopSummaryTyping();
     searchErrorMessage.value =
       error instanceof Error ? error.message : '검색 결과를 불러오지 못했습니다.';
     console.error(error);
   } finally {
-    isSearching.value = false;
+    if (requestId === latestSearchRequestId) {
+      isSearching.value = false;
+    }
   }
-
-  keyword.value = '';
 }
 
 async function onSubmit(e) {
@@ -242,7 +246,17 @@ const shouldShowSearchResults = computed(() => hasSearched.value);
 </script>
 
 <template>
-  <main id="search" :class="{ 'is-enter-ready': isEnterReady }">
+  <main id="search" :class="{ 'is-enter-ready': isEnterReady, 'is-searching-lock': isSearching }">
+    <div v-if="isSearching" class="search-page-overlay" aria-hidden="true">
+      <div class="search-loading-shell">
+        <div class="spectrum-loading-orbit search-loading-orbit">
+          <span class="spectrum-loading-orb spectrum-loading-orb-violet"></span>
+          <span class="spectrum-loading-orb spectrum-loading-orb-orange"></span>
+          <span class="spectrum-loading-orb spectrum-loading-orb-rose"></span>
+        </div>
+      </div>
+    </div>
+
     <section class="search-bar-section" style="--search-section-delay: 0ms">
       <form class="search-input-box" role="search" @submit="onSubmit">
         <input v-model="keyword" type="text" placeholder="노래, 아티스트, 색상 검색" />
@@ -252,24 +266,7 @@ const shouldShowSearchResults = computed(() => hasSearched.value);
       </form>
     </section>
 
-    <div
-      class="search-content-scroll"
-      :class="{ 'is-searching': shouldShowSearchResults && isSearching }"
-    >
-      <div
-        v-if="shouldShowSearchResults && isSearching"
-        class="search-loading-overlay"
-        aria-hidden="true"
-      >
-        <div class="search-loading-shell">
-          <div class="spectrum-loading-orbit search-loading-orbit">
-            <span class="spectrum-loading-orb spectrum-loading-orb-violet"></span>
-            <span class="spectrum-loading-orb spectrum-loading-orb-orange"></span>
-            <span class="spectrum-loading-orb spectrum-loading-orb-rose"></span>
-          </div>
-        </div>
-      </div>
-
+    <div class="search-content-scroll">
       <!-- 최근 검색어 -->
       <section class="search-section" style="--search-section-delay: 40ms">
         <h3 class="section-title">최근 검색어</h3>
@@ -286,7 +283,7 @@ const shouldShowSearchResults = computed(() => hasSearched.value);
         >
           <SwiperSlide v-for="t in searchData.tags" :key="t" class="tag-slide">
             <div
-              class="tag"
+              class="tag search-elevated"
               role="button"
               tabindex="0"
               @click="applyTagToSearch(t)"
@@ -344,7 +341,7 @@ const shouldShowSearchResults = computed(() => hasSearched.value);
         <section class="recent-colors-section" style="--search-section-delay: 80ms">
           <h3 class="section-title">최근 컬러</h3>
 
-          <div class="recent-colors-wrapper">
+          <div class="recent-colors-wrapper search-elevated">
             <div
               v-if="isLoadingColors"
               class="search-loading-shell search-loading-shell-box"
@@ -401,7 +398,7 @@ const shouldShowSearchResults = computed(() => hasSearched.value);
             <article
               v-for="r in searchData.recommended"
               :key="`${r.brand}-${r.name}`"
-              class="pantone-card"
+              class="pantone-card search-elevated"
               @click="goToPlaylist(r)"
             >
               <div class="card-color-top" :style="{ backgroundColor: r.code }"></div>
@@ -423,6 +420,7 @@ const shouldShowSearchResults = computed(() => hasSearched.value);
   --section-gap: 30px;
   --title-content-gap: 12px;
 
+  position: relative;
   justify-content: flex-start;
   align-items: stretch;
   min-height: 0;
@@ -432,6 +430,25 @@ const shouldShowSearchResults = computed(() => hasSearched.value);
   padding-right: 0;
   background-color: #f2f2ee;
   box-sizing: border-box;
+}
+
+#search.is-searching-lock > :not(.search-page-overlay) {
+  pointer-events: none;
+}
+
+#search.is-searching-lock .search-bar-section,
+#search.is-searching-lock .search-content-scroll {
+  opacity: 0.42;
+}
+
+.search-page-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(242, 242, 238, 0.2);
 }
 
 #search .search-bar-section,
@@ -507,19 +524,6 @@ const shouldShowSearchResults = computed(() => hasSearched.value);
   box-sizing: border-box;
 }
 
-.search-content-scroll.is-searching {
-  min-height: 100%;
-}
-
-.search-loading-overlay {
-  position: absolute;
-  inset: 0 0 calc(var(--app-main-bottom) + var(--section-gap)) 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-}
-
 .search-input-box {
   display: flex;
   width: 100%;
@@ -561,7 +565,8 @@ const shouldShowSearchResults = computed(() => hasSearched.value);
 }
 
 .tag-swiper {
-  padding: 0;
+  padding: 4px 0;
+  margin: -4px 0;
   overflow: hidden;
 }
 
@@ -574,6 +579,10 @@ const shouldShowSearchResults = computed(() => hasSearched.value);
   padding: 0 14px;
 }
 
+.search-elevated {
+  box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.1);
+}
+
 /* 최근 검색어 태그 */
 .tag {
   flex: 0 0 auto;
@@ -583,7 +592,6 @@ const shouldShowSearchResults = computed(() => hasSearched.value);
   padding: 8px 14px;
   border-radius: 20px;
   font-size: 14px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   cursor: pointer;
 }
 
@@ -608,7 +616,6 @@ const shouldShowSearchResults = computed(() => hasSearched.value);
   padding: 15px 0px 10px;
   background: #ffffff;
   border-radius: 15px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
   overflow: hidden;
 
   position: relative;
@@ -682,8 +689,8 @@ const shouldShowSearchResults = computed(() => hasSearched.value);
 
 .search-summary-text {
   margin: 0;
-  font-size: 14px;
-  line-height: 1.65;
+  font-size: 13px;
+  line-height: 1.5;
   white-space: pre-line;
   word-break: keep-all;
   overflow-wrap: break-word;
@@ -760,7 +767,6 @@ const shouldShowSearchResults = computed(() => hasSearched.value);
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
   cursor: pointer;
 }
 

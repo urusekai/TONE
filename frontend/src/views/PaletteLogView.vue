@@ -416,9 +416,7 @@ watch(
   background: var(--card, #bfc9d6);
   overflow: hidden;
   margin-top: -28px;
-  box-shadow:
-    0 16px 26px rgba(0, 0, 0, 0.18),
-    0 1px 0 rgba(255, 255, 255, 0.25) inset;
+  box-shadow: 0 5px 5px rgba(0, 0, 0, 0.5);
   opacity: 0;
   transform: translateY(10px);
   will-change: transform, opacity;

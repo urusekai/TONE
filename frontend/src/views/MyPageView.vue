@@ -429,7 +429,6 @@ const confirmWithdraw = async () => {
   display: block;
   margin-left: auto;
   margin-right: 0;
-  margin-bottom: 20px;
   text-decoration: underline;
 }
 </style>
