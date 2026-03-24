@@ -231,7 +231,11 @@ function formatTrackCount(value) {
 
 async function loadEchoNotes() {
   try {
-    const result = await apiRequest('/api/calendar/echo-notes.php', {}, '에코 노트를 불러오지 못했습니다.');
+    const result = await apiRequest(
+      '/api/calendar/echo-notes.php',
+      {},
+      '에코 노트를 불러오지 못했습니다.'
+    );
     echoNotes.value = Array.isArray(result?.echoNotes) ? result.echoNotes : [];
     currentEchoIndex.value = 0;
   } catch {
@@ -625,7 +629,7 @@ watch(
   background: var(--bg, #b7cc1a);
   color: #fff;
   text-decoration: none;
-  box-shadow: 0 18px 30px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 0px 10px rgba(0, 0, 0, 0.3);
 }
 
 .log-copy {
