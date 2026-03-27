@@ -31,6 +31,7 @@ TONE은 사용자에게 매일 팬톤컬러 기반의 색상과 그에 어울리
   <img alt="Vite" hspace="3" src="https://img.shields.io/badge/vite-%23646CFF.svg?style=flat-square&logo=vite&logoColor=white" />
   <img alt="Pinia" hspace="3" src="https://img.shields.io/badge/Pinia-FFD859?style=flat-square&logo=pinia&logoColor=black" />
   <img alt="Axios" hspace="3" src="https://img.shields.io/badge/Axios-5A29E4?style=flat-square&logo=axios&logoColor=white" />
+  <img alt="Swiper" hspace="3" src="https://img.shields.io/badge/Swiper-6332F6?style=flat-square&logo=swiper&logoColor=white" />
 </p>
 
 **백엔드 & AI**
@@ -47,6 +48,16 @@ TONE은 사용자에게 매일 팬톤컬러 기반의 색상과 그에 어울리
 <p>
   <img alt="GitHub Actions" hspace="3" src="https://img.shields.io/badge/GitHub%20Actions-2088FF?style=flat-square&logo=githubactions&logoColor=white" />
   <img alt="Cloudflare R2" hspace="3" src="https://img.shields.io/badge/Cloudflare%20R2-F38020?style=flat-square&logo=cloudflare&logoColor=white" />
+</p>
+
+**협업 & 개발 도구**
+
+<p>
+  <img alt="ESLint" hspace="3" src="https://img.shields.io/badge/ESLint-4B32C3?style=flat-square&logo=eslint&logoColor=white" />
+  <img alt="Prettier" hspace="3" src="https://img.shields.io/badge/Prettier-F7B93E?style=flat-square&logo=prettier&logoColor=black" />
+  <img alt="Notion" hspace="3" src="https://img.shields.io/badge/Notion-000000?style=flat-square&logo=notion&logoColor=white" />
+  <img alt="GitHub" hspace="3" src="https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=github&logoColor=white" />
+  <img alt="Figma" hspace="3" src="https://img.shields.io/badge/Figma-F24E1E?style=flat-square&logo=figma&logoColor=white" />
 </p>
 
 <br>
