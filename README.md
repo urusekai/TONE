@@ -14,9 +14,13 @@ TONE은 사용자에게 매일 팬톤컬러 기반의 색상과 그에 어울리
 하루의 감정을 색과 음악으로 기록할 수 있는 모바일 뮤직 플랫폼입니다.
 </p>
 <p align="center">
-  <a href="https://toneapp.dothome.co.kr" target="_blank">
-    <img alt="toneapp.dothome.co.kr" src="https://img.shields.io/badge/toneapp.dothome.co.kr-3F5F73?style=for-the-badge" />
+  🔗 <a href="https://toneapp.dothome.co.kr" target="_blank">
+    https://toneapp.dothome.co.kr
   </a>
+</p>
+<p align="center">
+  <img src="https://img.shields.io/badge/참여 인원 - 4명-3F5F73?style=flat&logoColor=white"/>
+  <img src="https://img.shields.io/badge/프로젝트 기간 - 2026.02.02 ~ 2026.03.24-3F5F73?style=flat&logoColor=white"/>
 </p>
 
 <br>
@@ -26,38 +30,38 @@ TONE은 사용자에게 매일 팬톤컬러 기반의 색상과 그에 어울리
 **프론트엔드**
 
 <p>
-  <img alt="Vue.js" hspace="3" src="https://img.shields.io/badge/vuejs-%2335495e.svg?style=flat-square&logo=vuedotjs&logoColor=%234FC08D" />
-  <img alt="Vue Router" hspace="3" src="https://img.shields.io/badge/Vue%20Router-4FC08D?style=flat-square&logo=vuedotjs&logoColor=white" />
-  <img alt="Vite" hspace="3" src="https://img.shields.io/badge/vite-%23646CFF.svg?style=flat-square&logo=vite&logoColor=white" />
-  <img alt="Pinia" hspace="3" src="https://img.shields.io/badge/Pinia-FFD859?style=flat-square&logo=pinia&logoColor=black" />
-  <img alt="Axios" hspace="3" src="https://img.shields.io/badge/Axios-5A29E4?style=flat-square&logo=axios&logoColor=white" />
-  <img alt="Swiper" hspace="3" src="https://img.shields.io/badge/Swiper-6332F6?style=flat-square&logo=swiper&logoColor=white" />
+  <img alt="Vue.js" hspace="3" src="https://img.shields.io/badge/Vue.js-35495e?style=flat&logo=vuedotjs&logoColor=4FC08D" />
+  <img alt="Vue Router" hspace="3" src="https://img.shields.io/badge/Vue%20Router-4FC08D?style=flat&logo=vuedotjs&logoColor=white" />
+  <img alt="Vite" hspace="3" src="https://img.shields.io/badge/Vite-646CFF?style=flat&logo=vite&logoColor=white" />
+  <img alt="Pinia" hspace="3" src="https://img.shields.io/badge/Pinia-FFD859?style=flat&logo=pinia&logoColor=black" />
+  <img alt="Axios" hspace="3" src="https://img.shields.io/badge/Axios-5A29E4?style=flat&logo=axios&logoColor=white" />
+  <img alt="Swiper" hspace="3" src="https://img.shields.io/badge/Swiper-6332F6?style=flat&logo=swiper&logoColor=white" />
 </p>
 
 **백엔드 & AI**
 
 <p>
-  <img alt="PHP" hspace="3" src="https://img.shields.io/badge/php-%23777BB4.svg?style=flat-square&logo=php&logoColor=white" />
-  <img alt="MySQL" hspace="3" src="https://img.shields.io/badge/mysql-4479A1.svg?style=flat-square&logo=mysql&logoColor=white" />
-  <img alt="Composer" hspace="3" src="https://img.shields.io/badge/composer-885630?style=flat-square&logo=composer&logoColor=white" />
-  <img alt="OpenAI API" hspace="3" src="https://img.shields.io/badge/OpenAI%20API-412991?style=flat-square&logo=openai&logoColor=white" />
+  <img alt="PHP" hspace="3" src="https://img.shields.io/badge/PHP-777BB4?style=flat&logo=php&logoColor=white" />
+  <img alt="MySQL" hspace="3" src="https://img.shields.io/badge/MySQL-4479A1?style=flat&logo=mysql&logoColor=white" />
+  <img alt="Composer" hspace="3" src="https://img.shields.io/badge/Composer-885630?style=flat&logo=composer&logoColor=white" />
+  <img alt="OpenAI API" hspace="3" src="https://img.shields.io/badge/OpenAI_API-412991?style=flat&logo=openai&logoColor=white" />
 </p>
 
 **배포 & 인프라**
 
 <p>
-  <img alt="GitHub Actions" hspace="3" src="https://img.shields.io/badge/GitHub%20Actions-2088FF?style=flat-square&logo=githubactions&logoColor=white" />
-  <img alt="Cloudflare R2" hspace="3" src="https://img.shields.io/badge/Cloudflare%20R2-F38020?style=flat-square&logo=cloudflare&logoColor=white" />
+  <img alt="GitHub Actions" hspace="3" src="https://img.shields.io/badge/GitHub%20Actions-2088FF?style=flat&logo=githubactions&logoColor=white" />
+  <img alt="Cloudflare R2" hspace="3" src="https://img.shields.io/badge/Cloudflare%20R2-F38020?style=flat&logo=cloudflare&logoColor=white" />
 </p>
 
 **협업 & 개발 도구**
 
 <p>
-  <img alt="ESLint" hspace="3" src="https://img.shields.io/badge/ESLint-4B32C3?style=flat-square&logo=eslint&logoColor=white" />
-  <img alt="Prettier" hspace="3" src="https://img.shields.io/badge/Prettier-F7B93E?style=flat-square&logo=prettier&logoColor=black" />
-  <img alt="Notion" hspace="3" src="https://img.shields.io/badge/Notion-000000?style=flat-square&logo=notion&logoColor=white" />
-  <img alt="GitHub" hspace="3" src="https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=github&logoColor=white" />
-  <img alt="Figma" hspace="3" src="https://img.shields.io/badge/Figma-F24E1E?style=flat-square&logo=figma&logoColor=white" />
+  <img alt="ESLint" hspace="3" src="https://img.shields.io/badge/ESLint-4B32C3?style=flat&logo=eslint&logoColor=white" />
+  <img alt="Prettier" hspace="3" src="https://img.shields.io/badge/Prettier-F7B93E?style=flat&logo=prettier&logoColor=black" />
+  <img alt="Notion" hspace="3" src="https://img.shields.io/badge/Notion-000000?style=flat&logo=notion&logoColor=white" />
+  <img alt="GitHub" hspace="3" src="https://img.shields.io/badge/GitHub-181717?style=flat&logo=github&logoColor=white" />
+  <img alt="Figma" hspace="3" src="https://img.shields.io/badge/Figma-F24E1E?style=flat&logo=figma&logoColor=white" />
 </p>
 
 <br>
